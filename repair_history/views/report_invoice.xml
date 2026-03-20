@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="external_layout_standard_inherit_udym" inherit_id="web.external_layout_standard">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_boxed_inherit_udym" inherit_id="web.external_layout_boxed">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_bold_inherit_udym" inherit_id="web.external_layout_bold">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_striped_inherit_udym" inherit_id="web.external_layout_striped">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_bubble_inherit_udym" inherit_id="web.external_layout_bubble">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_wave_inherit_udym" inherit_id="web.external_layout_wave">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="external_layout_folder_inherit_udym" inherit_id="web.external_layout_folder">
+        <xpath expr="//ul[@name='company_address_list']" position="inside">
+            <li t-if="company.partner_id.udym_no">
+                <strong>Udym Number: </strong>
+                <span t-field="company.partner_id.udym_no"/>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="report_invoice_document_inherited" inherit_id="account.report_invoice_document">
+
+        <xpath expr="//div[@name='address_not_same_as_shipping']//t[@t-set='address']" position="inside">
+            <div name="udyam_no_shipping">
+                Udym Number: <span t-field="o.partner_id.udym_no"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='address_same_as_shipping']//t[@t-set='address']" position="inside">
+            <div name="udyam_no_shipping">
+                Udym Number: <span t-field="o.partner_id.udym_no"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@name='no_shipping']//t[@t-set='address']" position="inside">
+            <div name="udyam_no_shipping">
+                Udym Number: <span t-field="o.partner_id.udym_no"/>
+            </div>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="after">
+            <t t-set="sale_lines" t-value="o.invoice_line_ids.mapped('sale_line_ids')"/>
+            <t t-set="sale_orders" t-value="sale_lines.mapped('order_id')"/>
+            <t t-set="delivery_orders" t-value="sale_orders.mapped('picking_ids').filtered(lambda p: p.state == 'done')"/>
+            <t t-set="buyer_pos" t-value="sale_orders.mapped('purchase_order_ids')"/>
+
+            <table class="table table-sm table-bordered mt-2 mb-4" style="table-layout: fixed; width: 100%; border: 1px solid black;">
+                <tbody>
+                    <tr>
+                        <td style="width: 25%;">
+                            <strong>Invoice No.</strong><br/>
+                            <span t-field="o.name"/>
+                        </td>
+                        <td style="width: 25%;">
+                            <strong>Delivery Note</strong><br/>
+                            <span t-if="delivery_orders" t-out="', '.join(delivery_orders.mapped('name'))"/>
+                        </td>
+                        <td style="width: 25%;">
+                            <strong>Delivery Note Date</strong><br/>
+                            <span t-if="delivery_orders">
+                                <span t-field="delivery_orders[0].date_done" t-options='{"widget": "date"}'/>
+                            </span>
+                        </td>
+                        <td style="width: 25%;">
+                            <strong>Term of Payment</strong><br/>
+                            <span t-if="sale_orders and sale_orders[0].payment_term_id" t-field="sale_orders[0].payment_term_id.name"/>
+                            <span t-elif="o.invoice_payment_term_id" t-field="o.invoice_payment_term_id.name"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>Buyer Orders &amp; Date</strong><br/>
+                            <t t-if="buyer_pos">
+                                <t t-foreach="buyer_pos" t-as="po">
+                                    <span t-out="po.name"/>
+                                    <span t-if="po.date_order"> (<span t-field="po.date_order" t-options='{"widget": "date"}'/>)</span>
+                                    <br t-if="not po_last"/>
+                                </t>
+                            </t>
+                        </td>
+                        <td>
+                            <strong>Dispatch Doc No.</strong><br/>
+                            <span t-field="o.dispatch_doc_no"/>
+                        </td>
+                        <td>
+                            <strong>Dispatched through</strong><br/>
+                            <span t-field="o.dispatched_through"/>
+                        </td>
+                        <td>
+                            <strong>Destination</strong><br/>
+                            <span t-field="o.destination"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <strong>Reference No. &amp; Date</strong><br/>
+                            <t t-if="o.reference_no">
+                                <span t-out="o.reference_no"/>
+                                <span t-if="o.reference_date"> (<span t-field="o.reference_date" t-options='{"widget": "date"}'/>)</span>
+                            </t>
+                        </td>
+                        <td>
+                            <strong>Other References</strong><br/>
+                            <span t-field="o.other_references"/>
+                        </td>
+                        <td colspan="2">
+                            <strong>Terms of Delivery</strong><br/>
+                            <span t-field="o.terms_of_delivery"/>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+        <xpath expr="//div[p[@t-if='o.company_id.display_invoice_amount_total_words']]" position="after">
+            <div class="mt-3" t-if="o.remark">
+                <strong>Remarks:</strong>
+                <div t-field="o.remark"/>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="custom_l10n_in_invoice_report_fixed" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">
+
+        <xpath expr="//th[@name='th_quantity']" position="before">
+            <th name="th_part_no">Part No.</th>
+        </xpath>
+
+        <xpath expr="//td[@name='td_quantity']" position="before">
+            <td name="td_part_no">
+                <span t-field="line.product_id.default_code"/>
+            </td>
+        </xpath>
+
+        <xpath expr="//div[@name='l10n_in_hsn_summary']/table" position="inside">
+            <t t-set="total_taxable_val" t-value="sum(item['amount_untaxed'] for item in hsn_summary['items'])"/>
+            <t t-set="total_igst_val" t-value="sum(item['tax_amount_igst'] for item in hsn_summary['items'])"/>
+
+            <tr class="border-black fw-bold">
+                <td>Total</td>
+                <td colspan="2"></td> <td class="text-end">
+                    <span t-esc="total_taxable_val" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                </td>
+                <td t-if="hsn_summary['has_gst']"></td>
+                <td t-if="hsn_summary['has_gst']"></td>
+                <td class="text-end" t-if="hsn_summary['has_igst']">
+                    <span t-esc="total_igst_val" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                </td>
+                <td t-if="hsn_summary['has_cess']"></td>
+            </tr>
+        </xpath>
+
+        <xpath expr="//div[@name='l10n_in_hsn_summary']" position="after">
+            <div class="mt-4" style="page-break-inside: avoid; border-top: 1px solid black;">
+                <div class="row pt-2">
+                    <div class="col-6">
+                        <strong>Declaration</strong>
+                        <p style="font-size: 15px;">
+                            We declare that this invoice shows the actual price of the goods
+                            described and that all particulars are true and correct.
+                        </p>
+                        <div t-if="o.company_id.vat">
+                            <strong>Company's PAN: </strong>
+                            <span t-esc="o.company_id.partner_id.l10n_in_pan"/>
+                        </div>
+                    </div>
+
+                    <div class="col-6 text-end">
+                        <strong>Company's Bank Details</strong><br/>
+                        <span>Bank Name : </span><span t-field="o.company_id.partner_id.bank_ids[:1].bank_id.name"/><br/>
+                        <span>A/c No. : </span><span t-field="o.company_id.partner_id.bank_ids[:1].acc_number"/><br/>
+                        <span>Branch &amp; IFS Code: </span>
+                        <span t-field="o.company_id.partner_id.bank_ids[:1].bank_id.street"/> &amp;
+                        <span t-field="o.company_id.partner_id.bank_ids[:1].bank_id.bic"/>
+                    </div>
+                </div>
+
+                <div class="row mt-3 border-top border-bottom" style="min-height: 80px;">
+                    <div class="col-6 border-end pt-2">
+                        <span>Customer's Seal and Signature</span>
+                    </div>
+                    <div class="col-6 text-end pt-2">
+                        <span>for <strong><t t-esc="o.company_id.name"/></strong></span>
+                        <br/><br/><br/>
+                        <span>Authorised Signatory</span>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

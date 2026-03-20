@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <record id="sequence_production_order" model="ir.sequence">
+            <field name="name">Production Order Sequence</field>
+            <field name="code">production.order</field>
+            <field name="prefix">PR/OR/%(y)s/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

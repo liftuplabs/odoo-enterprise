@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_customer_po_tree" model="ir.ui.view">
+        <field name="name">customer.po.tree</field>
+        <field name="model">customer.po</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="order_date"/>
+                <field name="po_state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_customer_po_form" model="ir.ui.view">
+        <field name="name">customer.po.form</field>
+        <field name="model">customer.po</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string="Confirm PO" type="object" name="action_confirm" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sale_order"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-shopping-cart"
+                                invisible="not sale_order_id">
+                            <field name="sale_order_id" invisible="1"/>
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Sale Order</span>
+                            </div>
+                        </button>
+
+                        <button name="action_view_production_orders"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-industry"
+                        >
+                            <field name="production_count" widget="statinfo" string="Production Orders"/>
+                        </button>
+
+                        <button name="action_view_stock"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-industry"
+                                invisible="not stock_count"
+                        >
+                            <field name="stock_count" widget="statinfo"/>
+                        </button>
+                    </div>
+
+                    <group>
+                        <field name="name"/>
+                        <field name="partner_id"/>
+                        <field name="sale_order_id" invisible="1"/>
+                        <field name="order_date"/>
+                        <field name="po_state"/>
+                    </group>
+                    <notebook>
+                        <page string="PO Lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="qty"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_customer_po" model="ir.actions.act_window">
+        <field name="name">Customer POs</field>
+        <field name="res_model">customer.po</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+<!--    <menuitem id="menu_customer_po_root" name="Customer PO" sequence="10"/>-->
+<!--    <menuitem id="menu_customer_po" name="Customer POs" parent="menu_customer_po_root"-->
+<!--              action="action_customer_po"/>-->
+
+
+</odoo>

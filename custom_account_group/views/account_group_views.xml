@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_form_inherit" model="ir.ui.view">
+        <field name="name">account.group.form.inherit</field>
+        <field name="model">account.group</field>
+        <field name="inherit_id" ref="account.view_account_group_form"/>
+        <field name="arch" type="xml">
+            <data>
+                <xpath expr="//label[@for='code_prefix_start']" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+
+                <xpath expr="//label[@for='code_prefix_start']/following-sibling::div[1]" position="attributes">
+                    <attribute name="invisible">1</attribute>
+                </xpath>
+                <xpath expr="//field[@name='name']" position="replace">
+                    <div class="oe_title">
+                        <label for="name" string="Group Name"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Current Assets" class="oe_inline"/>
+                        </h1>
+                    </div>
+                </xpath>
+                <xpath expr="//field[@name='company_id']" position="after">
+                    <field name="parent_group_id" placeholder="Parent Group..."/>
+                </xpath>
+                <xpath expr="//sheet" position="inside">
+                    <notebook>
+                        <page string="Accounts" editable="bottom">
+                            <field name="account_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="name"/>
+                                    <field name="account_type"/>
+                                    <field name="company_ids" widget="many2many_tags"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </xpath>
+            </data>
+        </field>
+    </record>
+
+    <record id="view_account_group_tree_inherit" model="ir.ui.view">
+        <field name="name">account.group.list.inherit</field>
+        <field name="model">account.group</field>
+        <field name="inherit_id" ref="account.view_account_group_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code_prefix_start']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='code_prefix_end']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="before">
+                <field name="complete_name"/>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="column_invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

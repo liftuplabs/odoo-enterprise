@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <record id="view_move_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='invoice_date']" position="after">
+                    <field name="terms_of_delivery"/>
+                    <field name="reference_no"/>
+                    <field name="reference_date"/>
+                    <field name="other_references"/>
+                </xpath>
+                <xpath expr="//group[@name='sale_info_group']" position="inside">
+                    <field name="dispatch_doc_no"/>
+                    <field name="dispatched_through"/>
+                    <field name="destination"/>
+                    <field name="remark"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

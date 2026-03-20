@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="group_edit_repair_stock_moves" model="res.groups">
+        <field name="name">Can Edit Repair Parts</field>
+        <field name="category_id" ref="base.module_category_inventory"/>
+    </record>
+
+    <record id="module_category_repair_management" model="ir.module.category">
+        <field name="name">Repair Management</field>
+        <field name="description">Manage repair processes.</field>
+        <field name="sequence">10</field>
+    </record>
+
+    <record id="group_repair_user" model="res.groups">
+        <field name="name">User</field>
+        <field name="category_id" ref="module_category_repair_management"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+    </record>
+
+    <record id="group_repair_manager" model="res.groups">
+        <field name="name">Administrator</field>
+        <field name="category_id" ref="module_category_repair_management"/>
+        <field name="implied_ids" eval="[(4, ref('group_repair_user'))]"/>
+    </record>
+
+</odoo>

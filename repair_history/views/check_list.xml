@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="check_list_repair_tree_editable_view">
+        <field name="name">check.list.work.order.list.editable</field>
+        <field name="model">check.list</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <list editable="bottom" js_class="mrp_workorder_list_view" multi_edit="1">
+                <field name="question_id"/>
+                <field name="is_check" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="check_list_question_repair_tree_editable_view">
+        <field name="name">check.list.question.work.order.list.editable</field>
+        <field name="model">check.list.question</field>
+        <field name="priority" eval="100"/>
+        <field name="arch" type="xml">
+            <list editable="bottom" js_class="mrp_workorder_list_view" multi_edit="1">
+                <field name="name"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="repair_check_list_question_action" model="ir.actions.act_window">
+        <field name="name">Check List Question</field>
+        <field name="res_model">check.list.question</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new Checklist Question
+            </p>
+        </field>
+    </record>
+
+
+    <record id="repair_check_list_action" model="ir.actions.act_window">
+        <field name="name">Check List</field>
+        <field name="res_model">check.list</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new employment type
+            </p>
+        </field>
+    </record>
+
+
+    <menuitem id="repair_check_list_question_configuration"
+              name="Check List question"
+              parent="repair.repair_menu_config"
+              sequence="0"
+              action="repair_check_list_question_action"/>
+
+</odoo>
+

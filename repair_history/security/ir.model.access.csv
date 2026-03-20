@@ -1,0 +1,18 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mrp_repair,access.mrp_repair,model_mrp_repair,base.group_user,1,1,1,1
+access_return_dc_wizard,access_return_dc_wizard,model_return_dc_wizard,base.group_user,1,1,1,1
+access_old_part,access.old_part,model_old_part,base.group_user,1,1,1,1
+access_failure_part,access.failure_part,model_failure_part,base.group_user,1,1,1,1
+access_repair_confirmation_wizard,access_repair_confirmation_wizard,model_repair_confirmation_wizard,base.group_user,1,1,1,1
+access_check_list,access.check_list,model_check_list,base.group_user,1,1,1,1
+access_check_list_question,access.check_list_question,model_check_list_question,base.group_user,1,1,1,1
+access_hr_employee_document_user,access.hr.employee.document.user,model_hr_employee_document,base.group_user,1,1,1,0
+access_hr_employee_document_hr,access.hr.employee.document.hr,model_hr_employee_document,hr.group_hr_user,1,1,1,1
+access_serial_excel_import_wizard,access_serial_excel_import_wizard,model_serial_excel_import_wizard,,1,1,1,1
+access_serial_import_line,access_serial_import_line,model_serial_import_line,,1,1,1,1
+repair.access_repair_user,Repair Order User,repair.model_repair_order,group_repair_user,1,1,1,0
+access_repair_order_manager,Repair Order Manager,repair.model_repair_order,group_repair_manager,1,1,1,1
+repair.access_repair_tag_user,Repair Tags User,repair.model_repair_tags,group_repair_user,1,1,1,1
+
+
+
