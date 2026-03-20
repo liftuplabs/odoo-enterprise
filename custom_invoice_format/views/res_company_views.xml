@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_company_form_inherit_custom_invoice" model="ir.ui.view">
+        <field name="name">res.company.form.inherit.custom.invoice</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+                <xpath expr="//field[@name='logo']" position="after">
+                    <field name="digital_signature" widget="image" class="oe_avatar" options='{"preview_image": "digital_signature"}'/>
+                    <group>
+                        <field name="invoice_layout_boxed"/>
+                    </group>
+                </xpath>
+        </field>
+    </record>
+</odoo>

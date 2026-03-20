@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_move_form_custom_invoice" model="ir.ui.view">
+        <field name="name">account.move.form.custom.invoice</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                 <page string="Transport &amp; Delivery" name="custom_transport_info" invisible="move_type not in ('out_invoice', 'out_refund')">
+                    <group>
+                        <group string="Delivery Details">
+                            <field name="dispatch_doc_no"/>
+                            <field name="dispatch_through"/>
+                            <field name="destination"/>
+                            <field name="delivery_note"/>
+                            <field name="delivery_note_date"/>
+                        </group>
+                        <group string="References">
+                            <field name="supplier_reference"/>
+                            <field name="other_reference"/>
+                            <field name="buyers_order_no"/>
+                            <field name="buyers_order_date"/>
+                             <field name="mode_of_payment"/>
+                        </group>
+                    </group>
+                    <group string="Terms">
+                         <field name="terms_of_delivery"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

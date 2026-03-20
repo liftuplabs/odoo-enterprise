@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+        <record id="view_downtime_reasons_list" model="ir.ui.view">
+            <field name="name">downtime.reasons.list</field>
+            <field name="model">downtime.reasons</field>
+            <field name="arch" type="xml">
+                <list string="Downtime Reasons" editable="bottom">
+                    <field name="name"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_downtime_reasons" model="ir.actions.act_window">
+            <field name="name">Downtime Reasons</field>
+            <field name="res_model">downtime.reasons</field>
+            <field name="view_mode">list</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <menuitem id="menu_downtime_reasons"
+            name="Downtime Reasons"
+            parent="mrp.menu_mrp_configuration"
+            action="action_downtime_reasons"
+            sequence="2"/>
+    </data>
+</odoo>

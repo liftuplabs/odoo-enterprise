@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_saleorder_hsn_column_inherit" inherit_id="sale.report_saleorder_document">
+
+        <xpath expr="//th[@name='th_description']" position="after">
+            <th name="th_hsn_code" class="text-start">HSN/SAC</th>
+            <th name="th_part_no">Part No.</th>
+        </xpath>
+
+        <xpath expr="//td[@name='td_name']" position="after">
+            <td name="td_hsn_code">
+                <span t-if="line.product_id.l10n_in_hsn_code" t-field="line.product_id.l10n_in_hsn_code"/>
+            </td>
+            <td name="td_part_no">
+                <span t-field="line.product_id.default_code"/>
+            </td>
+        </xpath>
+
+        <xpath expr="//tbody[hasclass('sale_tbody')]//tr" position="attributes">
+            <attribute name="t-if">
+                (not doc.purchase_order_ids) or
+                (line.is_repair_parts) or
+                (line.display_type in ['line_section', 'line_note'])
+            </attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='td_name']//h6" position="replace"/>
+
+        <xpath expr="//t[@t-set='address']" position="replace">
+            <t t-set="address">
+                </t>
+        </xpath>
+
+        <xpath expr="//t[@t-set='information_block']" position="replace">
+            <t t-set="information_block">
+                </t>
+        </xpath>
+
+        <xpath expr="//div[@id='informations']" position="replace"/>
+
+        <xpath expr="//div[@class='page']" position="before">
+            <style>
+                .table-custom-bordered {
+                    width: 100% !important;
+                    border: 1px solid black !important;
+                    border-collapse: collapse !important;
+                    margin-bottom: 20px !important;
+                    margin-top: 20px !important;
+                    table-layout: fixed; /* Ensures column widths are respected */
+                }
+                .table-custom-bordered th, .table-custom-bordered td {
+                    border: 1px solid black !important;
+                    padding: 4px 6px !important;
+                    vertical-align: top;
+                    word-wrap: break-word;
+                }
+                /* Bold and Centered Headers */
+                .table-custom-bordered thead th {
+                    background-color: #f8f9fa;
+                    font-weight: bold !important;
+                    text-align: center !important;
+                    text-transform: uppercase;
+                    vertical-align: middle !important;
+                }
+                .text-bold { font-weight: bold; }
+                /* Hide top right address from standard layout */
+                .header div[name="company_address"], .header .col-6.text-end { display: none !important; }
+            </style>
+            <style>
+                .table-custom-bordered {
+                    width: 100% !important;
+                    border: 1px solid black !important;
+                    border-collapse: collapse !important;
+                    margin-bottom: 20px !important;
+                    margin-top: 20px !important;
+                    table-layout: fixed;
+                }
+                .table-custom-bordered th, .table-custom-bordered td {
+                    border: 1px solid black !important;
+                    padding: 4px 6px !important;
+                    vertical-align: top;
+                    word-wrap: break-word;
+                    font-size: 14px !important; /* Forces uniform font size */
+                }
+            </style>
+        </xpath>
+
+        <xpath expr="//div[@class='page']/div[@class='oe_structure'][1]" position="after">
+            <t t-set="border_color" t-value="'#dee2e6'"/>
+            <t t-set="border_width" t-value="1"/>
+
+            <table class="table-header-grid">
+                <tbody>
+                    <tr>
+                        <td style="width: 50%; vertical-align: top; padding: 10px;">
+
+                            <div class="mb-3">
+                                <strong style="font-size: 1.2em;"><span t-field="doc.company_id.name"/></strong><br/>
+                                <span t-field="doc.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                <div t-if="doc.company_id.vat"><strong>GSTIN:</strong> <span t-field="doc.company_id.vat"/></div>
+                                <div t-if="doc.company_id.email"><strong>Email:</strong> <span t-field="doc.company_id.email"/></div>
+                            </div>
+
+                            <div t-if="doc.partner_shipping_id and (doc.partner_shipping_id != doc.partner_id)" class="mb-3">
+                                <strong>Consignee (Ship To):</strong><br/>
+                                <strong style="font-size: 1.1em;"><span t-field="doc.partner_shipping_id.name"/></strong><br/>
+                                <span t-field="doc.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                <div t-if="doc.partner_shipping_id.vat"><strong>GSTIN:</strong> <span t-field="doc.partner_shipping_id.vat"/></div>
+                            </div>
+
+                            <div>
+                                <strong>Bill To (Buyer):</strong><br/>
+                                <strong style="font-size: 1.1em;"><span t-field="doc.partner_id.name"/></strong><br/>
+                                <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                <div t-if="doc.partner_id.vat"><strong>GSTIN:</strong> <span t-field="doc.partner_id.vat"/></div>
+                                <div t-if="'l10n_in_state_id' in doc and doc.l10n_in_state_id" class="mt-1">
+                                    <strong>Place of Supply:</strong> <span t-field="doc.l10n_in_state_id.name"/>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td style="width: 50%; padding: 0; vertical-align: top;">
+                            <table class="table table-sm table-borderless mb-0 h-100" style="width: 100%; height: 100%;">
+                                 <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%; padding: 5px;">
+                                        <strong><t t-if="doc.state in ['draft','sent']">Quotation</t><t t-else="">Order</t> No:</strong> <br/>
+                                        <span t-field="doc.name"/>
+                                    </td>
+                                    <td style="padding: 5px;"><strong>Date:</strong> <br/><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
+                                </tr>
+                                <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Delivery Note:</strong> <br/><span t-field="doc.delivery_note"/></td>
+                                    <td style="padding: 5px;"><strong>Pay Mode:</strong> <br/><span t-field="doc.payment_term_id"/></td>
+                                </tr>
+                                <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Supplier Ref:</strong> <br/><span t-field="doc.client_order_ref"/></td>
+                                    <td style="padding: 5px;"><strong>Other Ref:</strong> <br/><span t-field="doc.other_reference"/></td>
+                                </tr>
+                                <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Buyer Order No:</strong> <br/><span t-field="doc.buyers_order_no"/></td>
+                                    <td style="padding: 5px;"><strong>Dated:</strong> <br/><span t-field="doc.buyers_order_date"/></td>
+                                </tr>
+                                <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Dispatch Doc No:</strong> <br/><span t-field="doc.dispatch_doc_no"/></td>
+                                    <td style="padding: 5px;"><strong>Del. Note Date:</strong> <br/><span t-field="doc.delivery_note_date"/></td>
+                                </tr>
+                                <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                    <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Dispatched Through:</strong> <br/><span t-field="doc.dispatch_through"/></td>
+                                    <td style="padding: 5px;"><strong>Destination:</strong> <br/><span t-field="doc.destination"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding: 5px;"><strong>Terms of Delivery:</strong> <br/><span t-field="doc.note"/></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+        <xpath expr="//table[hasclass('o_main_table')]" position="replace">
+            <table class="table-custom-bordered">
+                <thead>
+                    <tr>
+                        <th style="width: 5%;">SN</th>
+                        <th style="width: 40%;">Description of Goods</th>
+                        <th style="width: 12%;">HSN/SAC</th>
+                        <th style="width: 12%;">Part No.</th>
+                        <th style="width: 15%;">Qty</th>
+                        <th style="width: 13%;">Rate</th>
+                        <th style="width: 13%;">Taxes</th>
+                        <th style="width: 15%;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="idx" t-value="1"/>
+                    <t t-foreach="doc.order_line" t-as="line">
+                        <tr t-if="not line.display_type">
+                            <td class="text-center"><t t-out="idx"/></td>
+                            <td class="text-center"><span t-field="line.name"/></td>
+                            <td class="text-center"><span t-field="line.product_id.l10n_in_hsn_code"/></td>
+                            <td class="text-center"><span t-field="line.product_id.default_code"/></td>
+                            <td class="text-center">
+                                <span t-field="line.product_uom_qty"/> <span t-field="line.product_uom.name"/>
+                            </td>
+                            <td class="text-center"><span t-field="line.price_unit"/></td>
+                            <td class="text-center">
+                                <span t-out="', '.join(map(lambda x: (x.description or x.name), line.tax_id))"/>
+                            </td>
+                            <td class="text-center"><span t-field="line.price_subtotal"/></td>
+                            <t t-set="idx" t-value="idx + 1"/>
+                        </tr>
+                    </t>
+                    <tr>
+                        <td colspan="7" class="text-end text-bold">Total</td>
+                        <td class="text-end text-bold"><span t-field="doc.amount_untaxed"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="7" class="text-end text-bold" style="background-color: #f8f9fa;">Grand Total</td>
+                        <td class="text-center text-bold" style="background-color: #f8f9fa;"><span t-field="doc.amount_total"/></td>
+                    </tr>
+                </tbody>
+            </table>
+        </xpath>
+        <xpath expr="//div[@name='so_total_summary']" position="replace">
+        </xpath>
+        <xpath expr="//div[@name='signature']" position="replace">
+            <div name="signature" class="oe_structure"/>
+        </xpath>
+        <xpath expr="//table[hasclass('table-custom-bordered')]" position="after">
+            <div class="row mt-2" style="font-size: 15px;">
+                <div class="col-12">
+                    <strong>Amount Chargeable (in words):</strong> <br/>
+                    <span t-esc="doc.currency_id.amount_to_text(doc.amount_total)"/>
+                </div>
+            </div>
+
+            <div class="row mt-3" style="font-size: 15px;">
+                <t t-set="hsn_summary" t-value="doc._l10n_in_get_hsn_summary_table()"/>
+                <div t-if="hsn_summary" class="row mt-3">
+                    <div class="col-12">
+                        <strong class="d-block mb-1">HSN/SAC Summary:</strong>
+                        <table class="table-custom-bordered">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" class="text-center">HSN/SAC</th>
+                                    <th rowspan="2" class="text-end">Taxable Value</th>
+                                    <t t-if="hsn_summary['has_gst']">
+                                        <th colspan="2" class="text-center">CGST</th>
+                                        <th colspan="2" class="text-center">SGST</th>
+                                    </t>
+                                    <t t-if="hsn_summary['has_igst']">
+                                        <th colspan="2" class="text-center">IGST</th>
+                                    </t>
+                                    <th rowspan="2" class="text-end">Total Tax</th>
+                                </tr>
+                                <tr>
+                                    <t t-if="hsn_summary['has_gst']">
+                                        <th class="text-end">Rate</th><th class="text-end">Amt</th>
+                                        <th class="text-end">Rate</th><th class="text-end">Amt</th>
+                                    </t>
+                                    <t t-if="hsn_summary['has_igst']">
+                                        <th class="text-end">Rate</th><th class="text-end">Amt</th>
+                                    </t>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="hsn_summary['items']" t-as="item">
+                                    <td class="text-center"><span t-esc="item['l10n_in_hsn_code']"/></td>
+                                    <td class="text-end"><span t-esc="item['amount_untaxed']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                    <t t-if="hsn_summary['has_gst']">
+                                        <td class="text-end"><span t-esc="item['rate'] / 2"/>%</td>
+                                        <td class="text-end"><span t-esc="item['tax_amount_cgst']" t-options='{"widget": "monetary"}'/></td>
+                                        <td class="text-end"><span t-esc="item['rate'] / 2"/>%</td>
+                                        <td class="text-end"><span t-esc="item['tax_amount_sgst']" t-options='{"widget": "monetary"}'/></td>
+                                    </t>
+                                    <t t-if="hsn_summary['has_igst']">
+                                        <td class="text-end"><span t-esc="item['rate']"/>%</td>
+                                        <td class="text-end"><span t-esc="item['tax_amount_igst']" t-options='{"widget": "monetary"}'/></td>
+                                    </t>
+                                    <td class="text-end">
+                                        <span t-esc="item['tax_amount_cgst'] + item['tax_amount_sgst'] + item['tax_amount_igst']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2" style="font-size: 15px;">
+                 <div class="col-12 text-end">
+                     <strong>Tax Amount (in words):</strong> <span t-esc="doc.currency_id.amount_to_text(doc.amount_tax)"/>
+                 </div>
+            </div>
+
+            <div class="row mt-5" style="font-size: 15px;">
+                <div class="col-7">
+                    <strong>Declaration:</strong><br/>
+                    <p t-field="doc.company_id.report_footer" style="font-size: 10px;"/>
+                </div>
+                <div class="col-5 text-end">
+                    <strong>For <span t-field="doc.company_id.name"/></strong>
+                    <br/><br/><br/>
+                    <strong>Authorized Signatory</strong>
+                </div>
+            </div>
+        </xpath>
+    </template>
+    <template id="custom_external_layout_standard_inherit" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@name='company_address']" position="replace">
+            <div name="company_address" class="col-6" />
+        </xpath>
+    </template>
+</odoo>

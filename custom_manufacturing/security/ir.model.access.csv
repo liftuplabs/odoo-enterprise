@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_production_order,production_order,model_production_order,base.group_system,1,1,1,1
+access_downtime_reasons,downtime_reasons,model_downtime_reasons,base.group_system,1,1,1,1

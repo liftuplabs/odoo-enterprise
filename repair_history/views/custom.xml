@@ -1,0 +1,1326 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_customer_po" model="ir.ui.view">
+        <field name="name">purchase.order.form</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_qty']" position="after">
+                <field name="used_qty"/>
+            </xpath>
+            <field name="currency_id" position="after">
+                <field name="customer_po_no" />
+                <field name="is_used" />
+            </field>
+            <xpath expr="//page[@name='purchase_delivery_invoice']" position="after">
+                 <page string="Transport &amp; Delivery" name="custom_transport_info">
+                    <group>
+                        <group string="Delivery Details">
+                            <field name="dispatch_doc_no"/>
+                            <field name="dispatch_through"/>
+                            <field name="destination"/>
+                            <field name="delivery_note"/>
+                            <field name="delivery_note_date"/>
+                        </group>
+                        <group string="References">
+                            <field name="supplier_reference"/>
+                            <field name="other_reference"/>
+                            <field name="buyers_order_no"/>
+                            <field name="buyers_order_date"/>
+                             <field name="mode_of_payment"/>
+                        </group>
+                    </group>
+                    <group string="Terms">
+                         <field name="terms_of_delivery"/>
+                    </group>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+    <record id="view_order_line_repair" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form" />
+        <field name="arch" type="xml">
+            <!-- <xpath expr="//button[@name='action_draft']" position="after">
+                <button name="action_create_repair" type="object" string="Create Repair"/>
+            </xpath> -->
+            <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
+                <field name="is_repair_parts" column_invisible="1"/>
+                <field name="lot_ids" widget="many2many_tags" optional="hide"/>
+                <field name="repair_id" column_invisible="1"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="purchase_order_ids" widget="many2many_tags" invisible="repair_count == 0" />
+            </xpath>
+            <xpath expr="//page[@name='other_information']" position="after">
+                 <page string="Transport &amp; Delivery" name="custom_transport_info">
+                    <group>
+                        <group string="Delivery Details">
+                            <field name="dispatch_doc_no"/>
+                            <field name="dispatch_through"/>
+                            <field name="destination"/>
+                            <field name="delivery_note"/>
+                            <field name="delivery_note_date"/>
+                        </group>
+                        <group string="References">
+                            <field name="supplier_reference"/>
+                            <field name="other_reference"/>
+                            <field name="buyers_order_no"/>
+                            <field name="buyers_order_date"/>
+                             <field name="mode_of_payment"/>
+                        </group>
+                    </group>
+                    <group string="Terms">
+                         <field name="terms_of_delivery"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_repair_order_form_inherit" model="ir.ui.view">
+        <field name="name">repair.order.form.inherit.parts</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_form" />
+        <field name="arch" type="xml">
+            <!-- Locate move_ids field inside Parts page -->
+            <xpath expr="//page[@name='parts']/field[@name='move_ids']" position="attributes">
+                <attribute name="readonly">state in ('done','cancel','delivered') or not can_edit_parts</attribute>
+            </xpath>
+        </field>
+    </record>
+<!--    <record id="action_repair_mark_delivered" model="ir.actions.server">-->
+<!--        <field name="name">Mark as Delivered</field>-->
+<!--        <field name="model_id" ref="model_repair_order" />-->
+<!--        <field name="state">code</field>-->
+<!--        <field name="binding_model_id" ref="model_repair_order" />-->
+<!--        <field name="binding_view_types">list</field>-->
+<!--        <field name="code">-->
+<!--            action = records.action_mark_repair_delivered()-->
+<!--        </field>-->
+<!--    </record>-->
+    <record id="view_repair_order_search_serial" model="ir.ui.view">
+        <field name="name">repair.order.search.serial</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_form_filter" />
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <!-- Dropdown filter by Serial Number -->
+                <field name="lot_id" string="Serial Number" />
+                <field name="dc_number" string="DC Number" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_repair_inherit_form_inherit" model="ir.ui.view">
+        <field name="name">repair.order.repair.inherit.form.inherit</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/div/button[2]" position="after">
+                <button type="object" name="action_open_product_history" class="oe_stat_button" icon="fa-bars">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Repair History</span>
+                        <span class="o_stat_value">
+                            <field name="repair_history_count" />
+                        </span>
+                    </div>
+                </button>
+                <button type="object" invisible="0" name="action_open_delivery" class="oe_stat_button" icon="fa-truck">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Delivery</span>
+                        <span class="o_stat_value">
+                            <field name="delivery_count" />
+                        </span>
+                    </div>
+                </button>
+               <!--  <button type="object" invisible="0" name="action_open_delivery_dc" class="oe_stat_button" icon="fa-truck">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Dc Delivery</span>
+                        <span class="o_stat_value">
+                            <field name="delivery_count_dc" />
+                        </span>
+                    </div>
+                </button> -->
+            </xpath>
+            <!-- Do: Dhaval
+            <xpath expr="//button[@name='action_repair_start']" position="replace">
+                <button name="action_repair_start" invisible="state != 'confirmed' or not sale_order_id" type="object" string="Start Repair" class="oe_highlight" data-hotkey="q" />
+            </xpath> -->
+            <xpath expr="//button[@name='action_create_sale_order']" position="replace" />
+            <xpath expr="//button[@name='action_repair_end']" position="replace">
+                <attribute name="invisible"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_repair_end']" position="replace">
+                <attribute name="invisible"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_repair_start']" position="after">
+                <!-- <button name="action_mark_repair_delivered" invisible="state != 'done'" type="object" string="Delivery Order" class="oe_highlight" data-hotkey="q" /> -->
+                <button name="open_repair_confirmation_wizard" invisible="state != 'under_repair' or not has_uncomplete_moves" type="object" string="End Repair" class="oe_highlight" data-hotkey="x" confirm="For some of the parts, there is a difference between the initial demand and the actual quantity that was used. Are you sure you want to confirm ?" />
+                <button name="open_repair_confirmation_wizard" invisible="state != 'under_repair' or has_uncomplete_moves" type="object" string="End Repair" class="oe_highlight" data-hotkey="x" />
+                <button name="back_to_under_repair" invisible="state != 'done' or sale_order_id" type="object" string="Back to Under Repair" class="oe_highlight" confirm="Do you want to move repaired order back to under repair?"/>
+            </xpath>
+            <!--            <xpath expr="//page[@name='parts']" position="after">-->
+            <!--                <page string="Old Parts" name="old_part">-->
+            <!--                    <field name="old_part_ids"/>-->
+            <!--                </page>-->
+            <!--            </xpath>-->
+            <xpath expr="//page[@name='page_miscellaneous']" position="after">
+                <page string="Test Checklist" name="testing_checklist">
+                    <field name="check_list_ids">
+                        <list editable="bottom">
+                            <field name="question_id" />
+                            <field name="is_check" />
+                        </list>
+                    </field>
+                    <field name="tested_with_motot" invisible="1" />
+                    <field name="tested_digital" invisible="1" />
+                    <field name="unit_converted" invisible="1" />
+                    <field name="fulltime_test_2hr" invisible="1" />
+                    <field name="unit_cleaned" invisible="1" />
+                    <field name="interbus_check" invisible="1" />
+                    <field name="resolver_check" invisible="1" />
+                    <field name="parameter" invisible="1" />
+                    <field name="internal_psu" invisible="1" />
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='page_miscellaneous']" position="after">
+                <page string="Error And Failure Info" name="error_info">
+                    <group>
+                        <field name="incoming_software" invisible="1" />
+                        <field name="incoming_software_label" />
+                        <field name="customer_error" />
+                        <field name="reported_issue" />
+                        <field name="failure_category_main_info" />
+                        <field name="failure_sub_info" />
+                        <field name="failure_date" />
+                        <field name="failure_days" />
+                        <field name="failure_description" />
+                    </group>
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='repair_notes']" position="attributes">
+                <attribute name="string">Repair Remarks</attribute>
+            </xpath>
+            <xpath expr="//page[@name='repair_notes']" position="after">
+                <page string="Photo Evidence " name="action_notes">
+                    <field name="recommended_notes" placeholder="Add internal notes." />
+                </page>
+            </xpath>
+            <xpath expr="//page[@name='parts']" position="attributes">
+                <attribute name="string">New Parts</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']/list/field[@name='product_id']" position="attributes">
+                <attribute name="domain">[('type', 'in', ['consu', 'service'])]</attribute>
+                <attribute name="context">{'default_is_storable': True}</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']" position="after">
+                <page string="Old Parts" name="old_part">
+                    <field name="old_part_ids" />
+                </page>
+                <page string="Failure Parts" name="failure_part">
+                    <field name="failure_part_ids">
+                        <list editable="bottom">
+                            <field name="product_id" />
+                            <field name="barcode_text" />
+                            <field name="quantity" />
+                        </list>
+                    </field>
+                </page>
+                <page string="Time Tracking" name="tracker">
+                    <field name="work_time_id2" />
+                </page>
+                <page string="QR Code" name="qr_tracker">
+                    <div class="oe_button_box" name="qr_actions" style="margin-bottom: 1rem;">
+                        <button type="object" name="action_generate_qr" string="Generate QR Code" class="btn btn-primary me-2" icon="fa-qrcode" />
+                        <button type="object" name="action_download_qr" string="Download QR Code" class="btn btn-secondary" icon="fa-download" />
+                    </div>
+                    <field name="qr_code_image" widget="image" options='{"size": [500, 400]}' class="bg-view" />
+                </page>
+            </xpath>
+            <xpath expr="//field[@name='under_warranty']" position="before">
+                <field name="return_date" invisible="1" />
+                <field name="can_edit_parts" invisible="1" />
+                <field name="quotation_day" invisible="1" />
+                <field name="account_en" />
+                <field name="sw_label" invisible="0" />
+                <field name="customer_po" />
+                <field name="start_date" />
+                <field name="end_date" />
+                <field name="warranty_days" />
+                <field name="warranty_validity" />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="before">
+                <field name="rep_india" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,under_repair,done,delivered,cancel" />
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="required">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="lot_id" readonly="0" />
+                <field name="dc_number" string="DC Number" />
+                <field name="unit_status_us" invisible="0" />
+                <field name="partner_id" required="1" readonly="1" />
+                <field name="inward_date" invisible="0" />
+                <field name="customer_state" invisible="0" />
+                <field name="plant" invisible="0" />
+                <field name="open_by_customer" />
+                <field name="last_repair_date" />
+            </xpath>
+            <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+ -->
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="related_repair_ids" widget="many2many_tags" />
+                <field name="priority_level" />
+                <field name="delivery_id" invisible="1" />
+                <field name="barcode" />
+                <field name="qr_code" widget="qrcode" options="{'size': 256}" invisible="1" />
+                <field name="qr_code_url" invisible="1" />
+                <field name="duration_expected" widget="float_time" />
+                <field name="duration" invisible="0" widget="float_time" readonly="1" />
+                <field name="duration_compute" invisible="1" />
+                <field name="efficiency" invisible="0" readonly="1" />
+                <field name="repair_history_count" invisible="1" />
+                <field name="unit_status" invisible="1" />
+                <field name="unit" invisible="1" />
+                <field name="sn_unit" invisible="1" />
+                <field name="sw_on_label" invisible="1" />
+                <field name="module" invisible="1" />
+                <field name="shipment_carrier" invisible="1" />
+            </xpath>
+            <xpath expr="//field[@name='under_warranty']" position="replace">
+                <div class="d-flex align-items-center gap-3">
+                    <label for="under_warranty" class="o_form_label">Under Warranty</label>
+                    <field name="under_warranty" class="mt-1" options="{'no_label': True}" />
+                    <button name="check_warranty" string="Check Under Warranty" type="object" class="btn btn-outline-primary" />
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='move_ids']/list/field[@name='picked']" position="after">
+                <field name="warranty_days" string="Warranty (Days)" width="120%" />
+                <field name="warranty_validity" string="Validity Up To" width="120%" />
+                <field name="warranty_validity_check" string="validity check" column_invisible="True" />
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color', 'no_create_edit': True}" width="100%" />
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='repair_line_type']" position="attributes">
+                <attribute name="width">50%;</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='product_id']" position="attributes">
+                <attribute name="width">130%;</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='picked']" position="attributes">
+                <attribute name="width">75%;</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='product_uom_qty']" position="attributes">
+                <attribute name="width">75%;</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='forecast_availability']" position="attributes">
+                <attribute name="width">100%;</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']//field[@name='move_ids']//field[@name='quantity']" position="attributes">
+                <attribute name="width">75%;</attribute>
+            </xpath>
+            <xpath expr="//field[@name='under_warranty']" position="attributes">
+                <attribute name="readonly">1</attribute>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_picking_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">view.picking.form.inherit.mrp</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="product_id" invisible="1" />
+                <field name="product_ids" widget='many2many_tags' />
+                <field name="lot_id" invisible="1" />
+                <field name="lot_ids" widget="many2many_tags" />
+                <field name="customer_state" />
+                <field name="dc_number" />
+                <field name="plant" />
+            </xpath>
+        </field>
+    </record>
+    <record id="view_picking_filter_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.filter.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search" />
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="lot_ids" />
+                <field name="product_ids" />
+            </field>
+        </field>
+    </record>
+    <record id="stock_picking_view_tree_inherit_quality" model="ir.ui.view">
+        <field name="name">stock.picking.view.tree.inherit.quality</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree" />
+        <field name="arch" type="xml">
+            <header position="inside">
+                <button name="custom_return_with_dc"
+                        type="object"
+                        string="Inward with DC"
+                        class="btn-primary"
+                        icon="fa-undo"
+                        />
+            </header>
+            <xpath expr="field[@name='company_id']" position="after">
+                <field name="product_id" invisible="1" />
+                <field name="product_ids" widget='many2many_tags' />
+                <field name="lot_id" />
+                <field name="lot_ids" widget='many2many_tags' />
+                <field name="customer_state" />
+                <field name="dc_number" />
+                <field name="plant" />
+            </xpath>
+            <xpath expr="//header/button[@name='action_assign']" position="after">
+                <button name="action_open_serial_excel_wizard" string="Import Serial Excel" type="object" class="btn btn-primary" />
+            </xpath>
+        </field>
+    </record>
+    <record id="repair_order_tree_inherit_repair_order" model="ir.ui.view">
+        <field name="name">repair.order.tree.inherit.repair.order.hiatory</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_tree" />
+        <field name="arch" type="xml">
+            <xpath expr="field[@name='state']" position="after">
+                <field name="tag_ids" widget="many2many_tags" options="{'no_create': True}" />
+            </xpath>
+        </field>
+    </record>
+    <record id="action_return_all_and_validate" model="ir.actions.server">
+        <field name="name">Return All</field>
+        <field name="model_id" ref="stock.model_stock_picking" />
+        <field name="binding_model_id" ref="stock.model_stock_picking" />
+        <field name="state">code</field>
+        <field name="binding_view_types">list</field>
+        <field name="code">
+            action = records.action_return_all_and_validate()
+        </field>
+    </record>
+    <record id="inherit_repair_order_form_software_label" model="ir.ui.view">
+        <field name="name">repair.order.form.software.label</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_form" /> <!-- reference to the original view -->
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='parts']//field[@name='product_id']" position="after">
+                <field name="scan_data" />
+            </xpath>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="old_part_repair_tree_editable_view">
+        <field name="name">old.part.work.order.list.editable</field>
+        <field name="model">old.part</field>
+        <field name="priority" eval="100" />
+        <field name="arch" type="xml">
+            <list editable="bottom" js_class="mrp_workorder_list_view" multi_edit="1">
+                <field name="fi_part_old" />
+                <field name="product_id" readonly="0" />
+                <field name="warranty_validity" readonly="0" />
+                <field name="tag_ids" widget="many2many_tags" options="{'no_create': True}" readonly="1" />
+            </list>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="mrp_production_repair_tree_editable_view">
+        <field name="name">mrp.repair.work.order.list.editable</field>
+        <field name="model">mrp.repair</field>
+        <field name="priority" eval="100" />
+        <field name="arch" type="xml">
+            <list editable="bottom" js_class="mrp_workorder_list_view" multi_edit="1">
+                <field name="employee_id" optional="show" />
+                <field name="is_user_working" readonly="0" column_invisible="1" />
+                <field name="duration_tracked" readonly="0" column_invisible="1" />
+                <field name="date_start" readonly="state in ['progress', 'done', 'cancel']" column_invisible="1" />
+                <field name="date_finished" readonly="state in ['progress', 'done', 'cancel']" column_invisible="1" />
+                <field name="duration_expected" column_invisible="1" widget="float_time" sum="expected duration" readonly="state in ['cancel', 'done']" />
+                <field name="duration" widget="customer_mrp_timer" readonly="1" sum="real duration" />
+                <field name="state" widget="badge" decoration-warning="state == 'progress'" decoration-success="state == 'done'" decoration-danger="state == 'cancel'" decoration-info="state not in ('progress', 'done', 'cancel')" />
+                <button name="button_start" type="object" title="Start" class="btn-success px-2" icon="fa-play" invisible="is_user_working==True" />
+                <!--                <button name="button_pending" type="object" title="Pause" class="btn-warning px-2" icon="fa-pause"/>-->
+                <button name="button_stop" type="object" title="Pause" class="btn-warning px-2" icon="fa-pause" invisible="is_user_working==False" />
+                <button name="button_finish" type="object" title="Done" class="btn-success px-2" icon="fa-check" />
+                <!--                <widget name="mo_view_list_dropdown"/>-->
+            </list>
+        </field>
+    </record>
+    <record id="view_repair_confirmation_wizard" model="ir.ui.view">
+        <field name="name">repair.confirmation.wizard.form</field>
+        <field name="model">repair.confirmation.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Repair">
+                <group>
+                    <div class="o_form_label">Check the box below if you want to provide a Service warranty for this
+                        repair.
+                    </div>
+                    <field name="note" invisible="1" />
+                    <field name="is_warranty" />
+                    <field name="warranty_days" invisible="is_warranty==False" />
+                </group>
+                <footer>
+                    <button name="confirm_repair" string="Confirm" type="object" class="btn-primary" />
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+    <template id="report_deliveryslip_custom" inherit_id="stock.report_delivery_document">
+        <xpath expr="//div[@class='page']" position="replace">
+            <div class="page" style="font-family: 'Arial', sans-serif; font-size: 12px; line-height: 1.6; padding: 20px; border: 2px solid #000;">
+                <!-- Header -->
+                <div style="text-align: center; font-size: 18px; font-weight: bold; color: #2c3e50;">MATERIAL OUT</div>
+                <div style="text-align: right; font-style: italic; color: #7f8c8d;">(Duplicate)</div>
+                <!-- Company & Dispatch Info -->
+                <table style="width: 100%; border-collapse: collapse; margin-top: 15px;" cellpadding="6">
+                    <tr>
+                        <td style="width: 60%; vertical-align: top; border: 1px solid #ccc; padding: 8px;">
+                            <strong>
+                                <t t-esc="o.company_id.name" />
+                            </strong>
+                            <br />
+                            <t t-esc="o.company_id.street" />
+                            <br />
+                            <t t-if="o.company_id.street2">
+                                <t t-esc="o.company_id.street2" />
+                                <br />
+                            </t>
+                            <t t-esc="o.company_id.city" />
+                            -
+                            <t t-esc="o.company_id.zip" />,
+                            <t t-esc="o.company_id.state_id.name" />
+                            <br />
+                            <t t-if="o.company_id.country_id">
+                                <t t-esc="o.company_id.country_id.name" />
+                                <br />
+                            </t>
+                            <strong>Contact:</strong>
+                            <t t-esc="o.company_id.phone or o.company_id.mobile or ''" />
+                        </td>
+                        <td style="width: 40%; vertical-align: top; border: 1px solid #ccc; padding: 8px;">
+                            <strong>Challan No.:</strong>
+                            <t t-esc="o.name" />
+                            <br />
+                            <strong>Date:</strong>
+                            <t t-esc="o.scheduled_date.strftime('%d-%B-%Y')" />
+                            <br />
+                            <strong>Supplier's Ref:</strong>
+                            <t t-esc="o.scheduled_date.strftime('%d-%B-%Y')" />
+                            <br />
+                            <strong>Other Reference(s):</strong>
+                            <t t-esc="o.scheduled_date.strftime('%d-%B-%Y')" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="vertical-align: top; border: 1px solid #ccc; padding: 8px;">
+                            <strong>Dispatch To:</strong>
+                            <br />
+                            <t t-esc="o.partner_id.name" />
+                            <br />
+                            <t t-if="o.partner_id.street">
+                                <t t-esc="o.partner_id.street" />
+                                <br />
+                            </t>
+                            <t t-if="o.partner_id.street2">
+                                <t t-esc="o.partner_id.street2" />
+                                <br />
+                            </t>
+                            <t t-if="o.partner_id.city">
+                                <t t-esc="o.partner_id.city" />,
+                            </t>
+                            <t t-if="o.partner_id.state_id">
+                                <t t-esc="o.partner_id.state_id.name" />
+                            </t>
+                            <t t-if="o.partner_id.zip">-
+                                <t t-esc="o.partner_id.zip" />
+                            </t>
+                            <br />
+                            <t t-if="o.partner_id.country_id">
+                                <t t-esc="o.partner_id.country_id.name" />
+                                <br />
+                            </t>
+                            <t t-if="o.partner_id.vat">
+                                <strong>GSTIN:</strong>
+                                <t t-esc="o.partner_id.vat" />
+                            </t>
+                        </td>
+                        <td style="vertical-align: top; border: 1px solid #ccc; padding: 8px;">
+                            <strong>Payment Term:</strong>
+                            <t t-esc="o.scheduled_date.strftime('%d-%B-%Y')" />
+                            <br />
+                            <strong>Buyer's Order No.:</strong>
+                            <br />
+                            <strong>Despatch Document No.:</strong>
+                            <t t-esc="o.name" />
+                            <br />
+                            <strong>Date and Time of Issue:</strong>
+                            <t t-esc="o.scheduled_date.strftime('%d-%b-%Y %H:%M')" />
+                            <br />
+                            <strong>Destination:</strong>
+                            <t t-esc="o.partner_id.city" />
+                            <br />
+                            <strong>Vehicle No.:</strong>
+                        </td>
+                    </tr>
+                </table>
+                <!-- Items Table -->
+                <h4 style="margin-top: 20px; background: #ecf0f1; padding: 8px;">Goods Details</h4>
+                <table style="width: 100%; border-collapse: collapse;" border="1" cellpadding="6">
+                    <thead style="background-color: #dfe6e9; text-align: center; font-weight: bold;">
+                        <tr>
+                            <th style="width: 5%;">Sr</th>
+                            <th>Description of Goods</th>
+                            <th style="width: 15%;">Serial No</th>
+                            <th style="width: 15%;">HSN No</th>
+                            <th style="width: 10%;">Qty</th>
+                            <th style="width: 10%;">Rate</th>
+                            <th style="width: 15%;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="counter" t-value="1" />
+                        <t t-foreach="o.move_ids_without_package" t-as="line">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <t t-esc="counter" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.product_id.name" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.lot_ids and line.lot_ids[-1].name or ''" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.product_id.l10n_in_hsn_code or ''" />
+                                </td>
+                                <td style="text-align: right;">
+                                    <t t-esc="line.quantity" />
+                                    <t t-esc="line.product_uom.name" />
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <t t-set="counter" t-value="counter + 1" />
+                        </t>
+                    </tbody>
+                </table>
+                <!-- Footer -->
+                <div style="margin-top: 30px;">
+                    <div style="text-align: right; font-weight: bold;">E AND O.E</div>
+                    <br />
+                    <strong>Company's PAN:</strong>
+                    [Your PAN Here]
+                    <div style="text-align: right; margin-top: -40px;">
+                        <strong>for</strong>
+                        <t t-esc="o.company_id.name" />
+                        <br />
+                        <br />
+                        <br />
+                        <i>[Signature Image]</i>
+                        <br />
+                        Authorized Signatory
+                    </div>
+                    <div style="text-align: center; margin-top: 30px; font-style: italic; font-size: 11px; color: #7f8c8d;">
+                        This is a computer-generated document
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <!-- Remove default delivery address block -->
+        <xpath expr="//div[@name='div_outgoing_address']/div[@name='outgoing_delivery_address']" position="replace">
+            <div name="outgoing_delivery_address" t-if="o.should_print_delivery_address()" style="display: none;"></div>
+        </xpath>
+    </template>
+    <template id="repair.report_repairorder">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="doc.with_context(lang=doc.partner_id.lang)" />
+            <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; padding-top: 10px;">
+                <!-- Top Section -->
+                <div style="
+    border: 1.5px solid #333;
+    padding: 18px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+                    <div class="row" style="display: flex; justify-content: space-between;padding-top: 20px;">
+                        <div style="width: 48%;">
+                            <p style="margin: 6px 0;">
+                                <strong>Repair Order #:</strong>
+                                <span t-field="o.name" />
+                            </p>
+                            <p t-if="o.partner_id" style="margin: 6px 0;">
+                                <strong>Indian Repair NR:</strong>
+                            </p>
+                            <p t-if="o.product_id" style="margin: 6px 0;">
+                                <strong>Product:</strong>
+                                <span t-field="o.product_id" />
+                            </p>
+                            <p t-if="o.lot_id" style="margin: 6px 0;">
+                                <strong>Serial No.:</strong>
+                                <span t-field="o.lot_id.name" />
+                            </p>
+                        </div>
+                        <div style="width: 48%;">
+                            <p style="margin: 6px 0;">
+                                <strong>Status:</strong>
+                                <span t-field="o.state" />
+                            </p>
+                            <p style="margin: 6px 0;">
+                                <strong>Customer PO:</strong>
+                                <span t-field="o.customer_po" />
+                            </p>
+                            <p t-if="o.user_id" style="margin: 6px 0;">
+                                <strong>Responsible:</strong>
+                                <span t-field="o.user_id" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Title -->
+                <h2 style="text-align: center; margin-top: 20px; text-transform: uppercase;">Repair Report</h2>
+                <p style="text-align: center; font-size: 14px; margin-top: 20px;">
+                    <strong>Start Date:</strong>
+                    <span t-field="o.start_date" t-options='{"format": "dd MMMM yyyy"}' />
+                </p>
+                <!-- Section: Customer Info -->
+                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 20px;">Customer Info</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Customer Number</th>
+                            <th>Customer Name</th>
+                            <th>Info</th>
+                            <th>Incoming Date</th>
+                            <th>Shipment Carrier</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <t t-esc="o.partner_id.ref or 'N/A'" />
+                            </td>
+                            <td>
+                                <t t-esc="o.partner_id.name" />
+                            </td>
+                            <td>
+                                <t t-esc="o.partner_id.comment or 'N/A'" />
+                            </td>
+                            <td>
+                                <t t-esc="o.start_date.strftime('%d-%m-%Y') if o.start_date else ''" />
+                            </td>
+                            <td>
+                                <t t-esc="o.shipment_carrier if o.shipment_carrier else 'N/A'" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Section: Unit Info -->
+                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Unit Info</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Part number</th>
+                            <th>Unit Type</th>
+                            <th>Serial Number</th>
+                            <th>HSN Number</th>
+                            <th>Production date</th>
+                            <th>Module</th>
+                            <th>Sw_on_label</th>
+                            <th>Unit Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.move_ids.filtered(lambda l: l.repair_line_type == 'add')" t-as="line">
+                            <td>
+                                <span t-field="o.product_id.default_code" />
+                            </td>
+                            <td>
+                                <span t-field="o.unit" />
+                            </td>
+                            <td>
+                                <span t-field="o.lot_id.name" />
+                            </td>
+                            <td>
+                                <span t-field="o.product_id.l10n_in_hsn_code" />
+                            </td>
+                            <td>
+                                <span t-field="o.module" />
+                            </td>
+                            <td>
+                                <span t-field="o.sw_on_label" />
+                            </td>
+                            <td>
+                                <span t-field="o.unit_status" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">New Parts Used</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>UoM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.move_ids.filtered(lambda l: l.repair_line_type == 'add')" t-as="line">
+                            <td>
+                                <span t-field="line.product_id" />
+                            </td>
+                            <td>
+                                <span t-field="line.product_uom_qty" />
+                            </td>
+                            <td>
+                                <span t-field="line.product_uom.name" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Section: Error Info -->
+                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Error Info</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Incoming Software</th>
+                            <th>Failure Date</th>
+                            <th>Customer Error</th>
+                            <th>Failure Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <t t-esc="o.get_selection_label('incoming_software_label')" />
+                            </td>
+                            <td>
+                                <t t-esc="o.failure_date" />
+                            </td>
+                            <td>
+                                <t t-esc="o.customer_error" />
+                            </td>
+                            <td>
+                                <t t-esc="o.failure_description" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Section: New Parts Used -->
+                <!-- Section: Old Parts -->
+                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">Old/Removed Parts</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Description</th>
+                            <th>Qty</th>
+                            <th>UoM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.old_part_ids" t-as="line">
+                            <td>
+                                <span t-field="line.product_id" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Section: Technician Work -->
+                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">Technician Work</h4>
+                <table class="table table-sm table-bordered" style="width: 100%;">
+                    <thead style="background-color: #b2bec3;">
+                        <tr>
+                            <th>Technician</th>
+                            <th>Duration (min)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.work_time_id2" t-as="work">
+                            <td>
+                                <span t-field="work.employee_id" />
+                            </td>
+                            <td>
+                                <span t-field="work.duration" />
+                            </td>
+                            <td>
+                                <span t-field="work.state" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- Remarks -->
+                <t t-if="o.internal_notes">
+                    <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Technician Remarks</h4>
+                    <p t-field="o.internal_notes" />
+                </t>
+                <!-- Checklist -->
+                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">
+                    Test With Motor Checklist
+                </h4>
+                <ul style="list-style-type: none; padding-left: 0; font-size: 14px;">
+                    <t t-foreach="o.check_list_ids" t-as="check">
+                        <li>
+                            <t t-if="check.is_check">☑</t>
+                            <t t-else="">☐</t>
+                            <t t-esc="check.question_id.name" />
+                        </li>
+                    </t>
+                </ul>
+                <!-- Signatures -->
+                <div style="margin-top: 80px; display: flex; justify-content: center; gap: 80px;">
+                    <div style="text-align: center;">
+                        <p>__________________________</p>
+                        <p>Customer Signature</p>
+                    </div>
+                    <div style="text-align: center;">
+                        <p>__________________________</p>
+                        <p>Technician Signature</p>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+    <template id="repair_tracking_template" name="Repair Order Tracking">
+        <html>
+
+        <head>
+            <title>Repair Order Tracking</title>
+            <link rel="stylesheet" href="/web/static/lib/bootstrap/css/bootstrap.min.css" />
+            <style>
+            body {
+                background: #f1f3f5;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .repair-wrapper {
+                max-width: 800px;
+                margin: 3rem auto;
+                background: linear-gradient(135deg, #ffffff, #e9f0f4);
+                border-radius: 1rem;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                padding: 2.5rem;
+            }
+
+            .repair-heading {
+                text-align: center;
+                font-size: 2rem;
+                font-weight: bold;
+                color: #0d6efd;
+                margin-bottom: 1rem;
+            }
+
+            .repair-subtext {
+                text-align: center;
+                font-size: 0.95rem;
+                color: #6c757d;
+                margin-bottom: 2rem;
+            }
+
+            .repair-label {
+                text-transform: uppercase;
+                font-size: 0.75rem;
+                font-weight: 600;
+                color: #6c757d;
+                letter-spacing: 0.5px;
+            }
+
+            .repair-value {
+                font-size: 1.2rem;
+                font-weight: 600;
+                color: #212529;
+                margin-bottom: 1rem;
+            }
+
+            .badge-status {
+                font-size: 1rem;
+                padding: 0.4rem 1rem;
+                border-radius: 1rem;
+                font-weight: 600;
+                display: inline-block;
+            }
+
+            .badge-created {
+                background-color: #ffc107;
+                color: #212529;
+            }
+
+            .badge-confirmed {
+                background-color: #0dcaf0;
+                color: #fff;
+            }
+
+            .badge-in_progress {
+                background-color: #0d6efd;
+                color: #fff;
+            }
+
+            .badge-done {
+                background-color: #198754;
+                color: #fff;
+            }
+
+            .badge-cancelled {
+                background-color: #dc3545;
+                color: #fff;
+            }
+            </style>
+        </head>
+
+        <body>
+            <div class="repair-wrapper">
+                <div class="repair-heading">🔧 Repair Tracking</div>
+                <div class="repair-subtext">Track the status of your repair order</div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Customer Name</div>
+                        <div class="repair-value">
+                            <t t-esc="repair.partner_id.name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Order Number</div>
+                        <div class="repair-value">
+                            <t t-esc="repair.name" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Plant</div>
+                        <div class="repair-value">
+                            <t t-esc="repair.plant" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Customer State</div>
+                        <div class="repair-value">
+                            <t t-esc="repair.customer_state" />
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Status</div>
+                        <div class="repair-value">
+                            <t t-if="repair.state == 'draft'">
+                                <span class="badge-status badge-created">Created</span>
+                            </t>
+                            <t t-elif="repair.state == 'confirmed'">
+                                <span class="badge-status badge-confirmed">Confirmed</span>
+                            </t>
+                            <t t-elif="repair.state == 'under_repair'">
+                                <span class="badge-status badge-in_progress">In Progress</span>
+                            </t>
+                            <t t-elif="repair.state == 'done'">
+                                <span class="badge-status badge-done">Completed</span>
+                            </t>
+                            <t t-elif="repair.state == 'cancel'">
+                                <span class="badge-status badge-cancelled">Cancelled</span>
+                            </t>
+                            <t t-else="">
+                                <span class="badge-status badge-created">
+                                    <t t-esc="repair.state" />
+                                </span>
+                            </t>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="repair-label">Product</div>
+                        <div class="repair-value">
+                            <t t-esc="repair.product_id.display_name" />
+                        </div>
+                        <div class="text-muted small">Serial Number:
+                            <t t-esc="repair.lot_id.name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+
+        </html>
+    </template>
+    <!--    <template id="report_invoice_document_custom" inherit_id="account.report_invoice_document">-->
+    <!--        <xpath expr="//div[hasclass('invoice_line_table')]" position="inside">-->
+    <!--            <p>Custom Field: <span t-field="o.custom_field"/></p>-->
+    <!--        </xpath>-->
+    <!--    </template>-->
+    <template id="custom_invoice_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-set="company" t-value="o.company_id" />
+                <div class="page" style="font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 11px;">
+                    <!-- Logo and Header -->
+                    <table style="width: 100%; margin-bottom: 20px;">
+                        <tr>
+                            <td style="width: 30%;text-align: center;">
+                                <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 60px;" alt="Company Logo" />
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Company & Customer Info -->
+                    <table style="width: 100%; margin-bottom: 20px; align:center;" cellpadding="6">
+                        <tr>
+                            <!-- From -->
+                            <td style="width: 50%; text-align: center; background-color: #f1f2f6;">
+                                <strong>From:</strong>
+                                <br />
+                                <t t-esc="company.name" />
+                                <br />
+                                <t t-esc="company.street" />
+                                <br />
+                                <t t-if="company.street2">
+                                    <t t-esc="company.street2" />
+                                    <br />
+                                </t>
+                                <t t-esc="company.city" />
+                                -
+                                <t t-esc="company.zip" />,
+                                <t t-esc="company.state_id.name" />
+                                <br />
+                                <t t-if="company.country_id">
+                                    <t t-esc="company.country_id.name" />
+                                </t>
+                                <br />
+                                <strong>Contact:</strong>
+                                <t t-esc="company.phone or company.mobile or ''" />
+                            </td>
+                            <!-- To -->
+                            <td style="width: 50%; text-align: center; background-color: #f1f2f6;">
+                                <strong>Billed To:</strong>
+                                <br />
+                                <t t-esc="o.partner_id.name" />
+                                <br />
+                                <t t-esc="o.partner_id.street" />
+                                <br />
+                                <t t-esc="o.partner_id.city" />
+                                -
+                                <t t-esc="o.partner_id.zip" />,
+                                <t t-esc="o.partner_id.state_id.name" />
+                                <br />
+                                <strong>GST:</strong>
+                                <t t-esc="o.partner_id.vat or '-'" />
+                                <br />
+                                <strong>PAN:</strong>
+                                <t t-esc="o.partner_id.l10n_in_pan or '-'" />
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Shipped To -->
+                    <table style="width: 100%; margin-bottom: 20px; align:center;" cellpadding="6">
+                        <tr>
+                            <td style="width: 50%; text-align: center; background-color: #f1f2f6;">
+                                <strong>Shipped To:</strong>
+                                <br />
+                                <t t-esc="o.partner_shipping_id.name" />
+                                <br />
+                                <t t-esc="o.partner_shipping_id.street" />
+                                <br />
+                                <t t-esc="o.partner_shipping_id.city" />
+                                -
+                                <t t-esc="o.partner_shipping_id.zip" />,
+                                <t t-esc="o.partner_shipping_id.state_id.name" />
+                            </td>
+                            <td style="width: 50%; text-align: center; background-color: #f1f2f6;">
+                                <div style="font-size: 24px; font-weight: bold; color: #2d3436;">INVOICE</div>
+                                <div style="font-size: 12px;">
+                                    <strong>Invoice No:</strong>
+                                    <t t-esc="o.name" />
+                                    <br />
+                                    <strong>Date:</strong>
+                                    <t t-esc="o.invoice_date" />
+                                    <br />
+                                    <strong>Customer PO No:</strong>
+                                    <t t-esc="o.ref or '-'" />
+                                    <br />
+                                    <strong>PO Date:</strong>
+                                    <t t-esc="o.invoice_date or '-'" />
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Invoice Table -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;" border="1">
+                        <thead style="background-color: #dfe6e9; text-align: center;">
+                            <tr>
+                                <th>SN</th>
+                                <th>Description</th>
+                                <th>HSN</th>
+                                <th>Qty</th>
+                                <th>Rate</th>
+                                <th>Tax %</th>
+                                <th>Taxable</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="enumerate(o.invoice_line_ids)" t-as="line_with_index" style="text-align: center;">
+                                <t t-set="i" t-value="line_with_index[0]" />
+                                <t t-set="line" t-value="line_with_index[1]" />
+                                <td>
+                                    <t t-esc="i + 1" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.name" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.product_id.l10n_in_hsn_code or ''" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.quantity" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.price_unit" />
+                                </td>
+                                <td>
+                                    <t t-foreach="line.tax_ids" t-as="tax">
+                                        <t t-esc="tax.amount" />%
+                                        <br />
+                                    </t>
+                                </td>
+                                <td>
+                                    <t t-esc="line.price_subtotal" />
+                                </td>
+                                <td>
+                                    <t t-esc="line.price_total" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <t t-set="repairs" t-value="o.line_ids.sale_line_ids.order_id.repair_order_ids" />
+
+                    <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 20px;" border="1">
+                        <thead style="background-color: #dfe6e9; text-align: center;">
+                            <tr>
+                                <th>SN</th>
+                                <th>Drive Type</th>
+                                <th>In Warranty</th>
+                                <th>Material Cost</th>
+                                <th>Service Warranty</th>
+                                <th>Good Will</th>
+                                <th>Cost</th>
+                                <th>Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="repairs" t-as="repair">
+                                <t t-set="repair_moves" t-value="repair.move_ids" />
+                                <t t-set="in_warranty_count" t-value="len([m for m in repair_moves if 'Under Warranty' in m.tag_ids.mapped('name')])" />
+                                <t t-set="total_count" t-value="len(repair_moves)" />
+                                <t t-set="in_cost_count" t-value="len([m for m in repair_moves if not m.tag_ids])" />
+                                <t t-set="service_warranty_count" t-value="len([m for m in repair_moves if 'Service Warranty' in m.tag_ids.mapped('name')])" />
+                                <t t-set="goodwill_count" t-value="len([m for m in repair_moves if not any(tag in ['Under Warranty', 'Service Warranty'] for tag in m.tag_ids.mapped('name'))])" />
+
+                                <tr style="text-align: center;">
+                                    <td><t t-esc="repair_index + 1" /></td>
+                                    <td>
+                                        <t t-esc="repair.product_id.name or '-'" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="in_warranty_count" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="goodwill_count" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="service_warranty_count" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="goodwill_count" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="in_cost_count" />
+                                    </td>
+                                    <td>
+                                        <t t-esc="total_count" />
+                                    </td>
+                                </tr>
+                            </t>
+                            <tr t-if="not repairs">
+                                <td colspan="8" style="text-align: center;">No repair history found.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- Totals -->
+                    <table style="width: 100%; margin-top: 20px; font-size: 11px;">
+                        <tr>
+                            <td style="width: 60%;">
+                                <strong>Amount in Words:</strong>
+                                <br />
+                                <t t-esc="o.currency_id.amount_to_text(o.amount_total)" />
+                            </td>
+                            <td style="text-align: right;">
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td>
+                                            <strong>Sub Total:</strong>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.amount_untaxed" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <strong>Total Tax:</strong>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.amount_tax" />
+                                        </td>
+                                    </tr>
+                                    <tr style="background-color: #ffeaa7;">
+                                        <td>
+                                            <strong>Grand Total:</strong>
+                                        </td>
+                                        <td>
+                                            <t t-esc="o.amount_total" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                    <!-- Declaration -->
+                    <div style="margin-bottom: 20px; font-size: 10px;">
+                        <strong>Terms and Conditions:</strong>
+                        <br />
+                        1. Our risk and responsibility ceases delivery Ex-factory unless otherwise specified.
+                        <br />
+                        2. I/We certify that the particulars given above are true and correct and the amount indicated
+                        represents the price actually charged and that there is no flow of additional consideration
+                        directly or indirectly from the buyer.
+                    </div>
+                    <!-- Signature Section -->
+                    <table style="width: 100%; margin-top: 50px; text-align: center;">
+                        <tr>
+                            <td style="border-top: 1px solid #000; width: 33%;">Prepared By</td>
+                            <td style="border-top: 1px solid #000; width: 33%;">Verified By</td>
+                            <td style="border-top: 1px solid #000; width: 33%;">Approved By</td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+    <!--        <record id="account_invoices_without_payment" model="ir.actions.report">-->
+    <!--        <field name="name">PDFs without Payment</field>-->
+    <!--        <field name="model">account.move</field>-->
+    <!--        <field name="report_type">qweb-pdf</field>-->
+    <!--        <field name="report_name">account.report_invoice</field>-->
+    <!--        <field name="report_file">account.report_invoice</field>-->
+    <!--        <field name="print_report_name">(object._get_report_base_filename())</field>-->
+    <!--        <field name="attachment"/>-->
+    <!--        <field name="binding_model_id" ref="model_account_move"/>-->
+    <!--        <field name="binding_type">report</field>-->
+    <!--        <field name="domain" eval="[('move_type', '!=', 'entry')]"/>-->
+    <!--    </record>-->
+    <!--    Report Function in Expense -->
+    <record id="action_invoice_request_report" model="ir.actions.report">
+        <field name="name">Invoice Report</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">repair_history.custom_invoice_template</field>
+        <field name="report_file">repair_history.custom_invoice_template</field>
+        <field name="binding_model_id" ref="account.model_account_move" />
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

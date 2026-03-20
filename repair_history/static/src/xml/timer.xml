@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="repair_history.MrpTimer2">
+        <span t-esc="durationFormatted"/>
+    </t>
+
+    <t t-name="repair_history.MrpTimerField2">
+        <MrpTimer t-if="props.readonly" value="duration" ongoing="ongoing"/>
+        <input t-else="" t-att-id="props.id" t-ref="numpadDecimal" t-att-placeholder="props.placeholder"
+               inputmode="numeric" class="o_input"/>
+    </t>
+</templates>

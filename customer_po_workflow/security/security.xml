@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Group for users who can edit stock moves in repair -->
+    <record id="group_edit_repair_stock_moves" model="res.groups">
+        <field name="name">Can Edit Repair Parts</field>
+        <field name="category_id" ref="base.module_category_inventory"/>
+    </record>
+
+    <!-- Rule: Default users (no edit/delete) -->
+<!--    <record id="rule_stock_move_repair_default" model="ir.rule">-->
+<!--        <field name="name">Stock Move Read and Create Only (Repair)</field>-->
+<!--        <field name="model_id" ref="stock.model_stock_move"/>-->
+<!--        <field name="groups" eval="[(4, ref('base.group_user'))]"/>-->
+<!--        <field name="perm_read" eval="True"/>-->
+<!--        <field name="perm_create" eval="True"/>-->
+<!--        <field name="perm_write" eval="False"/>-->
+<!--        <field name="perm_unlink" eval="False"/>-->
+<!--        <field name="domain_force">[('repair_id', '!=', False)]</field>-->
+<!--    </record>-->
+
+<!--    &lt;!&ndash; Rule: Only special group can edit/delete &ndash;&gt;-->
+<!--    <record id="rule_stock_move_repair_edit" model="ir.rule">-->
+<!--        <field name="name">Stock Move Edit Access for Repair Parts</field>-->
+<!--        <field name="model_id" ref="stock.model_stock_move"/>-->
+<!--        <field name="groups" eval="[(4, ref('repair_history.group_edit_repair_stock_moves'))]"/>-->
+<!--        <field name="perm_read" eval="True"/>-->
+<!--        <field name="perm_create" eval="True"/>-->
+<!--        <field name="perm_write" eval="True"/>-->
+<!--        <field name="perm_unlink" eval="True"/>-->
+<!--        <field name="domain_force">[('repair_id', '!=', False)]</field>-->
+<!--    </record>-->
+</odoo>
+

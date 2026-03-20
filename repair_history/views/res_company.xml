@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_company_form_inherit_checkin_location" model="ir.ui.view">
+        <field name="name">es.company.form.inherit.checkin.location</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <group string="Check-in Location Configuration">
+                    <field name="allowed_latitude"/>
+                    <field name="allowed_longitude"/>
+                    <field name="allowed_radius_km"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_users_form_inherit" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.repair</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <!-- Add checkbox in access rights page -->
+            <xpath expr="//page[@name='access_rights']" position="inside">
+                <group>
+                    <field name="can_edit_repair_parts"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+    <record id="employee_form_inherit_documents" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.documents</field>
+        <field name="model">hr.attendance</field>
+        <field name="inherit_id" ref="hr_attendance.hr_attendance_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='check_out']" position="after">
+                <field name="is_manually_check_in"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_serial_excel_import_wizard" model="ir.ui.view">
+        <field name="name">serial.excel.import.wizard.form</field>
+        <field name="model">serial.excel.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Serial Excel">
+                <group>
+                    <field name="file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                    <button name="action_import_serials" type="object" string="Load Serials" class="btn-primary"/>
+                </group>
+                <group>
+                    <field name="serial_ids" nolabel="1">
+                        <list editable="top">
+                            <field name="serial_number"/>
+                        </list>
+                    </field>
+                </group>
+                <footer>
+                    <button name="action_show_related_deliveries" type="object" string="Show Related Deliveries"
+                            class="btn-primary"/>
+                    <button string="Close" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_open_serial_excel_wizard" model="ir.actions.act_window">
+        <field name="name">Import Serial Excel</field>
+        <field name="res_model">serial.excel.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

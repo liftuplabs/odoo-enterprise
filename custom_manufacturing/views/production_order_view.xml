@@ -1,0 +1,130 @@
+<odoo>
+    <data>
+        # Model stock_picking form
+        <record id="view_stock_picking_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="string">Total</attribute>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="dc_date"/>
+                </xpath>
+                <xpath expr="//field[@name='quantity']" position="after">
+                    <field name="rejected" column_invisible="parent.state=='draft'"/>
+                    <field name="reason_rejection" column_invisible="parent.state=='draft'"/>
+                    <field name="required_time" column_invisible="parent.state=='draft'"/>
+                </xpath>
+            </field>
+        </record>
+
+
+        <record id="view_production_order_list" model="ir.ui.view">
+            <field name="name">production.order.list</field>
+            <field name="model">production.order</field>
+            <field name="arch" type="xml">
+                <list string="Production Orders">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="machine_id" widget="many2many_tags"/>
+                    <field name="shift_no"/>
+                    <field name="state" widget="badge" decoration-danger="state=='cancel'" decoration-info="state== 'in_progress'" decoration-muted="state == 'draft'" decoration-success="state == 'done'"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_production_order_form" model="ir.ui.view">
+            <field name="name">production.order.form</field>
+            <field name="model">production.order</field>
+            <field name="arch" type="xml">
+                <form string="Production Order">
+                    <header>
+                        <button name="action_confirm" type="object" string="In Progress"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_done" type="object" string="Done"
+                            class="btn-success" invisible="state != 'in_progress'"/>
+                        <button name="action_cancel" type="object" string="Cancel"
+                            class="btn-secondary"
+                            invisible="state not in ('draft', 'in_progress')"/>
+                        <button name="action_draft" type="object" string="Draft"
+                            class="btn-secondary"
+                            invisible="state not in ('done', 'cancel')"/>
+                        <field name="state" widget="statusbar" string="confirm" statusbar_visible="draft,in_progress,cancel,done"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <div class="oe_title">
+                                <h1>
+                                    <field name="name"/>
+                                    <br/>
+                                </h1>
+                            </div>
+                        </div>
+                        <group>
+                            <field name="date"/>
+                            <field name="machine_id" widget="many2many_tags"/>
+                            <field name="shift_no"/>
+                        </group>
+                        <notebook>
+                            <page string="Order Lines">
+                                <field name="mrp_ids">
+                                    <list>
+                                        <field name="name"/>
+                                        <field name="product_id"/>
+                                        <field name="product_qty"/>
+                                        <field name="product_uom_id"/>
+                                        <field name="date_start"/>
+                                        <field name="date_finished"/>
+                                        <field name="state"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_production_order_search" model="ir.ui.view">
+            <field name="name">production.order.search</field>
+            <field name="model">production.order</field>
+            <field name="arch" type="xml">
+                <search string="Search Production Orders">
+                    <field name="name"/>
+                    <field name="date"/>
+                    <field name="machine_id"/>
+                    <field name="shift_no"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_production_order" model="ir.actions.act_window">
+            <field name="name">Production Orders</field>
+            <field name="res_model">production.order</field>
+            <field name="view_mode">list,form</field>
+            <field name="domain">[]</field>
+        </record>
+
+        <menuitem id="menu_production_order"
+            name="Production Orders"
+            parent="mrp.menu_mrp_manufacturing"
+            action="action_production_order"
+            sequence="0"/>
+
+        <record id="action_picking_tree_incoming_custom" model="ir.actions.act_window">
+            <field name="name">Receipts</field>
+            <field name="res_model">stock.picking</field>
+            <field name="view_mode">list,kanban,form,calendar,activity</field>
+            <field name="domain">[]</field>
+            <field name="context">{'restricted_picking_type_code': 'incoming', 'search_default_reception': 1}</field>
+        </record>
+
+        <menuitem id="menu_inward_operation"
+            name="Inward"
+            parent="mrp.menu_mrp_manufacturing"
+            action="custom_manufacturing.action_picking_tree_incoming_custom"
+            sequence="-1"/>
+    </data>
+</odoo>
