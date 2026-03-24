@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    Inherited sale_order to add a barcode button in this model and on click of the button a js function is executed-->
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.view.form.inherit.barcode.capturing.sale.purchase</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="js_class">sale_order_barcode</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="repair_order_tree_inherit_barcode" model="ir.ui.view">
+        <field name="name">repair.order.tree.inherit.barcode</field>
+        <field name="model">repair.order</field>
+        <field name="inherit_id" ref="repair.view_repair_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="js_class">repair_barcode_list</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_form_inherit_print_barcodes2" model="ir.ui.view">
+        <field name="name">product.product.template.form.inherit.barcode.button</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button" position="before">
+                <button name="action_print_serial_barcodes"
+                        type="object"
+                        string="Print Barcodes"
+                        class="btn-primary"
+                        icon="fa-barcode"/>
+            </xpath>
+
+
+        </field>
+    </record>
+</odoo>
