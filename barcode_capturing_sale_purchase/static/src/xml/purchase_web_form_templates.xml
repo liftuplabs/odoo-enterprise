@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="barcode_capturing_sale_purchase.purchase_scanner" t-inherit="web.FormView">
+        <xpath expr="//t[@t-set-slot='layout-actions']" position="inside">
+            <button class="btn btn-primary d-flex align-items-center" t-on-click="PurchaseBarcodeDialog">
+                <i class="fa fa-barcode" style="font-size:24px; margin-right: 8px; color: white;"></i>
+                <span>Scan Barcode</span>
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="repair.ListView.Buttons" t-inherit="web.ListView">
+        <xpath expr="//Layout/t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button type="button" class="btn btn-primary" style="margin-right: 10px;" t-on-click="onScanBarcodeClick">
+                <i class="fa fa-barcode me-1"/>
+                Scan Barcode
+            </button>
+        </xpath>
+    </t>
+
+    <t t-name="stock.ListView.Buttons" t-inherit="web.ListView">
+        <xpath expr="//Layout/t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button type="button" class="btn btn-primary" style="margin-right: 10px;" t-on-click="onScanBarcodeClick2">
+                <i class="fa fa-barcode me-1"/>
+                Scan Barcode
+            </button>
+        </xpath>
+
+        <xpath expr="//Layout/t[@t-set-slot='control-panel-create-button']" position="inside">
+            <button type="button" class="btn btn-primary" style="margin-right: 10px;" t-on-click="onScanBarcodeClick3">
+                <i class="fa fa-barcode me-1"/>
+                Verify Barcode
+            </button>
+        </xpath>
+    </t>
+
+
+    <t t-name="repair.BarcodeDialog">
+        <div class="modal-body">
+            <label>Scan or Enter Barcode:</label>
+            <input t-model="state.barcode" type="text" class="form-control" placeholder="Enter or scan barcode"
+                   autofocus="autofocus"/>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" t-on-click="onCreate">Create</button>
+            <button class="btn btn-secondary" t-on-click="onCancel">Cancel</button>
+        </div>
+    </t>
+
+    <!-- views/repair_list_button_template.xml -->
+
+
+</templates>
+
+        <!-- repair_barcode_list_template.xml -->
+
+
+

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    Inherited purchase_order to add a barcode button in this model and on click of the button a js function is executed-->
+    <record id="purchase_order_form" model="ir.ui.view">
+        <field name="name">purchase.order.inherit.view.form.barcode.capturing.sale.purchase</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="js_class">purchase_order_barcode</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_quant_tree_editable_lst_proce" model="ir.ui.view">
+        <field name="name">stock.quant.list.editable.inherit.lst_price</field>
+        <field name="model">stock.quant</field>
+        <field name="inherit_id" ref="stock.view_stock_quant_tree_editable"/>
+        <field name="arch" type="xml">
+            <xpath expr="//list" position="attributes">
+                <attribute name="js_class">stock_barcode_list</attribute>
+                <attribute name="decoration-success">is_verified == True</attribute>
+                <attribute name="decoration-danger">is_verified == False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="after">
+                <field name="is_verified"/>
+                <field name="dc_number"/>
+                <field name="partner_id"/>
+                <field name="customer_state"/>
+                <field name="plant"/>
+                <field name="inward_date"/>
+                <field name="dc_date"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_verify_barcode_wizard_form" model="ir.ui.view">
+        <field name="name">verify.barcode.wizard.form</field>
+        <field name="model">verify.barcode.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Verify Barcode">
+                <group>
+                    <field name="barcode"/>
+                </group>
+                <footer>
+                    <button name="verify_barcode_action" string="Verify" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_serial_barcodes" model="ir.actions.report">
+        <field name="name">Serial Number Barcodes</field>
+        <field name="model">stock.quant</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">barcode_capturing_sale_purchase.barcode_template</field>
+        <field name="report_file">barcode_capturing_sale_purchase.barcode_template</field>
+        <field name="binding_model_id" ref="stock.model_stock_quant"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

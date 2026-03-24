@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="barcode_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div>
+                            <div class="col-5">
+                                <h2>
+                                    <span t-field="doc.product_id.name"/>
+                                </h2>
+                                <br/>
+                                <span style="margin-left:-60px;">
+                                    <img t-if="doc.lot_id"
+                                         style="width:400px;height:70px;"
+                                         t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' % ('EAN13', doc.lot_id.name, 265, 80)"/>
+                                </span>
+                                <br/>
+                                <div style="margin-left:100px" t-field="doc.lot_id.name"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+
+
+
+</odoo>
