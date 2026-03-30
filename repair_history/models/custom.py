@@ -1,4 +1,4 @@
-from django.utils.duration import duration_string
+# from django.utils.duration import duration_string
 from pkg_resources import require
 from odoo import api, Command, fields, models, modules, tools, _
 from datetime import datetime, timedelta
