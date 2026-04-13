@@ -2,23 +2,23 @@ from odoo import http
 from odoo.http import request
 
 from odoo.exceptions import UserError
-from geopy.distance import geodesic
+# from geopy.distance import geodesic
 
-class AttendanceController(http.Controller):
-
-    @http.route('/hr_attendance/custom_check_in_out', type='json', auth="user")
-    def custom_check_in_out(self, latitude, longitude):
-        employee = request.env.user.employee_id
-        company = employee.company_id
-
-        allowed_location = (company.allowed_latitude, company.allowed_longitude)
-        current_location = (latitude, longitude)
-        distance = geodesic(current_location, allowed_location).meters
-
-        if distance > company.location_radius:
-            raise UserError("You can't check in outside the allowed company location.")
-
-        return True
+# class AttendanceController(http.Controller):
+#
+#     @http.route('/hr_attendance/custom_check_in_out', type='json', auth="user")
+#     def custom_check_in_out(self, latitude, longitude):
+#         employee = request.env.user.employee_id
+#         company = employee.company_id
+#
+#         allowed_location = (company.allowed_latitude, company.allowed_longitude)
+#         current_location = (latitude, longitude)
+#         distance = geodesic(current_location, allowed_location).meters
+#
+#         if distance > company.location_radius:
+#             raise UserError("You can't check in outside the allowed company location.")
+#
+#         return True
 
 class RepairTrackingController(http.Controller):
 

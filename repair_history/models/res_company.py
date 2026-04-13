@@ -5,7 +5,7 @@ from odoo.exceptions import AccessError
 from odoo import models, api, _
 from odoo.exceptions import ValidationError
 import math
-from geopy.distance import geodesic
+# from geopy.distance import geodesic
 from odoo import models, fields, api
 import base64
 import xlrd
@@ -47,48 +47,48 @@ class ResCompanyInherit(models.Model):
 
 
 
-class HrAttendance(models.Model):
-    _inherit = 'hr.attendance'
-
-
-    is_manually_check_in = fields.Boolean(string='Manually Check In')
-
-    @api.constrains('check_in','check_out')
-    def _check_in_validation(self):
-        company = self.env.user.company_id
-        lat = self.in_latitude
-        lon = self.in_longitude
-        if not lon and not lat and self.is_manually_check_in == False:
-            raise ValidationError(_("Location permission is required to check out."))
-        if lat and lon and company.allowed_latitude and company.allowed_longitude and self.is_manually_check_in == False:
-            allowed_point = ((company.allowed_latitude), (company.allowed_longitude))
-            user_point = (lat, lon)
-            distance = geodesic(allowed_point, user_point).meters
-            if distance > company.allowed_radius_km:
-                raise ValidationError(_("You can't check in outside the company location."))
-        lat_out = self.out_latitude
-        lon_out = self.out_longitude
-
-        if not lat_out and not lon_out and self.is_manually_check_in == False:
-            raise ValidationError(_("Location permission is required to check out."))
-        if lat_out and lon_out and company.allowed_latitude and company.allowed_longitude and self.is_manually_check_in == False:
-            allowed_point = (company.allowed_latitude, company.allowed_longitude)
-            user_point = (lon_out, lon_out)
-            distance = geodesic(allowed_point, user_point).meters
-            if distance > company.allowed_radius_km:
-                raise ValidationError(_("You can't check out outside the company location."))
-
-    @api.model
-    def _haversine_distance(self, lat1, lon1, lat2, lon2):
-        R = 6371  # Earth radius in KM
-        phi1, phi2 = math.radians(lat1), math.radians(lat2)
-        d_phi = math.radians(lat2 - lat1)
-        d_lambda = math.radians(lon2 - lon1)
-
-        a = math.sin(d_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(d_lambda/2)**2
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
-        return R * c
-
+# class HrAttendance(models.Model):
+#     _inherit = 'hr.attendance'
+#
+#
+#     is_manually_check_in = fields.Boolean(string='Manually Check In')
+#
+#     @api.constrains('check_in','check_out')
+#     def _check_in_validation(self):
+#         company = self.env.user.company_id
+#         lat = self.in_latitude
+#         lon = self.in_longitude
+#         if not lon and not lat and self.is_manually_check_in == False:
+#             raise ValidationError(_("Location permission is required to check out."))
+#         if lat and lon and company.allowed_latitude and company.allowed_longitude and self.is_manually_check_in == False:
+#             allowed_point = ((company.allowed_latitude), (company.allowed_longitude))
+#             user_point = (lat, lon)
+#             distance = geodesic(allowed_point, user_point).meters
+#             if distance > company.allowed_radius_km:
+#                 raise ValidationError(_("You can't check in outside the company location."))
+#         lat_out = self.out_latitude
+#         lon_out = self.out_longitude
+#
+#         if not lat_out and not lon_out and self.is_manually_check_in == False:
+#             raise ValidationError(_("Location permission is required to check out."))
+#         if lat_out and lon_out and company.allowed_latitude and company.allowed_longitude and self.is_manually_check_in == False:
+#             allowed_point = (company.allowed_latitude, company.allowed_longitude)
+#             user_point = (lon_out, lon_out)
+#             distance = geodesic(allowed_point, user_point).meters
+#             if distance > company.allowed_radius_km:
+#                 raise ValidationError(_("You can't check out outside the company location."))
+#
+#     @api.model
+#     def _haversine_distance(self, lat1, lon1, lat2, lon2):
+#         R = 6371  # Earth radius in KM
+#         phi1, phi2 = math.radians(lat1), math.radians(lat2)
+#         d_phi = math.radians(lat2 - lat1)
+#         d_lambda = math.radians(lon2 - lon1)
+#
+#         a = math.sin(d_phi/2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(d_lambda/2)**2
+#         c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+#         return R * c
+#
 
 
 class StockMoveLine(models.Model):
