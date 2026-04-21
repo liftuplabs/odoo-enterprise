@@ -16,7 +16,7 @@
         'mail',
         'repair',
         'account',
-        'hr_attendance',
+        # 'hr_attendance',
         'web',
         'purchase',
         'l10n_in'
