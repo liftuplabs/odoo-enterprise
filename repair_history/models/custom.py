@@ -457,8 +457,8 @@ class RepairOrderInherit(models.Model):
                 self.partner_id = existing_quant.partner_id.id
             if existing_quant and existing_quant.plant:
                 self.plant = existing_quant.plant
-            if existing_quant and existing_quant.customer_po:
-                self.customer_po = existing_quant.customer_po
+            # if existing_quant and existing_quant.customer_po:
+            #     self.customer_po = existing_quant.customer_po
             if existing_quant and existing_quant.inward_date:
                 self.inward_date = existing_quant.inward_date
             if existing_quant and existing_quant.dc_number:
