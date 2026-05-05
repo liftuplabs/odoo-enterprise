@@ -365,6 +365,14 @@ class RepairOrderInherit(models.Model):
         tracking=True,
     )
 
+    @api.constrains('name')
+    def _check_duplicate_name(self):
+        for rec in self:
+            if rec.name:
+                existing = self.env['repair.order'].search([('name', '=', rec.name), ('id', '!=', rec.id)], limit=1)
+                if existing:
+                    raise ValidationError(f"The name '{rec.name}' is already used by another repair order. Please choose a unique name.")
+
     @api.depends('move_ids.product_id')
     def _compute_move_products(self):
         for rec in self:
