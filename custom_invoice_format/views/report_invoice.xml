@@ -5,8 +5,9 @@
         <template id="report_custom_tax_invoice_document" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">
             
              <xpath expr="//t[@t-call='web.external_layout']" position="replace">
-                <t t-call="web.external_layout">
+                <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context(lang=lang)" />
+
                     <!-- Dynamic Style Variables -->
                     <t t-set="border_color" t-value="o.company_id.custom_invoice_border_color or '#000000'"/>
                     <t t-set="border_width" t-value="o.company_id.custom_invoice_border_thickness or 1"/>
@@ -14,8 +15,10 @@
                     <t t-set="header_text" t-value="o.company_id.custom_invoice_header_text_color or '#000000'"/>
                     <t t-set="font_family" t-value="o.company_id.custom_invoice_font_family or 'Arial'"/>
                     <t t-set="page_title" t-value="o.company_id.custom_invoice_title or 'TAX INVOICE'"/>
+                    <t t-set="l10n_in_einvoice_json" t-value="o._get_l10n_in_edi_response_json()"/>
+                    <t t-set="l10n_in_ewaybill_json" t-value="o._get_l10n_in_edi_ewaybill_response_json()"/>
 
-                    <div class="page" t-attf-style="font-family: {{font_family}}, sans-serif; padding-top: 10px; margin-top: 10px;">
+                    <div class="page" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: 13px; line-height: 1.1; padding-top: 0px; margin-top: 0px;">
                         <!-- Custom CSS for strict PDF styling with Dynamic Values -->
                         <style t-attf-type="text/css">
                             .table-custom-bordered {
@@ -26,7 +29,7 @@
                             .table-custom-bordered th, 
                             .table-custom-bordered td {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                padding: 4px 6px !important;
+                                padding: 2px 4px !important;
                                 vertical-align: middle;
                             }
                             .table-custom-bordered thead th {
@@ -51,12 +54,29 @@
                             .text-bold { font-weight: bold; }
                         </style>
 
+                        <div t-if="l10n_in_einvoice_json" class="row mb-2" style="font-size: 13px; line-height: 1.2;">
+                            <div class="col-8">
+                                <strong>IRN : </strong> <span t-out="l10n_in_einvoice_json.get('Irn')"/><br/>
+                                <strong>Ack No. : </strong> <span t-out="l10n_in_einvoice_json.get('AckNo')"/><br/>
+                                <strong>Ack Date : </strong> <span t-out="l10n_in_einvoice_json.get('AckDt')"/><br/><br/>
+                                <!-- E-Waybill Fields -->
+                                <t t-if="l10n_in_ewaybill_json">
+                                    <strong>E-waybill : </strong><span t-esc="l10n_in_ewaybill_json.get('EwbNo') or l10n_in_ewaybill_json.get('ewayBillNo')"/><br/>
+                                    <strong>Ewb Date : </strong><span t-esc="l10n_in_ewaybill_json.get('EwbDt') or l10n_in_ewaybill_json.get('ewayBillDate')"/><br/>
+                                    <strong>Ewb Valid Until : </strong><span t-esc="l10n_in_ewaybill_json.get('EwbValidTill') or l10n_in_ewaybill_json.get('validUpto')"/>
+                                </t>
+                            </div>
+                            <div class="col-4 text-end">
+                                <img t-att-src="'/report/barcode/?barcode_type=%s&amp;value=%s&amp;width=%s&amp;height=%s' %('QR', l10n_in_einvoice_json['SignedQRCode'], 500, 500)" style="max-height: 155px"/>
+                            </div>
+                        </div>
+
                         <!-- Title Section -->
-                        <div class="row mb-3 text-center">
+                        <div class="row mb-1 text-center">
                             <div class="col-12">
-                                <h3 style="text-decoration: underline; font-weight: bold; margin: 0; text-transform: uppercase;">
+                                <h5 style="font-weight: bold; margin: 0; text-transform: uppercase;">
                                     <span t-esc="page_title"/>
-                                </h3>
+                                </h5>
                             </div>
                         </div>
 
@@ -67,7 +87,7 @@
                                     <tbody>
                                         <tr>
                                             <!-- LEFT SIDE: Address Stack -->
-                                            <td style="width: 50%; vertical-align: top; padding: 10px;">
+                                            <td style="width: 50%; vertical-align: center; padding: 5px;">
                                                 
                                                 <!-- 1. Seller (Company) Details -->
                                                 <div t-if="o.company_id.invoice_layout_boxed" class="mb-3">
