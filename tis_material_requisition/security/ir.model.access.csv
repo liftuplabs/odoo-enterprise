@@ -1,0 +1,14 @@
+id,name,model_id/id,group_id/id,perm_read,perm_write,perm_create,perm_unlink
+material_requisition_user,material_requisition_user,model_material_requisition,materials_group_user,1,1,1,0
+material_requisition_officer,material_requisition_officer,model_material_requisition,materials_group_officer,1,1,1,1
+material_requisition_manager,material_requisition_manager,model_material_requisition,materials_group_manager,1,1,1,1
+material_requisition_all,material_requisition_all,model_material_requisition,,1,1,1,1
+material_request_line_user,material_request_line_user,model_material_request_line,materials_group_user,1,1,1,0
+material_request_line_officer,material_request_line_officer,model_material_request_line,materials_group_officer,1,1,1,1
+material_request_line_manager,material_request_line_manager,model_material_request_line,materials_group_manager,1,1,1,1
+
+
+
+
+
+

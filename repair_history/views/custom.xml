@@ -51,9 +51,9 @@
                 <field name="lot_ids" widget="many2many_tags" optional="hide"/>
                 <field name="repair_id" column_invisible="1"/>
             </xpath>
-            <xpath expr="//field[@name='payment_term_id']" position="after">
-                <field name="purchase_order_ids" widget="many2many_tags" invisible="repair_count == 0" />
-            </xpath>
+<!--            <xpath expr="//field[@name='payment_term_id']" position="after">-->
+<!--                <field name="purchase_order_ids" widget="many2many_tags" invisible="repair_count == 0" />-->
+<!--            </xpath>-->
             <xpath expr="//page[@name='other_information']" position="after">
                  <page string="Transport &amp; Delivery" name="custom_transport_info">
                     <group>
@@ -118,6 +118,16 @@
         <field name="inherit_id" ref="repair.view_repair_order_form" />
         <field name="arch" type="xml">
             <xpath expr="//sheet/div/button[2]" position="after">
+                <button type="object" name="action_view_material_requisitions"
+                        class="oe_stat_button" icon="fa-file-text-o"
+                        invisible="requisition_count == 0">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value">
+                            <field name="requisition_count"/>
+                        </span>
+                        <span class="o_stat_text">Material Requisitions</span>
+                    </div>
+                </button>
                 <button type="object" name="action_open_product_history" class="oe_stat_button" icon="fa-bars">
                     <div class="o_stat_info">
                         <span class="o_stat_text">Repair History</span>
@@ -153,6 +163,19 @@
             </xpath>
             <xpath expr="//button[@name='action_repair_end']" position="replace">
                 <attribute name="invisible"></attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_repair_start']" position="attributes">
+                <attribute name="invisible">state not in ['confirmed', 'material_approved'] or (state == 'confirmed' and move_ids)</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids']" position="attributes">
+                <attribute name="readonly">state in ('cancel', 'done') or requisition_count &gt; 0</attribute>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_create_material_requisition"
+                        string="Create Material Requisition"
+                        type="object"
+                        class="oe_highlight"
+                        invisible="not move_ids or state == 'done' or requisition_count > 0"/>
             </xpath>
             <xpath expr="//button[@name='action_repair_start']" position="after">
                 <!-- <button name="action_mark_repair_delivered" invisible="state != 'done'" type="object" string="Delivery Order" class="oe_highlight" data-hotkey="q" /> -->
@@ -329,60 +352,7 @@
             </xpath>
         </field>
     </record>
-    <record id="view_picking_form_inherit_mrp" model="ir.ui.view">
-        <field name="name">view.picking.form.inherit.mrp</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="stock.view_picking_form" />
-        <field name="arch" type="xml">
-            <xpath expr="//field[@name='origin']" position="after">
-                <field name="product_id" invisible="1" />
-                <field name="product_ids" widget='many2many_tags' />
-                <field name="lot_id" invisible="1" />
-                <field name="lot_ids" widget="many2many_tags" />
-                <field name="customer_state" />
-                <field name="dc_number" />
-                <field name="plant" />
-            </xpath>
-        </field>
-    </record>
-    <record id="view_picking_filter_inherit" model="ir.ui.view">
-        <field name="name">stock.picking.filter.inherit</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="stock.view_picking_internal_search" />
-        <field name="arch" type="xml">
-            <field name="origin" position="after">
-                <field name="lot_ids" />
-                <field name="product_ids" />
-            </field>
-        </field>
-    </record>
-    <record id="stock_picking_view_tree_inherit_quality" model="ir.ui.view">
-        <field name="name">stock.picking.view.tree.inherit.quality</field>
-        <field name="model">stock.picking</field>
-        <field name="inherit_id" ref="stock.vpicktree" />
-        <field name="arch" type="xml">
-            <header position="inside">
-                <button name="custom_return_with_dc"
-                        type="object"
-                        string="Inward with DC"
-                        class="btn-primary"
-                        icon="fa-undo"
-                        />
-            </header>
-            <xpath expr="field[@name='company_id']" position="after">
-                <field name="product_id" invisible="1" />
-                <field name="product_ids" widget='many2many_tags' />
-                <field name="lot_id" />
-                <field name="lot_ids" widget='many2many_tags' />
-                <field name="customer_state" />
-                <field name="dc_number" />
-                <field name="plant" />
-            </xpath>
-            <xpath expr="//header/button[@name='action_assign']" position="after">
-                <button name="action_open_serial_excel_wizard" string="Import Serial Excel" type="object" class="btn btn-primary" />
-            </xpath>
-        </field>
-    </record>
+
     <record id="repair_order_tree_inherit_repair_order" model="ir.ui.view">
         <field name="name">repair.order.tree.inherit.repair.order.hiatory</field>
         <field name="model">repair.order</field>

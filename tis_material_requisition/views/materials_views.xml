@@ -1,0 +1,155 @@
+<odoo>
+    <data>
+        <record model="ir.actions.act_window" id="action_request">
+            <field name="name">Requests</field>
+            <field name="res_model">material.requisition</field>
+            <field name="view_mode">list,form</field>
+            <field name="context">{'create': True}</field>
+        </record>
+
+        <record id="material_requisition_form_view" model="ir.ui.view">
+            <field name="name">material.requisition.form.view</field>
+            <field name="model">material.requisition</field>
+            <field name="arch" type="xml">
+                <form string="Create">
+                    <header>
+                        <button name="action_confirm" string="Submit" type="object" class="btn-primary"
+                                invisible="state not in ['new']"
+                                groups="tis_material_requisition.materials_group_user"/>
+                        <button name="action_cancel" string="Cancel" type="object" class="btn-primary"
+                                invisible="state not in ['approved']"
+                                confirm="Are you sure you want to cancel this requisition? This action cannot be undone."
+                                groups="tis_material_requisition.materials_group_user"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-primary"
+                                invisible="state not in ['cancelled']"
+                                groups="tis_material_requisition.materials_group_user"/>
+                        <button name="action_refuse" string="Refuse" type="object" class="btn"
+                                invisible="state not in ['new','approved','done','refuse','confirmed']"
+                                groups="tis_material_requisition.materials_group_officer"/>
+                        <button name="action_resubmit" string="Resubmit" type="object" class="btn"
+                                invisible="state not in ['refuse']"
+                                groups="tis_material_requisition.materials_group_officer,tis_material_requisition.materials_group_user"/>
+                        <button name="action_approve" string="Approve" type="object"
+                                class="btn-primary"  invisible="state not in ['confirmed']"
+                                groups="tis_material_requisition.materials_group_manager"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="confirmed,approved"/>
+                    </header>
+                    <sheet>
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                        <group>
+                            <group>
+                                <field name="user_id"/>
+                                <field name="repair_id"/>
+                            </group>
+                            <group>
+                                <field name="requested_on"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Products">
+                                <field name="request_line_ids" readonly="state not in ['new','refuse']">
+                                    <list editable="bottom">
+                                        <field name="product_id"/>
+                                        <field name="description"/>
+                                        <field name="quantity"/>
+                                        <field name="unit_of_measure_id"/>
+                                        <field name="states" column_invisible="True"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Approval Log" name="approval_log_page">
+                                <group>
+                                    <group string="Approval">
+                                        <group>
+                                            <field name="date_approve">Date</field>
+                                            <field name="approved_by"/>
+                                        </group>
+                                    </group>
+                                    <group></group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="material_requisition_list_view" model="ir.ui.view">
+            <field name="name">material.requisition.list</field>
+            <field name="model">material.requisition</field>
+            <field name="arch" type="xml">
+                <list string="Requests">
+                    <field name="name" string="Request Number" class="oe_inline"/>
+                    <field name="user_id" string="Requested By"/>
+                    <field name="requested_on" string="Requested On"/>
+                    <field name="repair_id" string="Repair"/>
+                    <field name="state" string="Status" />
+                </list>
+            </field>
+        </record>
+
+        <record id="material_request_line_ids_form_view" model="ir.ui.view">
+            <field name="name">material.request.line.form</field>
+            <field name="model">material.request.line</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="product_id"/>
+                                <field name="description"/>
+                            </group>
+                            <group>
+                                <field name="quantity"/>
+                                <field name="states" invisible="1"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="material_request_line_ids_list_view" model="ir.ui.view">
+            <field name="name">material.request.line.list</field>
+            <field name="model">material.request.line</field>
+            <field name="arch" type="xml">
+                <list string="Requests">
+                    <field name="product_id" string="Product"/>
+                    <field name="description" string="Description"/>
+                    <field name="quantity" string="Quantity"/>
+                    <field name="states" invisible="1"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="sequence_self_service" model="ir.sequence">
+            <field name="name">Requisition Reference</field>
+            <field name="code">material.requisition</field>
+            <field name="active">TRUE</field>
+            <field name="prefix">MR/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="number_increment">1</field>
+        </record>
+
+        <menuitem id="material_requisition_menu_root"
+                  name="Material Requisition"
+                  web_icon="tis_material_requisition,static/description/icon.png"
+                  sequence="3"/>
+
+        <menuitem id="material_requisition_sub_menu"
+                  name="Material Requisition"
+                  parent="material_requisition_menu_root"
+                  sequence="2"/>
+
+        <menuitem id="req_sub_menu"
+                  name="Requests"
+                  parent="material_requisition_sub_menu"
+                  action="action_request"
+                  sequence="3"/>
+
+    </data>
+</odoo>

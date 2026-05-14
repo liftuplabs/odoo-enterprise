@@ -84,7 +84,7 @@
             <t t-set="sale_lines" t-value="o.invoice_line_ids.mapped('sale_line_ids')"/>
             <t t-set="sale_orders" t-value="sale_lines.mapped('order_id')"/>
             <t t-set="delivery_orders" t-value="sale_orders.mapped('picking_ids').filtered(lambda p: p.state == 'done')"/>
-            <t t-set="buyer_pos" t-value="sale_orders.mapped('purchase_order_ids')"/>
+<!--            <t t-set="buyer_pos" t-value="sale_orders.mapped('purchase_order_ids')"/>-->
 
             <table class="table table-sm table-bordered mt-2 mb-4" style="table-layout: fixed; width: 100%; border: 1px solid black;">
                 <tbody>

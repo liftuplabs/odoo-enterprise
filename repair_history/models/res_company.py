@@ -186,7 +186,7 @@ class SaleAdvancePaymentInvInherit(models.TransientModel):
         result = super(SaleAdvancePaymentInvInherit, self).create_invoices()
         invoice = self.env['account.move'].browse(result.get('res_id'))
         sale_order = self.env['sale.order'].browse(self._context.get('active_id'))
-        if invoice and sale_order.purchase_order_ids:
+        if invoice:
             for line in invoice.invoice_line_ids:
                 for so_line in line.sale_line_ids:
                     if not so_line.is_repair_parts:

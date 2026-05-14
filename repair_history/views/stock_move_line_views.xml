@@ -1,0 +1,17 @@
+<odoo>
+    <data>
+        <record id="view_stock_move_line_operation_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.move.line.list.inherit</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree" />
+            <field name="arch" type="xml">
+                <xpath expr="//list/field[@name='lot_name']" position="after">
+                    <field name="customer_lot_name" groups="stock.group_production_lot"
+                        placeholder="e.g. SN000001"
+                        column_invisible="parent.has_tracking == 'none' or not parent.show_lots_text"
+                        readonly="package_level_id and parent.picking_type_entire_packs"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

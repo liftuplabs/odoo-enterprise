@@ -12,260 +12,6 @@ import qrcode, base64
 from io import BytesIO
 
 
-class StockPicking(models.Model):
-    _inherit = 'stock.picking'
-
-    def action_open_serial_excel_wizard(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Import Serial Excel',
-            'res_model': 'serial.excel.import.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                # Optionally pass something to context
-            }
-        }
-
-
-
-    def custom_return_with_dc(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Return with DC Number',
-            'res_model': 'return.dc.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            # 'context': {
-            #     'default_picking_ids': [p.id for p in self],
-            # }
-        }
-
-    plant_selection = [
-        ('A001', 'A001'),
-        ('A101', 'A101'),
-        ('A201', 'A201'),
-        ('A403', 'A403'),
-        ('A605', 'A605'),
-        ('A607', 'A607'),
-        ('A609', 'A609'),
-        ('A611', 'A611'),
-        ('A615', 'A615'),
-        ('A617', 'A617'),
-        ('A620', 'A620'),
-        ('A621', 'A621'),
-        ('A707', 'A707'),
-        ('A709', 'A709'),
-        ('A712', 'A712'),
-        ('C301', 'C301'),
-        ('R202', 'R202'),
-        ('R302', 'R302'),
-        ('R502', 'R502'),
-        ('R607', 'R607'),
-        ('R705', 'R705'),
-    ]
-
-    dc_number = fields.Char(string="DC Number")
-    lot_id = fields.Many2one('stock.lot', 'Lot/Serial', readonly=True)
-    lot_ids = fields.Many2many('stock.lot', readonly=True)
-    product_id = fields.Many2one('product.product', string='Product', readonly=True)
-    product_ids = fields.Many2many('product.product', string='Products')
-    plant = fields.Selection(
-        selection=plant_selection,
-        string="Plant"
-    )
-    customer_state = fields.Selection([
-        ('MH', 'Maharashtra'),
-        ('GJ-BJ', 'Gujarat - Bhuj'),
-        ('RJ', 'Rajasthan'),
-        ('MP', 'Madhya Pradesh'),
-        ('AP', 'Andhra Pradesh'),
-        ('KN', 'Karnataka'),
-        ('TN', 'Tamilnadu'),
-        ('GJ-JM', 'Gujarat - Jamnagar'),
-    ], string="Customer State")
-
-    # def auto_populate_data(self):
-    #     for rec in self:
-    #         rec.plant = False
-    #         # self.customer_state = False
-    #         existing_quant = self.env['stock.quant'].with_context(prefetch_fields=False).search([
-    #             ('lot_id', '=', rec.lot_id.id),
-    #             ('product_id', '=', rec.product_id.id),
-    #             ('inventory_quantity_auto_apply', '>', 0)
-    #         ], limit=1)
-    #         if existing_quant:
-    #             if existing_quant.plant:
-    #                 rec.plant = existing_quant.plant
-
-    def button_validate(self):
-        for rec in self.move_ids_without_package.filtered(lambda t: t.picked == False):
-            rec.picked = True
-        res = super(StockPicking, self).button_validate()
-        for repair_id in self.sale_id.repair_ids:
-            repair_id.write({'state': 'delivered'})
-        return res
-
-    def action_return_all_and_validate(self, dc_number=None):
-        RepairOrder = self.env['repair.order']
-        Picking = self.env['stock.picking']
-        Move = self.env['stock.move']
-        MoveLine = self.env['stock.move.line']
-        Quant = self.env['stock.quant']
-
-        return_picking = None
-
-        for picking in self:
-            repair = RepairOrder.search([('name', '=', picking.origin)], limit=1)
-            if not repair or not repair.product_id or not repair.lot_id:
-                continue
-
-            product = repair.product_id
-            lot = repair.lot_id
-
-            source_location = picking.location_dest_id.id
-            return_location = picking.location_id.id
-
-            if not return_picking:
-                return_picking = Picking.create({
-                    'origin': 'Multiple Returns - ' + (dc_number or ''),
-                    'picking_type_id': self.env.ref('stock.picking_type_in').id,
-                    'location_id': source_location,
-                    'location_dest_id': return_location,
-                    'move_type': 'direct',
-                    'partner_id': repair.partner_id.id
-                })
-
-            move = Move.create({
-                'name': product.display_name,
-                'product_id': product.id,
-                'product_uom_qty': 1.0,
-                'product_uom': product.uom_id.id,
-                'location_id': source_location,
-                'location_dest_id': return_location,
-                'picking_id': return_picking.id,
-            })
-
-            MoveLine.create({
-                'move_id': move.id,
-                'picking_id': return_picking.id,
-                'product_id': product.id,
-                'product_uom_id': product.uom_id.id,
-                'quantity': 1.0,
-                'lot_id': lot.id,
-                'location_id': source_location,
-                'location_dest_id': return_location,
-            })
-
-            repair.return_date = fields.Date.today()
-
-            quant = Quant.search([
-                ('product_id', '=', product.id),
-                ('lot_id', '=', lot.id),
-                ('location_id', '=', return_location),
-            ], limit=1)
-
-            if quant:
-                quant.plant = repair.plant
-                quant.partner_id = repair.partner_id.id
-                quant.dc_number = dc_number
-
-        if return_picking:
-            # Collect all lot_ids and product_ids from its move lines
-            lot_ids = return_picking.move_line_ids.filtered(lambda l: l.lot_id).mapped('lot_id').ids
-            product_ids = return_picking.move_line_ids.mapped('product_id').ids
-
-            return_picking.write({
-                'lot_ids': [(6, 0, lot_ids)],
-                'product_ids': [(6, 0, product_ids)],
-            })
-
-        if return_picking:
-            return {
-                'type': 'ir.actions.act_window',
-                'res_model': 'stock.picking',
-                'res_id': return_picking.id,
-                'view_mode': 'form',
-                'target': 'current',
-            }
-
-
-
-        return {'type': 'ir.actions.act_window_close'}
-
-    def action_return_all_and_validate2(self,dc_number=None):
-        RepairOrder = self.env['repair.order']
-        Picking = self.env['stock.picking']
-        Move = self.env['stock.move']
-        MoveLine = self.env['stock.move.line']
-        Quant = self.env['stock.quant']
-
-        for picking in self:
-            repair = RepairOrder.search([('name', '=', picking.origin)], limit=1)
-            if not repair or not repair.product_id or not repair.lot_id:
-                continue
-
-            product = repair.product_id
-            lot = repair.lot_id
-
-            # From where it's being returned
-            source_location = picking.location_dest_id.id  # e.g., customer location
-            return_location = picking.location_id.id  # e.g., stock location
-
-            # NOTE: Removed lot_in_stock check — even if it's already returned, we want to ensure qty is updated
-
-            # Create return picking
-            return_picking = Picking.create({
-                'origin': picking.name + ' - Return',
-                'picking_type_id': self.env.ref('stock.picking_type_in').id,
-                'location_id': source_location,
-                'location_dest_id': return_location,
-                'move_type': 'direct',
-                'dc_number': dc_number,
-            })
-
-            # Create stock move
-            move = Move.create({
-                'name': product.display_name,
-                'product_id': product.id,
-                'product_uom_qty': 1.0,
-                'product_uom': product.uom_id.id,
-                'location_id': source_location,
-                'location_dest_id': return_location,
-                'picking_id': return_picking.id,
-            })
-
-            # Create move line with qty_done (mandatory)
-            MoveLine.create({
-                'move_id': move.id,
-                'picking_id': return_picking.id,
-                'product_id': product.id,
-                'product_uom_id': product.uom_id.id,
-                'quantity': 1.0,  # ✅ Required for validation
-                'lot_id': lot.id,
-                'location_id': source_location,
-                'location_dest_id': return_location,
-            })
-
-            # Validate the picking
-            return_picking.with_context(skip_immediate=True).button_validate()
-
-            # Update return date in repair
-            repair.return_date = fields.Date.today()
-
-            quant = Quant.search([
-                ('product_id', '=', product.id),
-                ('lot_id', '=', lot.id),
-                ('location_id', '=', return_location),
-            ], limit=1)
-
-            if quant:
-                print("iam here")
-                quant.plant = repair.plant
-                quant.partner_id = repair.partner_id.id
-                quant.dc_number = dc_number
-
-
 class SaleOrder(models.Model):
     _inherit = "sale.order"
 
@@ -276,7 +22,61 @@ class StockMove(models.Model):
     _inherit = 'stock.move'
 
     scan_data = fields.Text(string="Scan Data")
+    customer_product_id = fields.Many2one('product.product', 'Product (Customer)', readonly=True)
+    # product_id = fields.Many2one(
+    #     'product.product', 'Product',
+    #     check_company=True,
+    #     index=True,
+    #     required=True,
+    #     tracking=True  # This enables the chatter logging
+    # )
 
+    @api.onchange('customer_product_id')
+    def _onchange_customer_product_id(self):
+        for move in self:
+            move.product_id = move.customer_product_id
+
+    @api.onchange('product_id')
+    def _onchange_product_id_update_lines(self):
+        """
+        When the product is changed on the move,
+        update all existing move lines to match the new product.
+        """
+        for move in self:
+            if move.state not in ['done', 'cancel'] and move.move_line_ids:
+                # Update product_id on all existing lines
+                move.move_line_ids.write({'product_id': move.product_id.id})
+
+                # Optional: If the UOM changes with the product, update that too
+                if move.product_id.uom_id:
+                    move.move_line_ids.write({'product_uom_id': move.product_id.uom_id.id})
+
+    def write(self, vals):
+        # If product_id is changed via a standard write call (not just UI onchange)
+        old_products = {}
+        if 'product_id' in vals:
+            for move in self:
+                old_products[move.id] = move.product_id.name or _('None')
+
+        res = super(StockMove, self).write(vals)
+        if 'product_id' in vals:
+            for move in self:
+                if move.move_line_ids:
+                    move.move_line_ids.write({'product_id': vals['product_id']})
+
+        if 'product_id' in vals:
+            for move in self:
+                if move.picking_id:
+                    # Get the new product name from the updated record
+                    new_product_name = move.product_id.name or _('None')
+                    old_product_name = old_products.get(move.id, _('None'))
+
+                    # Only log if the product actually changed
+                    if old_product_name != new_product_name:
+                        move.picking_id.message_post(
+                            body=_("Product updated from %s to %s") % (old_product_name, new_product_name)
+                        )
+        return res
 
     @api.constrains('lot_ids','product_uom_qty')
     def _check_in_validation(self):
@@ -666,6 +466,9 @@ class RepairOrderInherit(models.Model):
     state = fields.Selection([
         ('draft', 'New'),
         ('confirmed', 'Confirmed'),
+        ('material_requested', 'Material Requested'),
+        ('material_approved', 'Material Approved'),
+        ('material_refused', 'Material Refused'),
         ('under_repair', 'Under Repair'),
         ('done', 'Repaired'),
         ('delivered', 'Delivered'),
@@ -676,6 +479,7 @@ class RepairOrderInherit(models.Model):
              "* The \'Under Repair\' status is used when the repair is ongoing.\n"
              "* The \'Repaired\' status is set when repairing is completed.\n"
              "* The \'Cancelled\' status is used when user cancel repair order.")
+    requisition_count = fields.Integer(string='Requisition Count', compute='_compute_requisition_count')
 
     def get_delivery_id(self):
         self.delivery_id = False
@@ -1303,6 +1107,56 @@ class RepairOrderInherit(models.Model):
 
         return True
 
+    def action_create_material_requisition(self):
+        self.ensure_one()
+        if not self.move_ids:
+            return
+
+        req_lines = []
+        for move in self.move_ids:
+            req_lines.append((0, 0, {
+                'product_id': move.product_id.id,
+                'description': move.name or move.product_id.display_name,
+                'quantity': move.product_uom_qty,
+                'unit_of_measure_id': move.product_uom.id,
+                'move_id': move.id,  # CRITICAL: This establishes the link
+            }))
+
+        # Create the Material Requisition
+        requisition = self.env['material.requisition'].create({
+            'repair_id': self.id,
+            'request_line_ids': req_lines,
+            'state': 'new',
+        })
+
+        self.write({'state': 'material_requested'})  # Update repair order state
+
+        # Return action to open the newly created requisition
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'material.requisition',
+            'view_mode': 'form',
+            'res_id': requisition.id,
+            'target': 'current',
+        }
+
+
+
+    def _compute_requisition_count(self):
+        for record in self:
+            record.requisition_count = self.env['material.requisition'].search_count([('repair_id', '=', record.id)])
+
+    def action_view_material_requisitions(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Material Requisitions',
+            'res_model': 'material.requisition',
+            'view_mode': 'list,form',
+            'domain': [('repair_id', '=', self.id)],
+            'context': {'default_repair_id': self.id},
+            'target': 'current',
+        }
 
 class MrpRepair(models.Model):
     _name = 'mrp.repair'
