@@ -30,6 +30,7 @@
         # 'views/account_move_view.xml',
         'views/res_partner_view.xml',
         # 'views/report_invoice.xml',
+        'views/product_template_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_move_view.xml',
         'views/stock_move_line_views.xml',
