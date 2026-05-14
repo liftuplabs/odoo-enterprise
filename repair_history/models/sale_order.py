@@ -28,8 +28,8 @@ class PurchaseOrder(models.Model):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
     
-    purchase_order_ids = fields.Many2many('purchase.order', string='Related Purchase Orders',
-        domain="[('partner_id', '=', partner_id), ('is_used', '=', False)]")
+    # purchase_order_ids = fields.Many2many('purchase.order', string='Related Purchase Orders',
+    #     domain="[('partner_id', '=', partner_id), ('is_used', '=', False)]")
     dispatch_doc_no = fields.Char(string='Dispatch Doc No.')
     dispatch_through = fields.Char(string='Dispatched Through')
     destination = fields.Char(string='Destination')
@@ -46,58 +46,58 @@ class SaleOrder(models.Model):
     buyers_order_no = fields.Char(string="Buyer's Order No.")
     buyers_order_date = fields.Date(string="Buyer's Order Date")
 
-    def _check_po_quantity_match(self):
-        for order in self:
-            if not order.purchase_order_ids:
-                continue
-
-            warnings = []
-
-            for so_line in order.order_line.filtered(lambda l: l.is_repair_parts and l.product_id.type != 'service'):
-                purchase_lines = self.env['purchase.order.line'].search([
-                    ('product_id', '=', so_line.product_id.id),
-                    ('order_id', 'in', order.purchase_order_ids.ids),
-                ])
-
-                if not purchase_lines:
-                    warnings.append(_("Product %s not found in Purchase Order.") % so_line.product_id.display_name)
-                    continue
-
-                total_qty = sum(purchase_lines.mapped('product_qty'))
-                total_used_qty = sum(purchase_lines.mapped('used_qty'))
-                total_available_qty = total_qty - total_used_qty
-
-                if total_available_qty < so_line.product_uom_qty:
-                    warnings.append(_(
-                        "Product %s has insufficient quantity on Purchase Order "
-                        "(SO Qty: %s, PO Qty: %s)."
-                    ) % (so_line.product_id.display_name,
-                         so_line.product_uom_qty,
-                         total_available_qty))
-                    continue
-
-                # Consume PO lines quantity according to SO qty
-                remaining_to_use = so_line.product_uom_qty
-                for po_line in purchase_lines.sorted(lambda l: l.id):  # deterministic order
-                    if remaining_to_use <= 0:
-                        break
-
-                    available_in_po = po_line.product_qty - (po_line.used_qty or 0)
-                    if available_in_po <= 0:
-                        continue
-
-                    use_qty = min(available_in_po, remaining_to_use)
-                    po_line.used_qty = (po_line.used_qty or 0) + use_qty
-                    remaining_to_use -= use_qty
-
-            if warnings:
-                raise ValidationError("\n".join(warnings))
+    # def _check_po_quantity_match(self):
+    #     for order in self:
+    #         if not order.purchase_order_ids:
+    #             continue
+    #
+    #         warnings = []
+    #
+    #         for so_line in order.order_line.filtered(lambda l: l.is_repair_parts and l.product_id.type != 'service'):
+    #             purchase_lines = self.env['purchase.order.line'].search([
+    #                 ('product_id', '=', so_line.product_id.id),
+    #                 ('order_id', 'in', order.purchase_order_ids.ids),
+    #             ])
+    #
+    #             if not purchase_lines:
+    #                 warnings.append(_("Product %s not found in Purchase Order.") % so_line.product_id.display_name)
+    #                 continue
+    #
+    #             total_qty = sum(purchase_lines.mapped('product_qty'))
+    #             total_used_qty = sum(purchase_lines.mapped('used_qty'))
+    #             total_available_qty = total_qty - total_used_qty
+    #
+    #             if total_available_qty < so_line.product_uom_qty:
+    #                 warnings.append(_(
+    #                     "Product %s has insufficient quantity on Purchase Order "
+    #                     "(SO Qty: %s, PO Qty: %s)."
+    #                 ) % (so_line.product_id.display_name,
+    #                      so_line.product_uom_qty,
+    #                      total_available_qty))
+    #                 continue
+    #
+    #             # Consume PO lines quantity according to SO qty
+    #             remaining_to_use = so_line.product_uom_qty
+    #             for po_line in purchase_lines.sorted(lambda l: l.id):  # deterministic order
+    #                 if remaining_to_use <= 0:
+    #                     break
+    #
+    #                 available_in_po = po_line.product_qty - (po_line.used_qty or 0)
+    #                 if available_in_po <= 0:
+    #                     continue
+    #
+    #                 use_qty = min(available_in_po, remaining_to_use)
+    #                 po_line.used_qty = (po_line.used_qty or 0) + use_qty
+    #                 remaining_to_use -= use_qty
+    #
+    #         if warnings:
+    #             raise ValidationError("\n".join(warnings))
 
     def _action_confirm(self):
-        if not self.purchase_order_ids and self.repair_count > 0:
-            raise UserError(_("Please select a Purchase Order for repair parts before confirming the Sale Order."))
-
-        self._check_po_quantity_match()
+        # if not self.purchase_order_ids and self.repair_count > 0:
+        #     raise UserError(_("Please select a Purchase Order for repair parts before confirming the Sale Order."))
+        #
+        # self._check_po_quantity_match()
 
         # 1. Execute standard confirmation (creates pickings and moves)
         res = super(SaleOrder, self)._action_confirm()
@@ -111,7 +111,6 @@ class SaleOrder(models.Model):
                 if not sale_line:
                     continue
 
-                # Handle removal of repair parts if that is your business logic
                 if sale_line.is_repair_parts:
                     move.unlink()
                     continue
@@ -137,40 +136,40 @@ class SaleOrder(models.Model):
                         })
         return res
 
-    def action_cancel(self):
-        """ Override to reverse PO quantity usage before the order is cancelled. """
-        for order in self:
-            # We only reverse if the order was already confirmed (state 'sale' or 'done')
-            # because draft orders haven't updated the PO quantities yet.
-            if order.state in ('sale', 'done'):
-                order._reverse_po_quantity_usage()
-        return super(SaleOrder, self).action_cancel()
+    # def action_cancel(self):
+    #     """ Override to reverse PO quantity usage before the order is cancelled. """
+    #     for order in self:
+    #         # We only reverse if the order was already confirmed (state 'sale' or 'done')
+    #         # because draft orders haven't updated the PO quantities yet.
+    #         if order.state in ('sale', 'done'):
+    #             order._reverse_po_quantity_usage()
+    #     return super(SaleOrder, self).action_cancel()
 
-    def _reverse_po_quantity_usage(self):
-        for order in self:
-            if not order.purchase_order_ids:
-                continue
-
-            for so_line in order.order_line.filtered(lambda l: l.is_repair_parts and l.product_id.type != 'service'):
-                # Search for the same PO lines used during confirmation
-                # We sort by 'id desc' to reverse the allocation in LIFO order
-                purchase_lines = self.env['purchase.order.line'].search([
-                    ('product_id', '=', so_line.product_id.id),
-                    ('order_id', 'in', order.purchase_order_ids.ids),
-                    ('used_qty', '>', 0),
-                ], order='id desc')
-
-                qty_to_release = so_line.product_uom_qty
-
-                for po_line in purchase_lines:
-                    if qty_to_release <= 0:
-                        break
-
-                    # Determine how much this specific line can "give back"
-                    can_release = min(po_line.used_qty, qty_to_release)
-
-                    po_line.used_qty -= can_release
-                    qty_to_release -= can_release
+    # def _reverse_po_quantity_usage(self):
+    #     for order in self:
+    #         # if not order.purchase_order_ids:
+    #         #     continue
+    #
+    #         for so_line in order.order_line.filtered(lambda l: l.is_repair_parts and l.product_id.type != 'service'):
+    #             # Search for the same PO lines used during confirmation
+    #             # We sort by 'id desc' to reverse the allocation in LIFO order
+    #             purchase_lines = self.env['purchase.order.line'].search([
+    #                 ('product_id', '=', so_line.product_id.id),
+    #                 ('order_id', 'in', order.purchase_order_ids.ids),
+    #                 ('used_qty', '>', 0),
+    #             ], order='id desc')
+    #
+    #             qty_to_release = so_line.product_uom_qty
+    #
+    #             for po_line in purchase_lines:
+    #                 if qty_to_release <= 0:
+    #                     break
+    #
+    #                 # Determine how much this specific line can "give back"
+    #                 can_release = min(po_line.used_qty, qty_to_release)
+    #
+    #                 po_line.used_qty -= can_release
+    #                 qty_to_release -= can_release
 
 
     def _l10n_in_get_hsn_summary_table(self):

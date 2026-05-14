@@ -1,0 +1,129 @@
+<odoo>
+    <data>
+        <record id="action_server_export_difference_report" model="ir.actions.server">
+            <field name="name">Export Difference Report (Excel)</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                action = records.action_export_difference_report()
+            </field>
+        </record>
+
+        <record id="view_picking_form_inherit_mrp" model="ir.ui.view">
+            <field name="name">view.picking.form.inherit.mrp</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//header" position="inside">
+                    <button name="action_export_difference_report"
+                            string="Export Differences"
+                            type="object"
+                            class="oe_highlight"
+                            invisible="state == 'draft'"/>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="product_id" invisible="1" />
+                    <field name="product_names" readonly="1"/>
+                    <field name="serial_numbers" readonly="1"/>
+                    <field name="customer_state" />
+                    <field name="plant" />
+                    <field name="dc_number" />
+                </xpath>
+                <xpath expr="//sheet/div[hasclass('oe_button_box')]" position="before">
+                    <widget name="web_ribbon" title="Confirmed"
+                            bg_color="text-bg-success"
+                            invisible="not is_inward_confirm"/>
+                </xpath>
+<!--                <header>-->
+<!--                    &lt;!&ndash; 2. Add 'Confirm Inward' Button &ndash;&gt;-->
+<!--                    &lt;!&ndash; Visible only for Receipts, if not already confirmed, and not finished &ndash;&gt;-->
+<!--                    <button name="action_set_inward_confirm"-->
+<!--                            string="Confirm"-->
+<!--                            type="object"-->
+<!--                            class="oe_highlight"-->
+<!--                            invisible="is_inward_confirm or picking_type_code != 'incoming' or state in ('done', 'cancel')"/>-->
+
+<!--                    &lt;!&ndash; 3. Modify the Standard Validate Button &ndash;&gt;-->
+<!--                    &lt;!&ndash; We add a condition: If it's a receipt, it MUST be inward confirmed to show Validate &ndash;&gt;-->
+<!--                    <xpath expr="//button[@name='button_validate'][hasclass('oe_highlight')]" position="attributes">-->
+<!--                        <attribute name="invisible">-->
+<!--                            state in ('done', 'cancel') or (picking_type_code == 'incoming' and not is_inward_confirm)-->
+<!--                        </attribute>-->
+<!--                    </xpath>-->
+<!--                </header>-->
+                <xpath expr="//button[@name='button_validate'][hasclass('oe_highlight')]" position="after">
+                    <button name="action_set_inward_confirm"
+                            string="Confirm"
+                            type="object"
+                            confirm="Are you sure you want to confirm the inward receipt? This action cannot be undone."
+                            class="oe_highlight"
+                            invisible="is_inward_confirm or picking_type_code != 'incoming' or state not in ('assigned')"/>
+
+                </xpath>
+                <xpath expr="//button[@name='button_validate'][hasclass('oe_highlight')]" position="attributes">
+                    <attribute name="invisible">
+                        state in ('draft', 'waiting', 'assigned', 'done', 'cancel')
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
+                    <attribute name="readonly">state == 'done' and picking_type_code == 'incoming'</attribute>
+                </xpath>
+                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="attributes">
+                    <attribute name="readonly">state == 'done'</attribute>
+                </xpath>
+                <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
+                    <attribute name="invisible">
+                        state in ('done', 'cancel') or (picking_type_code == 'incoming' and not is_inward_confirm)
+                    </attribute>
+                </xpath>
+                <xpath expr="//field[@name='origin']" position="after">
+                    <field name="is_inward_confirm" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+        <record id="view_picking_filter_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.filter.inherit</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_internal_search" />
+            <field name="arch" type="xml">
+                <field name="origin" position="after">
+                    <field name="product_names"/>
+                    <field name="serial_numbers"/>
+                    <field name="dc_number"/>
+                </field>
+            </field>
+        </record>
+        <record id="stock_picking_view_tree_inherit_quality" model="ir.ui.view">
+            <field name="name">stock.picking.view.tree.inherit.quality</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.vpicktree" />
+            <field name="arch" type="xml">
+<!--                <header position="inside">-->
+<!--                    <button name="custom_return_with_dc"-->
+<!--                            type="object"-->
+<!--                            string="Inward with DC"-->
+<!--                            class="btn-primary"-->
+<!--                            icon="fa-undo"-->
+<!--                            />-->
+<!--                </header>-->
+                <xpath expr="field[@name='company_id']" position="after">
+                    <field name="product_id" invisible="1" />
+                    <field name="product_names"/>
+                    <field name="serial_numbers"/>
+<!--                    <field name="lot_ids" widget='many2many_tags' />-->
+                    <field name="customer_state" />
+                    <field name="dc_number" />
+                    <field name="plant" />
+                </xpath>
+                <xpath expr="field[@name='state']" position="before">
+                    <field name="is_inward_confirm" string="Confirmed"/>
+                </xpath>
+<!--                <xpath expr="//header/button[@name='action_assign']" position="after">-->
+<!--                    <button name="action_open_serial_excel_wizard" string="Import Serial Excel" type="object" class="btn btn-primary" />-->
+<!--                </xpath>-->
+            </field>
+        </record>
+    </data>
+</odoo>

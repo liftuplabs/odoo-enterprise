@@ -18,7 +18,7 @@
 
         <xpath expr="//tbody[hasclass('sale_tbody')]//tr" position="attributes">
             <attribute name="t-if">
-                (not doc.purchase_order_ids) or
+<!--                (not doc.purchase_order_ids) or-->
                 (line.is_repair_parts) or
                 (line.display_type in ['line_section', 'line_note'])
             </attribute>
