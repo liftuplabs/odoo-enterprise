@@ -21,7 +21,7 @@
                             string="Export Differences"
                             type="object"
                             class="oe_highlight"
-                            invisible="state == 'draft'"/>
+                            invisible="state == 'draft' or picking_type_code != 'incoming'"/>
                 </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="product_id" invisible="1" />
