@@ -7,12 +7,15 @@
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
-            <xpath expr="//field[@name='vat']" position="after">
-                <group string="Check-in Location Configuration">
-                    <field name="allowed_latitude"/>
-                    <field name="allowed_longitude"/>
-                    <field name="allowed_radius_km"/>
-                </group>
+<!--            <xpath expr="//field[@name='vat']" position="after">-->
+<!--                <group string="Check-in Location Configuration">-->
+<!--                    <field name="allowed_latitude"/>-->
+<!--                    <field name="allowed_longitude"/>-->
+<!--                    <field name="allowed_radius_km"/>-->
+<!--                </group>-->
+<!--            </xpath>-->
+            <xpath expr="//field[@name='website']" position="after">
+                <field name="show_bank_detail"/>
             </xpath>
         </field>
     </record>
