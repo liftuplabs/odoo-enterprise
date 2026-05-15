@@ -41,7 +41,7 @@ class ResUsers(models.Model):
 class ResCompanyInherit(models.Model):
     _inherit = 'res.company'
 
-    show_bank_detail = fields.Boolean("Show Bank Details", help="Enable this to show company back detail on invoice")
+    # show_bank_detail = fields.Boolean("Show Bank Details", help="Enable this to show company back detail on invoice")
     allowed_latitude = fields.Float("Allowed Latitude")
     allowed_longitude = fields.Float("Allowed Longitude")
     allowed_radius_km = fields.Float("Allowed Radius (KM)", default=0.2)
