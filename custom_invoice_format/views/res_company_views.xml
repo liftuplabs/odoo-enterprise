@@ -5,12 +5,15 @@
         <field name="model">res.company</field>
         <field name="inherit_id" ref="base.view_company_form"/>
         <field name="arch" type="xml">
-                <xpath expr="//field[@name='logo']" position="after">
-                    <field name="digital_signature" widget="image" class="oe_avatar" options='{"preview_image": "digital_signature"}'/>
-                    <group>
-                        <field name="invoice_layout_boxed"/>
-                    </group>
-                </xpath>
+            <xpath expr="//field[@name='logo']" position="after">
+                <field name="digital_signature" widget="image" class="oe_avatar" options='{"preview_image": "digital_signature"}'/>
+                <group>
+                    <field name="invoice_layout_boxed"/>
+                </group>
+            </xpath>
+            <xpath expr="//field[@name='website']" position="after">
+                <field name="show_bank_detail"/>
+            </xpath>
         </field>
     </record>
 </odoo>
