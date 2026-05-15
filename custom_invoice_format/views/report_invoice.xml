@@ -192,7 +192,7 @@
                                         </t>
                                         <!-- Totals -->
                                         <tr>
-                                            <td colspan="6" class="text-end text-bold">Total</td>
+                                            <td colspan="7" class="text-end text-bold">Total</td>
                                             <td class="text-end text-bold"><span t-field="o.amount_untaxed"/></td>
                                         </tr>
                                         
@@ -200,7 +200,7 @@
                                         <t t-foreach="o.tax_totals['subtotals']" t-as="subtotal">
                                             <t t-foreach="subtotal['tax_groups']" t-as="tax_group">
                                                 <tr>
-                                                    <td colspan="6" class="text-end"><span t-esc="tax_group['group_name']"/></td>
+                                                    <td colspan="7" class="text-end"><span t-esc="tax_group['group_name']"/></td>
                                                     <td class="text-end"><span t-esc="tax_group['tax_amount_currency']" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                                                 </tr>
                                             </t>
@@ -208,7 +208,7 @@
 
                                         <!-- Grand Total -->
                                         <tr>
-                                            <td colspan="6" class="text-end text-bold">Grand Total</td>
+                                            <td colspan="7" class="text-end text-bold">Grand Total</td>
                                             <td class="text-end text-bold"><span t-field="o.amount_total"/></td>
                                         </tr>
                                     </tbody>
