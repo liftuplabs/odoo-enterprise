@@ -2,23 +2,23 @@
 <odoo>
 
 
-    <record id="view_company_form_inherit_checkin_location" model="ir.ui.view">
-        <field name="name">es.company.form.inherit.checkin.location</field>
-        <field name="model">res.company</field>
-        <field name="inherit_id" ref="base.view_company_form"/>
-        <field name="arch" type="xml">
-<!--            <xpath expr="//field[@name='vat']" position="after">-->
-<!--                <group string="Check-in Location Configuration">-->
-<!--                    <field name="allowed_latitude"/>-->
-<!--                    <field name="allowed_longitude"/>-->
-<!--                    <field name="allowed_radius_km"/>-->
-<!--                </group>-->
+<!--    <record id="view_company_form_inherit_checkin_location" model="ir.ui.view">-->
+<!--        <field name="name">es.company.form.inherit.checkin.location</field>-->
+<!--        <field name="model">res.company</field>-->
+<!--        <field name="inherit_id" ref="base.view_company_form"/>-->
+<!--        <field name="arch" type="xml">-->
+<!--&lt;!&ndash;            <xpath expr="//field[@name='vat']" position="after">&ndash;&gt;-->
+<!--&lt;!&ndash;                <group string="Check-in Location Configuration">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <field name="allowed_latitude"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <field name="allowed_longitude"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                    <field name="allowed_radius_km"/>&ndash;&gt;-->
+<!--&lt;!&ndash;                </group>&ndash;&gt;-->
+<!--&lt;!&ndash;            </xpath>&ndash;&gt;-->
+<!--            <xpath expr="//field[@name='website']" position="after">-->
+<!--                <field name="show_bank_detail"/>-->
 <!--            </xpath>-->
-            <xpath expr="//field[@name='website']" position="after">
-                <field name="show_bank_detail"/>
-            </xpath>
-        </field>
-    </record>
+<!--        </field>-->
+<!--    </record>-->
 
     <record id="view_users_form_inherit" model="ir.ui.view">
         <field name="name">res.users.form.inherit.repair</field>

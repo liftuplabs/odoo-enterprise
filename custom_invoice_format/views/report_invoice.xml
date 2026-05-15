@@ -318,33 +318,33 @@
 <!--                                <span t-field="o.company_id.report_footer"/>-->
                             </div>
                             <div class="col-6 text-end">
-                                <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>
-                                <t t-if="o.company_id.show_bank_detail">
-                                    <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">
-                                        <strong>Company's Bank Details</strong><br/>
+<!--                                <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>-->
+<!--                                <t t-if="o.company_id.show_bank_detail">-->
+<!--                                    <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">-->
+<!--                                        <strong>Company's Bank Details</strong><br/>-->
 
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>
-                                        </div>
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>A/C No.</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>
-                                        </div>
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col">
-                                                <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
-                                                <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>
-                                                <span t-field="bank_info.bank_id.bic"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </t>
-                                <br/><br/>
+<!--                                        <div class="row m-0">-->
+<!--                                            <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>-->
+<!--                                            <div class="p-0" style="width: 10px;">:</div>-->
+<!--                                            <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>-->
+<!--                                        </div>-->
+<!--                                        <div class="row m-0">-->
+<!--                                            <div class="p-0" style="width: 100px;"><strong>A/C No.</strong></div>-->
+<!--                                            <div class="p-0" style="width: 10px;">:</div>-->
+<!--                                            <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>-->
+<!--                                        </div>-->
+<!--                                        <div class="row m-0">-->
+<!--                                            <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>-->
+<!--                                            <div class="p-0" style="width: 10px;">:</div>-->
+<!--                                            <div class="p-0 col">-->
+<!--                                                <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>-->
+<!--                                                <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>-->
+<!--                                                <span t-field="bank_info.bank_id.bic"/>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </t>-->
+<!--                                <br/><br/>-->
                                 <strong>For <span t-field="o.company_id.name"/></strong>
                                 <br/><br/>
                                 <t t-if="o.company_id.digital_signature">
