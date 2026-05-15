@@ -20,4 +20,4 @@ class ResCompany(models.Model):
     custom_invoice_border_thickness = fields.Integer(string="Border Thickness (px)", default=1)
     custom_invoice_header_bg_color = fields.Char(string="Table Header Background", default="#f0f0f0")
     custom_invoice_header_text_color = fields.Char(string="Table Header Text Color", default="#000000")
-    # show_bank_detail = fields.Boolean("Show Bank Details", help="Enable this to show company back detail on invoice")
+    show_bank_detail = fields.Boolean("Show Bank Details", help="Enable this to show company back detail on invoice")
