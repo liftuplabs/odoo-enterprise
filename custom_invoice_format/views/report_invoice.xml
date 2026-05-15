@@ -168,6 +168,7 @@
                                             <th class="text-center" style="width: 5%;">SN</th>
                                             <th class="text-start">Description of Goods</th>
                                             <th class="text-center" style="width: 10%;">HSN/SAC</th>
+                                            <th class="text-center" style="width: 10%;">Part No.</th>
                                             <th class="text-end" style="width: 10%;">Quantity</th>
                                             <th class="text-end" style="width: 10%;">Rate</th>
                                             <th class="text-end" style="width: 5%;">Per</th>
@@ -179,8 +180,9 @@
                                         <t t-foreach="o.invoice_line_ids" t-as="line">
                                             <tr t-if="line.display_type == 'product'">
                                                 <td class="text-center"><span t-esc="idx"/></td>
-                                                <td><span t-field="line.name"/></td>
+                                                <td><span t-field="line.product_id.name"/></td>
                                                 <td class="text-center"><span t-field="line.l10n_in_hsn_code"/></td>
+                                                <td class="text-center"><span t-field="line.product_id.default_code"/></td>
                                                 <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom_id.name"/></td>
                                                 <td class="text-end"><span t-field="line.price_unit"/></td>
                                                 <td class="text-end"><span t-field="line.product_uom_id"/></td>
