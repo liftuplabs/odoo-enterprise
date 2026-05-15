@@ -18,7 +18,7 @@
         - DSG Signature placeholder.
     """,
     'author': 'Antigravity',
-    'depends': ['account', 'l10n_in'],
+    'depends': ['base', 'account', 'l10n_in'],
     'data': [
         'views/account_move_views.xml',
         'views/res_company_views.xml',
