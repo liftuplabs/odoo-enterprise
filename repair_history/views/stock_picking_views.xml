@@ -23,6 +23,27 @@
                             class="oe_highlight"
                             invisible="state == 'draft' or picking_type_code != 'incoming'"/>
                 </xpath>
+                <xpath expr="//header" position="after">
+                    <div class="alert alert-info d-flex text-center align-items-center justify-content-center"
+                         role="alert"
+                         invisible="state == 'done'">
+                        <div class="me-3">
+                            <field name="scanning_mode" widget="radio" options="{'horizontal': true}"/>
+                        </div>
+                        <div class="ms-4">
+                            <strong>Scan to Verify : </strong>
+                            <field name="barcode_scan_trigger" placeholder="Point scanner here..."/>
+                        </div>
+                    </div>
+                </xpath>
+                <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/list/field[@name='product_id']" position="before">
+                    <field name="customer_product_id" readonly="parent.state == 'done'" decoration-danger="customer_product_id != actual_product_id"
+                        decoration-success="customer_product_id == actual_product_id"/>
+                    <field name="actual_product_id" readonly="parent.state == 'done'"/>
+                </xpath>
+                <xpath expr="//page[@name='operations']/field[@name='move_ids_without_package']/list/field[@name='product_id']" position="attributes">
+                    <attribute name="column_invisible">parent.dc_number and parent.state == 'draft'</attribute>
+                </xpath>
                 <xpath expr="//field[@name='origin']" position="after">
                     <field name="product_id" invisible="1" />
                     <field name="product_names" readonly="1"/>
@@ -70,9 +91,9 @@
                 <xpath expr="//field[@name='move_ids_without_package']" position="attributes">
                     <attribute name="readonly">state == 'done' and picking_type_code == 'incoming'</attribute>
                 </xpath>
-                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="attributes">
-                    <attribute name="readonly">state == 'done'</attribute>
-                </xpath>
+<!--                <xpath expr="//field[@name='move_ids_without_package']/list/field[@name='product_id']" position="attributes">-->
+<!--                    <attribute name="readonly">state == 'done'</attribute>-->
+<!--                </xpath>-->
                 <xpath expr="//button[@name='button_validate'][hasclass('o_btn_validate')]" position="attributes">
                     <attribute name="invisible">
                         state in ('done', 'cancel') or (picking_type_code == 'incoming' and not is_inward_confirm)

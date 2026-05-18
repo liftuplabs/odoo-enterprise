@@ -10,6 +10,8 @@ from odoo.tools import float_compare, format_datetime, float_is_zero, float_roun
 from odoo.exceptions import UserError, ValidationError
 import qrcode, base64
 from io import BytesIO
+from odoo.tools.misc import clean_context, OrderedSet, groupby
+
 
 
 class SaleOrder(models.Model):
@@ -23,18 +25,26 @@ class StockMove(models.Model):
 
     scan_data = fields.Text(string="Scan Data")
     customer_product_id = fields.Many2one('product.product', 'Product (Customer)', readonly=True)
+    actual_product_id = fields.Many2one('product.product', 'Product (Actual)', readonly=True)
     # product_id = fields.Many2one(
     #     'product.product', 'Product',
     #     check_company=True,
-    #     index=True,
-    #     required=True,
-    #     tracking=True  # This enables the chatter logging
-    # )
+    #     domain="[('type', '=', 'consu')]", index=True, required=False)
+
 
     @api.onchange('customer_product_id')
     def _onchange_customer_product_id(self):
         for move in self:
-            move.product_id = move.customer_product_id
+            if move.actual_product_id:
+                move.product_id = move.actual_product_id
+            else:
+                move.product_id = move.customer_product_id
+
+    @api.onchange('actual_product_id')
+    def _onchange_actual_product_id(self):
+        for move in self:
+            move.product_id = move.actual_product_id
+
 
     @api.onchange('product_id')
     def _onchange_product_id_update_lines(self):

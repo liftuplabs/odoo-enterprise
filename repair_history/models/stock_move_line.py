@@ -11,15 +11,7 @@ class StockMoveLineInt(models.Model):
     _inherit = "stock.move.line"
 
     lot_name = fields.Char('Lot/Serial Number Name', tracking=True)
-    customer_lot_name = fields.Char('Serial Number (Customer)', readonly=True)
-
-    @api.onchange('customer_lot_name')
-    def _onchange_customer_lot_name(self):
-        for ml in self:
-            if ml.customer_lot_name:
-                ml.lot_name = ml.customer_lot_name
-            else:
-                ml.lot_name = False
+    customer_lot_name = fields.Char('Serial Number (Customer)')
 
     def _get_tracked_fields(self):
         """ Add lot_name to the list of fields tracked in the picking chatter """
