@@ -180,7 +180,7 @@
                                         <t t-foreach="o.invoice_line_ids" t-as="line">
                                             <tr t-if="line.display_type == 'product'">
                                                 <td class="text-center"><span t-esc="idx"/></td>
-                                                <td><span t-field="line.product_id.name"/></td>
+                                                <td><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
                                                 <td class="text-center"><span t-field="line.l10n_in_hsn_code"/></td>
                                                 <td class="text-center"><span t-field="line.product_id.default_code"/></td>
                                                 <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom_id.name"/></td>

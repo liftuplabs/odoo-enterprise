@@ -78,6 +78,63 @@ class StockPicking(models.Model):
         help="Summary of all serial numbers assigned in this transfer"
     )
 
+    barcode_scan_trigger = fields.Char(string="Scan Serial Number", store=False)
+    scanning_mode = fields.Selection([
+        ('product', 'Product'),
+        ('serial', 'Serial Number')
+    ], string="Scanning Mode", default='serial')
+
+    @api.onchange('barcode_scan_trigger')
+    def _onchange_barcode_scan_trigger(self):
+        if not self.barcode_scan_trigger or not self.scanning_mode:
+            return
+
+        scanned_val = self.barcode_scan_trigger.strip()
+        found = False
+        message = ""
+
+        if self.scanning_mode == 'product':
+            # Find the product based on the scanned barcode or internal reference
+            product = self.env['product.product'].search([
+                '|', ('name', '=', scanned_val), ('default_code', '=', scanned_val)
+            ], limit=1)
+
+            if product:
+                for move in self.move_ids_without_package:
+                    # Match if customer intended this product and it's not yet verified
+                    if move.customer_product_id == product and not move.actual_product_id:
+                        move.actual_product_id = product
+                        # Also update any associated move lines
+                        move.move_line_ids.write({'product_id': product.id})
+                        found = True
+                        message = _('Product "%s" verified successfully.') % product.display_name
+                        break
+            else:
+                message = _('No product found with barcode : %s') % scanned_val
+
+        # --- MODE 2: VERIFY SERIAL NUMBER ---
+        elif self.scanning_mode == 'serial':
+            for line in self.move_line_ids:
+                if line.customer_lot_name == scanned_val and not line.lot_name:
+                    line.lot_name = scanned_val
+                    # Ensure product_id is also filled if it wasn't already verified
+                    if line.move_id.customer_product_id and not line.product_id:
+                        line.product_id = line.move_id.customer_product_id
+                        line.move_id.product_id = line.move_id.customer_product_id
+
+                    found = True
+                    message = _('Serial Number "%s" verified successfully.') % scanned_val
+                    break
+
+        self.barcode_scan_trigger = False
+
+        if found:
+            return {'warning': {'title': _('Success'), 'message': message}}
+        else:
+            return {'warning': {'title': _('Verification Failed'),
+                                'message': message or _('No match found for: %s') % scanned_val}}
+
+
     @api.depends('move_ids.product_id', 'move_ids.move_line_ids.lot_name')
     def _compute_aggregated_move_data(self):
         for picking in self:
