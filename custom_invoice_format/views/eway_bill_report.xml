@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_ewaybill_document">
+        <t t-call="web.basic_layout">
+            <t t-set="doc" t-value="docs[0]"/>
+            <t t-set="l10n_in_einvoice_json" t-value="doc._get_l10n_in_edi_response_json()"/>
+            <t t-set="l10n_in_ewaybill_json" t-value="doc._get_l10n_in_edi_ewaybill_response_json()"/>
+
+            <style>
+                *, *::before, *::after {
+                    box-sizing: border-box;
+                }
+                .eway-body {
+                    font-family: 'Arial', 'Helvetica', sans-serif;
+                    font-size: 9.5pt;
+                    color: #000000;
+                    line-height: 1.3;
+                }
+                .font-bold { font-weight: bold; }
+
+                .main-title {
+                    text-align: center;
+                    font-weight: bold;
+                    font-size: 14pt;
+                    margin-bottom: 15px;
+                }
+
+                .section-title {
+                    font-weight: bold;
+                    font-size: 10pt;
+                    border-top: 1px solid #000000;
+                    padding-top: 5px;
+                    margin-top: 12px;
+                    margin-bottom: 5px;
+                }
+
+                .address-header {
+                    font-weight: bold;
+                    padding-bottom: 2px;
+                    margin-bottom: 4px;
+                }
+
+                .grid-row {
+                    margin-bottom: 3px;
+                }
+
+                .goods-header {
+                    font-weight: bold;
+                    font-size: 9pt;
+                    border-top: 1px solid #000000;
+                    border-bottom: 1px solid #000000;
+                    padding: 5px 0;
+                    margin-top: 5px;
+                }
+
+                .goods-row {
+                    font-size: 8.5pt;
+                    border-bottom: 1px solid #e0e0e0;
+                    padding: 5px 0;
+                }
+
+                .totals-section {
+                    border-top: 1px solid #000000;
+                    border-bottom: 1px solid #000000;
+                    margin-top: 10px;
+                    padding: 4px 0;
+                }
+            </style>
+
+            <div class="page eway-body">
+                <div class="main-title">e-Way Bill</div>
+
+                <div class="row no-gutters mb-3">
+                    <div class="col-9">
+                        <div class="row no-gutters"><div class="col-2">Doc No.</div><div class="col-10 font-bold">: <t t-out="doc.name"/></div></div>
+                        <div class="row no-gutters"><div class="col-2">Date</div><div class="col-10 font-bold">: <t t-out="doc.invoice_date" t-options='{"widget": "date"}'/></div></div>
+                        <div class="row no-gutters mt-2"><div class="col-2">IRN</div><div class="col-10 font-bold" style="word-break: break-all;">: <t t-out="l10n_in_einvoice_json.get('Irn') or ''"/></div></div>
+                        <div class="row no-gutters"><div class="col-2">Ack No.</div><div class="col-10 font-bold">: <t t-out="l10n_in_einvoice_json.get('AckNo') or ''"/></div></div>
+                        <div class="row no-gutters"><div class="col-2">Ack Date</div><div class="col-10 font-bold">: <t t-out="l10n_in_einvoice_json.get('AckDt') or ''"/></div></div>
+                    </div>
+                    <div class="col-3 text-end">
+                        <div class="font-bold" style="font-size: 8pt; margin-bottom: 4px;">e-Way Bill</div>
+                        <t t-set="ewb_no" t-value="l10n_in_ewaybill_json.get('EwbNo') or l10n_in_ewaybill_json.get('ewayBillNo') or ''"/>
+                        <t t-set="gstin" t-value="doc.company_id.vat or ''"/>
+                        <t t-set="gen_date" t-value="l10n_in_ewaybill_json.get('EwbDt') or l10n_in_ewaybill_json.get('ewayBillDate')"/>
+
+                        <t t-set="qr_string" t-value="'EWB%20No.%20%3A%20' + str(ewb_no) + '%20%2F%20GSTIN%20%3A%20' + str(gstin) + '%20%2F%20Date%20%3A%20' + str(gen_date)"/>
+
+                        <t t-if="ewb_no">
+                            <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=' + qr_string + '&amp;width=90&amp;height=90'"
+                                 style="max-height: 90px;"/>
+<!--                        <t t-if="l10n_in_einvoice_json.get('Irn')">-->
+<!--                            <img t-att-src="'/report/barcode/?barcode_type=QR&amp;value=' + l10n_in_einvoice_json.get('Irn') + '&amp;width=90&amp;height=90'" style="max-height: 90px;"/>-->
+                        </t>
+                    </div>
+                </div>
+
+                <div class="section-title">1. e-Way Bill Details</div>
+                <div class="row grid-row no-gutters">
+                    <div class="col-2">e-Way Bill No.</div>
+                    <div class="col-3 font-bold">: <t t-esc="l10n_in_ewaybill_json.get('EwbNo') or l10n_in_ewaybill_json.get('ewayBillNo')"/></div>
+                    <div class="col-2">Mode</div>
+                    <div class="col-2 font-bold">
+                        <t t-set="mode_val" t-value="str(doc.l10n_in_mode) if 'l10n_in_mode' in doc and doc.l10n_in_mode else ''"/>
+                        <t t-set="mode_mapping" t-value="{'0': '0 - Managed by Transporter', '1': '1 - Road', '2': '2 - Rail', '3': '3 - Air', '4': '4 - Ship'}"/>
+                        : <t t-out="mode_mapping.get(mode_val, mode_val)"/>
+                    </div>
+                    <div class="col-2">Generated Date</div>
+                    <div class="col-1  font-bold text-end">: <t t-esc="l10n_in_ewaybill_json.get('EwbDt') or l10n_in_ewaybill_json.get('ewayBillDate')" t-options='{"widget": "date"}'/></div>
+                </div>
+                <div class="row grid-row no-gutters">
+                    <div class="col-2">Generated By</div>
+                    <div class="col-3 font-bold">: <t t-out="doc.company_id.vat"/></div>
+                    <div class="col-2">Approx Distance</div>
+                    <div class="col-2 font-bold">
+                        : <t t-out="str(doc.l10n_in_distance) + ' KM' if doc.l10n_in_distance else ''"/>
+                    </div>
+                    <div class="col-2">Valid Upto</div>
+                    <div class="col-1  font-bold text-end">: <t t-esc="l10n_in_ewaybill_json.get('EwbValidTill') or l10n_in_ewaybill_json.get('validUpto')"/></div>
+                </div>
+                <div class="row grid-row no-gutters">
+                    <div class="col-2">Supply Type</div>
+                    <div class="col-3 font-bold">: Outward</div>
+                    <div class="col-2">Transaction Type</div>
+                    <div class="col-5 font-bold">
+                        <t t-set="v_type" t-value="doc.l10n_in_vehicle_type if 'l10n_in_vehicle_type' in doc and doc.l10n_in_vehicle_type else ''"/>
+                        <t t-set="type_mapping" t-value="{'R': 'Regular', 'O': 'Over Dimensional Cargo'}"/>
+                        : <t t-out="type_mapping.get(v_type, v_type)"/>
+                    </div>
+                </div>
+
+                <div class="section-title">2. Address Details</div>
+                <div class="row no-gutters mb-2">
+                    <div class="col-6 pr-3">
+                        <div class="address-header">From</div>
+                        <div class="font-bold"><t t-out="doc.company_id.name"/></div>
+                        <div>GSTIN : <t t-out="doc.company_id.vat"/></div>
+                        <div><t t-out="doc.company_id.state_id.name"/></div>
+                    </div>
+                    <div class="col-6 pl-3">
+                        <div class="address-header">To</div>
+                        <div class="font-bold"><t t-out="doc.partner_id.name"/></div>
+                        <div>GSTIN : <t t-out="doc.partner_id.vat"/></div>
+                        <div><t t-out="doc.partner_id.state_id.name"/></div>
+                    </div>
+                </div>
+                <div class="row no-gutters mt-2">
+                    <div class="col-6 pr-3">
+                        <div class="address-header">Dispatch From</div>
+                        <div>
+                            <t t-out="doc.company_id.street"/>, <t t-out="doc.company_id.street2 or ''"/>,
+                            <t t-out="doc.company_id.city"/>, <t t-out="doc.company_id.state_id.name"/>, <t t-out="doc.company_id.zip"/>
+                        </div>
+                    </div>
+                    <div class="col-6 pl-3">
+                        <div class="address-header">Ship To</div>
+                        <div>
+                            <t t-out="doc.partner_shipping_id.street"/>, <t t-out="doc.partner_shipping_id.street2 or ''"/>,
+                            <t t-out="doc.partner_shipping_id.city"/>, <t t-out="doc.partner_shipping_id.state_id.name"/>, <t t-out="doc.partner_shipping_id.zip"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">3. Goods Details</div>
+
+                <div class="row goods-header no-gutters">
+                    <div class="col-2">HSN Code</div>
+                    <div class="col-5 text-start">Product Name &amp; Desc</div>
+                    <div class="col-1 text-end">Quantity</div>
+                    <div class="col-2 text-end">Taxable Amt</div>
+                    <div class="col-2 text-end">Tax Rate (C+S)</div>
+                </div>
+
+                <t t-foreach="doc.invoice_line_ids" t-as="line">
+                    <t t-if="line.display_type == 'product'">
+                        <div class="row goods-row align-items-start no-gutters">
+                            <div class="col-2 font-bold"><t t-out="line.product_id.l10n_in_hsn_code or ''"/></div>
+                            <div class="col-5 text-start">
+                                <t t-esc="line.product_id.name + (' - ' + line.product_id.description_sale if line.product_id.description_sale else '')"/>
+                            </div>
+                            <div class="col-1 text-end">
+                                <t t-out="int(line.quantity)"/> <t t-out="line.product_uom_id.name"/>
+                            </div>
+                            <div class="col-2 text-end font-bold">
+                                <t t-out="line.price_subtotal" t-options='{"widget": "float", "precision": 2}'/>
+                            </div>
+                            <div class="col-2 text-end">
+                                <t t-out="','.join([str(int(t.amount)) for t in line.tax_ids if t.tax_group_id.name in ['CGST', 'SGST']]) or '9+9'"/>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+
+                <div class="totals-section">
+                    <div class="row no-gutters">
+                        <div class="col-2">Tot.Taxable Amt</div>
+                        <div class="col-2 font-bold">: <t t-out="doc.amount_untaxed" t-options='{"widget": "float", "precision": 2}'/></div>
+                        <div class="col-2">Other Amt</div>
+                        <div class="col-2 font-bold">: 0.00</div>
+                        <div class="col-2">Total Inv Amt</div>
+                        <div class="col-4 font-bold">: <t t-out="doc.amount_total" t-options='{"widget": "float", "precision": 2}'/></div>
+                    </div>
+                    <div class="row no-gutters mt-1">
+                        <div class="col-2">CGST Amt</div>
+                        <div class="col-2 font-bold">: <t t-out="doc.amount_tax / 2" t-options='{"widget": "float", "precision": 2}'/></div>
+                        <div class="col-2">SGST Amt</div>
+                        <div class="col-2 font-bold">: <t t-out="doc.amount_tax / 2" t-options='{"widget": "float", "precision": 2}'/></div>
+                        <div class="col-4"></div>
+                    </div>
+                </div>
+
+                <div class="section-title">4. Transportation Details</div>
+                <div class="row grid-row no-gutters">
+                    <div class="col-2">Transporter ID</div>
+                    <div class="col-6 font-bold">: <t t-out="doc.l10n_in_transporter_id.vat if doc.l10n_in_transporter_id else ''"/></div>
+                    <div class="col-2">Doc No.</div>
+                    <div class="col-2 font-bold">: </div>
+                </div>
+                <div class="row grid-row no-gutters">
+                    <div class="col-2">Name</div>
+                    <div class="col-6 font-bold">: <t t-out="doc.l10n_in_transporter_id.name if doc.l10n_in_transporter_id else ''"/></div>
+                    <div class="col-2">Date</div>
+                    <div class="col-2 font-bold">: </div>
+                </div>
+
+                <div class="section-title">5. Vehicle Details</div>
+                <div class="row grid-row no-gutters" style="border-bottom: 1px solid #000000; padding-bottom: 5px;">
+                    <div class="col-2">Vehicle No.</div>
+                    <div class="col-4 font-bold">: <t t-out="doc.l10n_in_vehicle_no or ''"/></div>
+                    <div class="col-1">From</div>
+                    <div class="col-2 font-bold">: <t t-out="doc.company_id.city"/></div>
+                    <div class="col-2">CEWB No.</div>
+                    <div class="col-1  font-bold text-end">: </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <record id="action_report_ewaybill" model="ir.actions.report">
+        <field name="name">E-Way Bill</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_format.report_ewaybill_document</field>
+        <field name="report_file">custom_invoice_format.report_ewaybill_document</field>
+        <field name="print_report_name">'eWayBill_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>
