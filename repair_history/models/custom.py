@@ -1060,62 +1060,106 @@ class RepairOrderInherit(models.Model):
         return True
 
 
+    # def back_to_under_repair(self):
+    #     import pdb; pdb.set_trace()
+    #     for repair in self:
+    #         if repair.state != 'done':
+    #             raise UserError(_("Only 'Done' repair orders can be reset."))
+    #
+    #         # 1. IDENTIFY MOVES
+    #         # Component moves (parts consumed)
+    #         component_moves = repair.move_ids.filtered(lambda m: m.state == 'done')
+    #         # Finished product move (the repair result)
+    #         finished_move = repair.move_id
+    #
+    #         all_moves_to_revert = component_moves | (
+    #             finished_move if finished_move.state == 'done' else self.env['stock.move'])
+    #
+    #         # 2. REVERSE STOCK (To fix 'On Hand' quantity)
+    #         for move in all_moves_to_revert:
+    #             reversal_move = move.copy({
+    #                 'name': _("REVERSAL: %s") % move.name,
+    #                 'location_id': move.location_dest_id.id,
+    #                 'location_dest_id': move.location_id.id,
+    #                 'repair_id': False,
+    #                 'origin': repair.name,
+    #                 'state': 'draft',
+    #             })
+    #             reversal_move._action_confirm()
+    #             reversal_move._action_assign()
+    #             for line in reversal_move.move_line_ids:
+    #                 original_line = move.move_line_ids.filtered(lambda l: l.product_id == line.product_id)[:1]
+    #                 if original_line:
+    #                     line.lot_id = original_line.lot_id
+    #                 line.quantity = move.quantity
+    #                 line.picked = True
+    #             reversal_move._action_done()
+    #
+    #         # 3. RE-ARM THE COMPONENTS
+    #         # We must create NEW draft moves for the components.
+    #         # If we don't, the 'Done' button has nothing to process next time.
+    #         for move in component_moves:
+    #             move.copy({
+    #                 'repair_id': repair.id,  # Link new move to this repair
+    #                 'state': 'draft',
+    #                 'picked': False,
+    #             })
+    #             # Unlink the old 'Done' move so it's no longer part of this repair's logic
+    #             move.repair_id = False
+    #
+    #             # 4. RESET REPAIR ORDER FIELDS
+    #         repair.write({
+    #             'state': 'under_repair',
+    #             'move_id': False,  # Clear the link to the old finished product move
+    #         })
+    #
+    #         repair.message_post(
+    #             body=_("Repair reset: Stock reversed and new component moves created for re-processing."))
+    #
+    #     return True
+
     def back_to_under_repair(self):
+
         for repair in self:
             if repair.state != 'done':
                 raise UserError(_("Only 'Done' repair orders can be reset."))
 
-            # 1. IDENTIFY MOVES
-            # Component moves (parts consumed)
-            component_moves = repair.move_ids.filtered(lambda m: m.state == 'done')
-            # Finished product move (the repair result)
-            finished_move = repair.move_id
+            picking_type = self.env['stock.picking.type'].search([
+                ('code', '=', 'internal'),
+                ('warehouse_id', '=', repair.picking_type_id.warehouse_id.id)
+            ], limit=1)
 
-            all_moves_to_revert = component_moves | (
-                finished_move if finished_move.state == 'done' else self.env['stock.move'])
-
-            # 2. REVERSE STOCK (To fix 'On Hand' quantity)
-            for move in all_moves_to_revert:
-                reversal_move = move.copy({
-                    'name': _("REVERSAL: %s") % move.name,
-                    'location_id': move.location_dest_id.id,
-                    'location_dest_id': move.location_id.id,
-                    'repair_id': False,
-                    'origin': repair.name,
-                    'state': 'draft',
-                })
-                reversal_move._action_confirm()
-                reversal_move._action_assign()
-                for line in reversal_move.move_line_ids:
-                    original_line = move.move_line_ids.filtered(lambda l: l.product_id == line.product_id)[:1]
-                    if original_line:
-                        line.lot_id = original_line.lot_id
-                    line.quantity = move.quantity
-                    line.picked = True
-                reversal_move._action_done()
-
-            # 3. RE-ARM THE COMPONENTS
-            # We must create NEW draft moves for the components.
-            # If we don't, the 'Done' button has nothing to process next time.
-            for move in component_moves:
-                move.copy({
-                    'repair_id': repair.id,  # Link new move to this repair
-                    'state': 'draft',
-                    'picked': False,
-                })
-                # Unlink the old 'Done' move so it's no longer part of this repair's logic
-                move.repair_id = False
-
-                # 4. RESET REPAIR ORDER FIELDS
-            repair.write({
-                'state': 'under_repair',
-                'move_id': False,  # Clear the link to the old finished product move
+            # 1. Create a Stock Picking for the return of parts
+            picking = self.env['stock.picking'].create({
+                'picking_type_id': picking_type.id,
+                'location_id': repair.location_dest_id.id,  # The "done" location
+                'location_dest_id': repair.location_id.id,  # Where they should go back
+                'origin': f"Reset Repair: {repair.name}",
+                'move_ids_without_package': [
+                    (0, 0, {
+                        'name': move.name,
+                        'product_id': move.product_id.id,
+                        'product_uom_qty': move.quantity,
+                        'product_uom': move.product_uom.id,
+                        'location_id': move.location_dest_id.id,
+                        'location_dest_id': move.location_id.id,
+                        'repair_id': repair.id,
+                    }) for move in repair.move_ids if move.state == 'done'
+                ]
             })
 
-            repair.message_post(
-                body=_("Repair reset: Stock reversed and new component moves created for re-processing."))
 
-        return True
+            # 2. Confirm and Validate
+            picking.action_confirm()
+            # picking.action_assign()
+            picking.button_validate()
+
+            # 3. Reset the Repair Order
+            repair.move_ids.write({'state': 'draft'})
+            repair.write({'state': 'under_repair',
+                          'move_id': False,})
+
+            repair.message_post(body=_("Repair reset. Parts returned via Picking: %s") % picking.name)
 
     def action_create_material_requisition(self):
         self.ensure_one()
