@@ -55,11 +55,22 @@
                                         string="Add to Sale Order"
                                         type="object"
                                         icon="fa-plus-circle"
-                                        class="btn-primary"
+                                        class="btn btn-link"
                                         context="{'parent_sale_order_id': parent.id}"/>
                             </list>
                         </field>
                     </page>
+                </xpath>
+                <xpath expr="//button[@id='action_confirm']" position="attributes">
+                    <attribute name="invisible">state != 'sent' or alternate_so_count &gt; 0</attribute>
+                </xpath>
+
+                <!-- 3. Target the second Confirm button (which has no ID) by matching its name attribute -->
+                <xpath expr="//header/button[@name='action_confirm' and not(@id)]" position="attributes">
+                    <attribute name="invisible">state != 'draft' or alternate_so_count &gt; 0</attribute>
+                </xpath>
+                <xpath expr="//header/button[@name='action_cancel']" position="attributes">
+                    <attribute name="invisible">state not in ['draft', 'sent', 'sale'] or not id or locked or alternate_so_count &gt; 0</attribute>
                 </xpath>
                 <xpath expr="//field[@name='order_line']/list/field[@name='product_uom_qty']" position="before">
                     <field name="is_repair_parts" column_invisible="1"/>

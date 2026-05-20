@@ -96,8 +96,8 @@
                                                     <div t-if="o.company_id.vat"><strong>GSTIN:</strong> <span t-field="o.company_id.vat"/></div>
                                                     <div t-if="o.company_id.email"><strong>Email:</strong> <span t-field="o.company_id.email"/></div>
                                                     <div t-if="o.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="o.company_id.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                        <strong>State Name :</strong> <span t-field="o.partner_id.state_id.name"/>,
+                                                        <strong>Code :</strong> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
@@ -112,8 +112,8 @@
                                                     <span t-field="o.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
                                                     <div t-if="o.partner_shipping_id.vat"><strong>GSTIN:</strong> <span t-field="o.partner_shipping_id.vat"/></div>
                                                     <div t-if="o.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="o.company_id.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                        <strong>State Name :</strong> <span t-field="o.partner_id.state_id.name"/>,
+                                                        <strong>Code :</strong> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
@@ -127,8 +127,8 @@
                                                         <strong>Place of Supply:</strong> <span t-field="o.l10n_in_state_id.name"/>
                                                     </div>
                                                     <div t-if="o.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="o.company_id.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                        <strong>State Name :</strong> <span t-field="o.partner_id.state_id.name"/>,
+                                                        <strong>Code :</strong> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
                                             </td>

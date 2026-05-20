@@ -86,6 +86,21 @@ class MaterialRequisition(models.Model):
                             'approved_by': self.env.user.id})
                 if self.repair_id:
                     self.repair_id.write({'state': 'material_approved'})
+                    if self.repair_id:
+                        self.repair_id.write({'state': 'material_approved'})
+
+                        # UPDATED: Loop through requisition lines and update the matching pre-existing stock moves
+                        for line in self.request_line_ids:
+                            # Find the existing move on the Repair Order for this specific product
+                            matching_move = self.repair_id.move_ids.filtered(
+                                lambda m: m.product_id == line.product_id and m.state not in ['done', 'cancel']
+                            )
+
+                            if matching_move:
+                                # Take the first matched move block (if multiples exist), update quantity
+                                move = matching_move[0]
+                                move.write({'quantity': line.quantity})
+                                line.write({'move_id': move.id})
                 self.request_line_ids.write({'states': 'authorized'})
         return True
 
