@@ -33,6 +33,7 @@
         'views/product_template_views.xml',
         'views/stock_picking_views.xml',
         'views/stock_move_line_views.xml',
+        'views/sale_order_views.xml',
         'views/report_sale_order.xml',
         'views/report_purchase_order.xml',
         'views/check_list.xml',

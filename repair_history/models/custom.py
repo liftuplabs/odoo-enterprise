@@ -479,6 +479,7 @@ class RepairOrderInherit(models.Model):
         ('material_requested', 'Material Requested'),
         ('material_approved', 'Material Approved'),
         ('material_refused', 'Material Refused'),
+        ('material_on_hold', 'Material On Hold'),
         ('under_repair', 'Under Repair'),
         ('done', 'Repaired'),
         ('delivered', 'Delivered'),

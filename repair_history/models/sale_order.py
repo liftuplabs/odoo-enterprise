@@ -45,6 +45,111 @@ class SaleOrder(models.Model):
 
     buyers_order_no = fields.Char(string="Buyer's Order No.")
     buyers_order_date = fields.Date(string="Buyer's Order Date")
+    original_order_id = fields.Many2one('sale.order', string='Original Quotation', readonly=True)
+
+    pending_product_ids = fields.Many2many(
+        'customer.pending.product',
+        compute='_compute_pending_products',
+        string='Pending Products'
+    )
+
+    alternate_so_ids = fields.One2many('sale.order', 'original_order_id', string='Alternate Orders')
+    alternate_so_count = fields.Integer(compute='_compute_alternate_so_count', string='Alternate SO Count')
+
+    @api.depends('alternate_so_ids')
+    def _compute_alternate_so_count(self):
+        for order in self:
+            order.alternate_so_count = len(order.alternate_so_ids)
+
+    @api.depends('partner_id')
+    def _compute_pending_products(self):
+        for order in self:
+            if order.partner_id:
+                pendings = self.env['customer.pending.product'].search([
+                    ('partner_id', '=', order.partner_id.id),
+                    ('state', '=', 'pending')
+                ])
+                order.pending_product_ids = pendings
+            else:
+                order.pending_product_ids = False
+
+    def action_create_customer_so(self):
+        self.ensure_one()
+
+        new_so = self.copy({
+            'original_order_id': self.id,
+            'client_order_ref': False,  # Clear the reference so they can enter the new PO number
+            'state': 'draft',
+        })
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Customer PO (Alternate SO)'),
+            'res_model': 'sale.order',
+            'res_id': new_so.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
+    def action_view_alternate_sos(self):
+        self.ensure_one()
+        return {
+            'name': _('Customer POs'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'sale.order',
+            'view_mode': 'list,form',
+            'domain': [('original_order_id', '=', self.id)],
+            'context': {'default_original_order_id': self.id},
+        }
+
+    def action_compare_and_set_pending(self):
+        self.ensure_one()
+        if not self.original_order_id:
+            return
+
+        PendingProduct = self.env['customer.pending.product']
+
+        existing_pending = PendingProduct.search([
+            ('original_order_id', '=', self.original_order_id.id),
+            ('partner_id', '=', self.partner_id.id),
+            ('state', '=', 'pending')
+        ])
+        existing_pending.unlink()
+
+        original_lines = {}
+        for line in self.original_order_id.order_line:
+            pid = line.product_id.id
+            if pid not in original_lines:
+                original_lines[pid] = {
+                    'qty': 0,
+                    'price': line.price_unit,
+                    'is_repair_parts': line.is_repair_parts  # Capture the flag initially
+                }
+            original_lines[pid]['qty'] += line.product_uom_qty
+
+            if line.is_repair_parts:
+                original_lines[pid]['is_repair_parts'] = True
+
+        current_lines = {}
+        for line in self.order_line:
+            pid = line.product_id.id
+            current_lines[pid] = current_lines.get(pid, 0) + line.product_uom_qty
+
+        for product_id, data in original_lines.items():
+            orig_qty = data['qty']
+            curr_qty = current_lines.get(product_id, 0)
+            remaining_qty = orig_qty - curr_qty
+
+            if remaining_qty > 0:
+                PendingProduct.create({
+                    'partner_id': self.partner_id.id,
+                    'product_id': product_id,
+                    'product_uom_qty': remaining_qty,
+                    'price_unit': data['price'],
+                    'original_order_id': self.original_order_id.id,
+                    'state': 'pending',
+                    'is_repair_parts': data['is_repair_parts']  # Save to pending record
+                })
 
     # def _check_po_quantity_match(self):
     #     for order in self:

@@ -13,6 +13,7 @@ access_serial_import_line,access_serial_import_line,model_serial_import_line,,1,
 repair.access_repair_user,Repair Order User,repair.model_repair_order,group_repair_user,1,1,1,0
 access_repair_order_manager,Repair Order Manager,repair.model_repair_order,group_repair_manager,1,1,1,1
 repair.access_repair_tag_user,Repair Tags User,repair.model_repair_tags,group_repair_user,1,1,1,1
+access_customer_pending_product_user,access_customer_pending_product,model_customer_pending_product,base.group_user,1,1,1,1
 
 
 

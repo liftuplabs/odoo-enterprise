@@ -16,7 +16,7 @@ class MaterialRequisition(models.Model):
                                        auto_join=True)
     state = fields.Selection(
         [('new', 'New'), ('confirmed', 'Confirmed'), ('approved', 'Approved'), ('done', 'Done'), ('refuse', 'Refuse'),
-         ('resubmit', 'Resubmit'), ('cancelled', 'Cancelled')],
+         ('resubmit', 'Resubmit'), ('cancelled', 'Cancelled'), ('on_hold', 'On Hold')],
         string='Status',
         required=True, copy=False, default='new', tracking=True)
     repair_id = fields.Many2one('repair.order', string="Repair", readonly=True)
@@ -38,6 +38,15 @@ class MaterialRequisition(models.Model):
             self.write({'state': 'confirmed'})
             if self.repair_id:
                 self.repair_id.write({'state': 'material_requested'})
+        return True
+
+    def action_on_hold(self):
+        if self.repair_id.state not in ['draft', 'confirmed', 'cancel', 'material_requested', 'material_refused', 'material_approved']:
+            raise UserError("You cannot put the request on hold as the repair order is already in progress.")
+
+        self.write({'state': 'on_hold'})
+        if self.repair_id:
+            self.repair_id.write({'state': 'material_on_hold'})
         return True
 
     def action_refuse(self):

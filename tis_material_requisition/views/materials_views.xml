@@ -30,6 +30,9 @@
                                 invisible="state not in ['refuse']"
                                 groups="tis_material_requisition.materials_group_officer,tis_material_requisition.materials_group_user"/>
                         <button name="action_approve" string="Approve" type="object"
+                                class="btn-primary"  invisible="state not in ['confirmed','on_hold']"
+                                groups="tis_material_requisition.materials_group_manager"/>
+                        <button name="action_on_hold" string="On Hold" type="object"
                                 class="btn-primary"  invisible="state not in ['confirmed']"
                                 groups="tis_material_requisition.materials_group_manager"/>
                         <field name="state" widget="statusbar"
