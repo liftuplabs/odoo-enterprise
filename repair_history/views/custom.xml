@@ -125,7 +125,13 @@
                 <attribute name="invisible"></attribute>
             </xpath>
             <xpath expr="//button[@name='action_repair_start']" position="attributes">
-                <attribute name="invisible">state not in ['confirmed', 'material_approved'] or (state == 'confirmed' and move_ids)</attribute>
+                <attribute name="invisible">state not in ['confirmed', 'material_approved', 'material_requested', 'material_refused', 'material_on_hold', 'material_cancelled']</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_repair_cancel']" position="attributes">
+                <attribute name="confirm">Are you sure you want to scrap this repair order?</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_repair_cancel']" position="attributes">
+                <attribute name="string">Scrap</attribute>
             </xpath>
             <xpath expr="//field[@name='move_ids']" position="attributes">
                 <attribute name="readonly">state in ('cancel', 'done') or requisition_count &gt; 0</attribute>

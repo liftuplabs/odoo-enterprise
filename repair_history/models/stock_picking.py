@@ -159,73 +159,61 @@ class StockPicking(models.Model):
 
     def action_export_difference_report(self):
         output = io.BytesIO()
+        import xlsxwriter
         workbook = xlsxwriter.Workbook(output)
         sheet = workbook.add_worksheet('Difference Report')
 
         # Formatting
-        bold = workbook.add_format({'bold': True})
         header_fmt = workbook.add_format({'bold': True, 'bg_color': '#D3D3D3', 'border': 1})
-        title_fmt = workbook.add_format({'bold': True, 'font_size': 14, 'underline': True})
 
-        row = 0
+        headers = [
+            'DC Number', 'DC Date', 'Customer', 'Customer State',
+            'Drive Type(Customer)', 'Drive Type(Adroit)', 'Drive Type Difference',
+            'Serial Number(Customer)', 'Serial Number(Adroit)', 'Serial Number Difference'
+        ]
+
+        # Write Headers
+        for col, text in enumerate(headers):
+            sheet.write(0, col, text, header_fmt)
+
+        row = 1
+        # Loop through ALL selected pickings
         for picking in self:
-            # Picking Title/Separator if multiple
-            if len(self) > 1:
-                sheet.write(row, 0, f"Receipt: {picking.name}", title_fmt)
-                row += 1
+            dc_number = picking.dc_number or ''
+            dc_date = str(picking.dc_date) if picking.dc_date else ''
+            customer = picking.partner_id.name or ''
+            customer_state = picking.customer_state or ''
 
-            # Header Section (from image)
-            sheet.write(row, 0, 'DC Number', bold)
-            sheet.write(row, 1, picking.dc_number or '')
-            row += 1
-            sheet.write(row, 0, 'DC Date', bold)
-            sheet.write(row, 1, str(picking.dc_date) if picking.dc_date else '')
-            row += 1
-            sheet.write(row, 0, 'Customer', bold)
-            sheet.write(row, 1, picking.partner_id.name or '')
-            row += 1
-            sheet.write(row, 0, 'Customer State', bold)
-            sheet.write(row, 1, picking.customer_state or '')
-
-            # Table Headers
-            row += 2
-            headers = [
-                'Drive Type(Customer)', 'Drive Type(Adroit)', 'Drive Type Difference',
-                'Serial Number(Customer)', 'Serial Number(Adroit)', 'Serial Number Difference'
-            ]
-            for col, text in enumerate(headers):
-                sheet.write(row, col, text, header_fmt)
-
-            # Data Rows
-            row += 1
             for ml in picking.move_line_ids:
-                # Drive Type Logic
                 cust_prod = ml.move_id.customer_product_id.name or ''
                 adr_prod = ml.product_id.name or ''
                 prod_diff = cust_prod != adr_prod
 
-                # Serial Logic
                 cust_serial = ml.customer_lot_name or ''
                 adr_serial = ml.lot_name or ml.lot_id.name or ''
                 serial_diff = cust_serial != adr_serial
 
-                sheet.write(row, 0, cust_prod)
-                sheet.write(row, 1, adr_prod)
-                sheet.write(row, 2, 'TRUE' if prod_diff else 'FALSE')
-                sheet.write(row, 3, cust_serial)
-                sheet.write(row, 4, adr_serial)
-                sheet.write(row, 5, 'TRUE' if serial_diff else 'FALSE')
+                sheet.write(row, 0, dc_number)
+                sheet.write(row, 1, dc_date)
+                sheet.write(row, 2, customer)
+                sheet.write(row, 3, customer_state)
+                sheet.write(row, 4, cust_prod)
+                sheet.write(row, 5, adr_prod)
+                sheet.write(row, 6, 'TRUE' if prod_diff else 'FALSE')
+                sheet.write(row, 7, cust_serial)
+                sheet.write(row, 8, adr_serial)
+                sheet.write(row, 9, 'TRUE' if serial_diff else 'FALSE')
                 row += 1
-
-            # Add space between pickings
-            row += 2
 
         workbook.close()
         output.seek(0)
 
-        # Create attachment
-        file_name = f'Difference_Report_{fields.Date.today()}.xlsx' if len(
-            self) > 1 else f'Difference_Report_{self.name}.xlsx'
+        # FIXED: Prevent Singleton Error by checking length first
+        if len(self) > 1:
+            file_name = f'Difference_Report_Multiple_{fields.Date.today()}.xlsx'
+        else:
+            safe_name = self.name.replace('/', '_') if self.name else 'Picking'
+            file_name = f'Difference_Report_{safe_name}.xlsx'
 
         attachment = self.env['ir.attachment'].create({
             'name': file_name,

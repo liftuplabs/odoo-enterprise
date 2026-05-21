@@ -70,7 +70,7 @@ class MaterialRequisition(models.Model):
 
         self.write({'state': 'cancelled'})
         if self.repair_id:
-            self.repair_id.write({'state': 'material_requested'})
+            self.repair_id.write({'state': 'material_cancelled'})
         return True
 
     def action_reset_to_draft(self):

@@ -11,13 +11,13 @@
             <field name="name">material.requisition.form.view</field>
             <field name="model">material.requisition</field>
             <field name="arch" type="xml">
-                <form string="Create">
+                <form string="Create" create="false">
                     <header>
                         <button name="action_confirm" string="Submit" type="object" class="btn-primary"
                                 invisible="state not in ['new']"
                                 groups="tis_material_requisition.materials_group_user"/>
                         <button name="action_cancel" string="Cancel" type="object" class="btn-primary"
-                                invisible="state not in ['approved']"
+                                invisible="state not in ['new','confirmed']"
                                 confirm="Are you sure you want to cancel this requisition? This action cannot be undone."
                                 groups="tis_material_requisition.materials_group_user"/>
                         <button name="action_reset_to_draft" string="Reset to Draft" type="object" class="btn-primary"
@@ -85,7 +85,7 @@
             <field name="name">material.requisition.list</field>
             <field name="model">material.requisition</field>
             <field name="arch" type="xml">
-                <list string="Requests">
+                <list string="Requests" create="false">
                     <field name="name" string="Request Number" class="oe_inline"/>
                     <field name="user_id" string="Requested By"/>
                     <field name="requested_on" string="Requested On"/>

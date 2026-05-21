@@ -480,16 +480,17 @@ class RepairOrderInherit(models.Model):
         ('material_approved', 'Material Approved'),
         ('material_refused', 'Material Refused'),
         ('material_on_hold', 'Material On Hold'),
+        ('material_cancelled', 'Material Cancelled'),
         ('under_repair', 'Under Repair'),
         ('done', 'Repaired'),
         ('delivered', 'Delivered'),
-        ('cancel', 'Cancelled')], string='Status',
+        ('cancel', 'Scrap')], string='Status',
         copy=False, default='draft', readonly=True, tracking=True, index=True,
         help="* The \'New\' status is used when a user is encoding a new and unconfirmed repair order.\n"
              "* The \'Confirmed\' status is used when a user confirms the repair order.\n"
              "* The \'Under Repair\' status is used when the repair is ongoing.\n"
              "* The \'Repaired\' status is set when repairing is completed.\n"
-             "* The \'Cancelled\' status is used when user cancel repair order.")
+             "* The \'Scarp\' status is used when user scrap repair order.")
     requisition_count = fields.Integer(string='Requisition Count', compute='_compute_requisition_count')
 
     def get_delivery_id(self):
@@ -889,8 +890,8 @@ class RepairOrderInherit(models.Model):
             raise UserError("Selected records don't have customer set.")
         if self.filtered(lambda repair: repair.sale_order_id):
             raise UserError("Selected records have already sale order create.")
-        if self.filtered(lambda repair: repair.state != 'done'):
-            raise UserError("Please select records with the done status only.")
+        if self.filtered(lambda repair: repair.state not in ['done','cancel']):
+            raise UserError("Please select records with the done or scrap status only.")
         if len(self.mapped('partner_id')) > 1:
             raise UserError("Please select records with the same customer only.")
         if len(self.mapped('company_id')) > 1:
@@ -1212,6 +1213,70 @@ class RepairOrderInherit(models.Model):
             'context': {'default_repair_id': self.id},
             'target': 'current',
         }
+
+    def action_repair_start(self):
+        """ Writes repair order state to 'Under Repair'
+        """
+        if self.move_ids and self.requisition_count == 0:
+            raise UserError(_("Please create a material requisition before starting the repair."))
+        if self.move_ids and self.requisition_count > 0 and self.state != 'material_approved':
+            raise UserError(_("Material requisition must be approved before starting the repair."))
+
+        if self.filtered(lambda repair: repair.state != 'confirmed'):
+            self._action_repair_confirm()
+        return self.write({'state': 'under_repair'})
+
+    def _action_repair_confirm(self):
+        """ Repair order state is set to 'Confirmed'.
+        @param *arg: Arguments
+        @return: True
+        """
+        repairs_to_confirm = self.filtered(lambda repair: repair.state == 'draft')
+        repairs_to_confirm._check_company()
+        repairs_to_confirm.move_ids._check_company()
+        repairs_to_confirm.move_ids._adjust_procure_method(picking_type_code='repair_operation')
+        repairs_to_confirm.move_ids._action_confirm()
+        repairs_to_confirm.move_ids._trigger_scheduler()
+        for repair in repairs_to_confirm:
+            # Find all material requisitions linked to this repair order
+            requisitions = self.env['material.requisition'].search([('repair_id', '=', repair.id)])
+
+            if requisitions:
+                # Extract all the states of the linked requisitions into a list
+                req_states = requisitions.mapped('state')
+
+                # Apply priority logic to determine the repair order state
+                if 'confirmed' in req_states:
+                    repair.write({'state': 'material_requested'})
+                elif 'on_hold' in req_states:
+                    repair.write({'state': 'material_on_hold'})
+                elif 'refuse' in req_states:
+                    repair.write({'state': 'material_refused'})
+                elif 'approved' in req_states:
+                    repair.write({'state': 'material_approved'})
+                elif 'cancelled' in req_states:
+                    repair.write({'state': 'material_cancelled'})
+                else:
+                    repair.write({'state': 'confirmed'})
+            else:
+                # Normal behavior if no material requests exist at all
+                repair.write({'state': 'confirmed'})
+        return True
+
+    def action_repair_cancel(self):
+        if any(repair.state == 'done' for repair in self):
+            raise UserError(_("You cannot cancel a Repair Order that's already been completed"))
+        for repair in self:
+            if repair.sale_order_id:
+                repair.sale_order_line_id.write({'product_uom_qty': 0.0})  # Quantity of the product that generated the RO is set to 0
+        self.move_ids._action_cancel()
+
+        for repair in self:
+            if repair.requisition_count > 0:
+                requisitions = self.env['material.requisition'].search([('repair_id', '=', repair.id)])
+                requisitions.write({'state': 'cancelled'})
+        return self.write({'state': 'cancel'})
+
 
 class MrpRepair(models.Model):
     _name = 'mrp.repair'
