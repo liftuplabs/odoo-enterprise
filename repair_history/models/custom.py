@@ -1151,17 +1151,21 @@ class RepairOrderInherit(models.Model):
             })
 
 
-            # 2. Confirm and Validate
-            picking.action_confirm()
-            # picking.action_assign()
-            picking.button_validate()
-
-            # 3. Reset the Repair Order
-            repair.move_ids.write({'state': 'draft'})
-            repair.write({'state': 'under_repair',
-                          'move_id': False,})
-
-            repair.message_post(body=_("Repair reset. Parts returned via Picking: %s") % picking.name)
+            if picking.move_ids_without_package:
+                # 2. Confirm and Validate
+                picking.action_confirm()
+                # picking.action_assign()
+                picking.button_validate()
+                repair.move_ids.write({'state': 'draft'})
+                repair.write({'state': 'under_repair',
+                              'move_id': False, })
+                repair.message_post(body=_("Repair reset. Parts returned via Picking: %s") % picking.name)
+            elif not picking.move_ids_without_package:
+                picking.unlink()
+                repair.move_ids.write({'state': 'draft'})
+                repair.write({'state': 'under_repair',
+                              'move_id': False,})
+                repair.message_post(body=_("Repair reset."))
 
     def action_create_material_requisition(self):
         self.ensure_one()
