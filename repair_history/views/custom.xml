@@ -548,7 +548,7 @@
                     <div style="text-align: right; font-weight: bold;">E AND O.E</div>
                     <br />
                     <strong>Company's PAN:</strong>
-                    [Your PAN Here]
+                    <span t-field="o.company_id.l10n_in_pan"/>
                     <div style="text-align: right; margin-top: -40px;">
                         <strong>for</strong>
                         <t t-esc="o.company_id.name" />
