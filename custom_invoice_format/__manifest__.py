@@ -25,6 +25,7 @@
         'views/res_config_settings_views.xml',
         'views/report_invoice.xml',
         'views/eway_bill_report.xml',
+        'views/report_invoice_with_e_way_bill.xml',
     ],
     'installable': True,
     'application': False,

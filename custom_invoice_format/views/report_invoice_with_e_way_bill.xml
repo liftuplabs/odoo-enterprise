@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_invoice_and_ewaybill_combined">
+        <t t-foreach="docs" t-as="o">
+            <t t-call="custom_invoice_format.report_custom_tax_invoice_document"/>
+
+            <p style="page-break-after: always;"/>
+
+            <t t-set="doc" t-value="o"/>
+            <t t-call="custom_invoice_format.report_ewaybill_document"/>
+
+            <p t-if="not o_last" style="page-break-after: always;"/>
+        </t>
+    </template>
+
+    <record id="action_report_invoice_with_ewaybill" model="ir.actions.report">
+        <field name="name">Invoice with E-Way Bill</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">custom_invoice_format.report_invoice_and_ewaybill_combined</field>
+        <field name="report_file">custom_invoice_format.report_invoice_and_ewaybill_combined</field>
+        <field name="print_report_name">'Invoice_EWayBill_%s' % (object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

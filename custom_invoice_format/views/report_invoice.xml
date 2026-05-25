@@ -203,9 +203,22 @@
                                             </tr>
                                         </t>
                                         <!-- Totals -->
+                                        <t t-set="total_qty" t-value="sum(line.quantity for line in o.invoice_line_ids if line.display_type == 'product')"/>
+                                        <t t-set="product_lines" t-value="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')"/>
+                                        <t t-set="total_uom" t-value="product_lines[0].product_uom_id.name if product_lines else ''"/>
                                         <tr>
-                                            <td colspan="7" class="text-end text-bold">Total</td>
-                                            <td class="text-end text-bold"><span t-field="o.amount_untaxed"/></td>
+                                            <td colspan="4" class="text-end text-bold">Total</td>
+
+                                            <td class="text-end text-bold">
+                                                <span t-esc="total_qty"/> <span t-esc="total_uom"/>
+                                            </td>
+
+                                            <td class="text-end"></td>
+                                            <td class="text-end"></td>
+
+                                            <td class="text-end text-bold">
+                                                <span t-field="o.amount_untaxed"/>
+                                            </td>
                                         </tr>
 
                                         <!-- Tax Totals Loop -->
