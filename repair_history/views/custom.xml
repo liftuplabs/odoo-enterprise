@@ -147,7 +147,7 @@
                 <!-- <button name="action_mark_repair_delivered" invisible="state != 'done'" type="object" string="Delivery Order" class="oe_highlight" data-hotkey="q" /> -->
                 <button name="open_repair_confirmation_wizard" invisible="state != 'under_repair' or not has_uncomplete_moves" type="object" string="End Repair" class="oe_highlight" data-hotkey="x" confirm="For some of the parts, there is a difference between the initial demand and the actual quantity that was used. Are you sure you want to confirm ?" />
                 <button name="open_repair_confirmation_wizard" invisible="state != 'under_repair' or has_uncomplete_moves" type="object" string="End Repair" class="oe_highlight" data-hotkey="x" />
-                <button name="back_to_under_repair" invisible="state != 'done' or sale_order_id" type="object" string="Back to Under Repair" class="oe_highlight" confirm="Do you want to move repaired order back to under repair?"/>
+                <button name="back_to_under_repair" invisible="state != 'done' or sale_order_id" type="object" string="Back to Under Repair" class="oe_highlight" confirm="Do you want to move repaired order back to under repair?" groups="repair_history.group_repair_manager"/>
             </xpath>
             <!--            <xpath expr="//page[@name='parts']" position="after">-->
             <!--                <page string="Old Parts" name="old_part">-->
