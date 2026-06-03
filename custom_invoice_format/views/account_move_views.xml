@@ -30,4 +30,24 @@
             </xpath>
         </field>
     </record>
+
+    <record id="view_move_form_custom_invoice" model="ir.ui.view">
+        <field name="name">account.move.form.custom.invoice</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="l10n_in_edi_ewaybill.invoice_form_inherit_l10n_in_edi_ewaybill"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='l10n_in_edi_ewaybill_page']/group[@name='ewaybill_group']" position="before">
+                <group name="ewaybill_info_group" string="E-Way Bill Info">
+                    <group>
+                        <field name="eway_bill_no" invisible="not eway_bill_no"/>
+                        <field name="eway_bill_date" invisible="not eway_bill_date"/>
+                        <field name="eway_bill_valid_till" invisible="not eway_bill_valid_till"/>
+                        <button name="action_compute_eway_bill_info" type="object" string="Fetch Ewb info" class="btn btn-link"/>
+                        <button name="action_update_eway_bill_json" invisible='not eway_bill_no' type="object" string="Update Ewb info" class="btn btn-link"/>
+                    </group>
+                    <group></group>
+                </group>
+            </xpath>
+        </field>
+    </record>
 </odoo>
