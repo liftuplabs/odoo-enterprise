@@ -294,6 +294,7 @@ class RepairOrderInherit(models.Model):
         ('production_warranty', 'Production Warranty'),
         ('service_warranty', 'Service Warranty'),
         ('inspection_cost', 'Inspection Cost'),
+        ('material_cost', 'Material Cost'),
     ], string="Account EN")
 
     customer_state = fields.Selection([
@@ -516,39 +517,6 @@ class RepairOrderInherit(models.Model):
             for rec in self.move_ids:
                 if rec.warranty_days:
                     rec.warranty_validity = self.end_date + timedelta(days=rec.warranty_days)
-
-            # ➤ Add all component moves from repair.move_ids
-
-            # ➤ Confirm and validate picking
-
-    # def action_mark_repair_delivered(self):
-    #     for repair in self:
-    #         picking = self.env['stock.picking'].create({
-    #             'partner_id': repair.partner_id.id,
-    #             'dc_number': repair.dc_number,
-    #             'plant': repair.plant,
-    #             'customer_state': repair.customer_state,
-    #             'picking_type_id': repair.env.ref('stock.picking_type_out').id,  # or your outgoing type
-    #             'location_id': repair.location_id.id,
-    #             'location_dest_id': repair.partner_id.property_stock_customer.id,
-    #             'origin': repair.name,
-    #             'move_ids_without_package': [(0, 0, {
-    #                 'product_id': repair.product_id.id,
-    #                 'product_uom_qty': repair.product_qty,
-    #                 'product_uom': repair.product_uom.id,
-    #                 'name': repair.product_id.name,
-    #                 'location_id': repair.location_id.id,
-    #                 'location_dest_id': repair.partner_id.property_stock_customer.id,
-    #                 'lot_ids': [(6, 0, [repair.lot_id.id if repair.lot_id else False])],
-    #             })]
-    #         })
-    #
-    #         if picking:
-    #             for line in repair.move_ids:
-    #                 line.picking_id = picking.id
-    #         picking.action_confirm()
-    #         picking.button_validate()
-    #         repair.state = 'delivered'
 
     duration = fields.Float(string="Real Duration")
     warranty_days = fields.Integer(string="Warranty Duration (Days)")

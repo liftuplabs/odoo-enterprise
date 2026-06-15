@@ -39,6 +39,7 @@
         'views/check_list.xml',
         'views/hr_employee.xml',
         'views/res_company.xml',
+        'reports/material_out_report.xml',
         ],
 
     'assets': {
