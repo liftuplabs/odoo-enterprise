@@ -85,7 +85,7 @@ class AccountMove(models.Model):
         if not l10n_in_edi:
             raise UserError(_("No E-Way Bill document found."))
 
-        attachment = l10n_in_edi.attachment_id
+        attachment = l10n_in_edi.sudo().attachment_id
 
         if not attachment:
             raise UserError(_("No E-Way Bill attachment found."))
@@ -105,7 +105,7 @@ class AccountMove(models.Model):
 
         json_content = json.dumps(json_data, indent=4)
 
-        attachment.write({
+        attachment.sudo().write({
             'datas': base64.b64encode(json_content.encode('utf-8')),
         })
 
