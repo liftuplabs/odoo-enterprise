@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <template id="report_visitor_pass_template">
+        <t t-call="web.html_container">
+            <t t-set="company" t-value="env.company" />
+            <t t-call="web.external_layout">
+                <div class="oe_structure"/>
+                <div class="text-center">
+                    <span t-esc="o.name" style="font-size: 24pt"/>
+                </div>
+                <div class="page">
+                    <div class="row mt32 mb32">
+                        <div class="col-6">
+                            <strong>Check In</strong>:
+                            <span t-field="o.check_in" />
+                        </div>
+                        <div class="col-6 text-end">
+                            <strong>Check Out</strong>:
+                            <span t-field="o.check_out" />
+                        </div>
+                    </div>
+                    <table class="table table-sm">
+                        <tbody>
+                            <tr t-if="o">
+                                <strong>
+                                    <th colspan="100" class="text-center" style="font-size:16px;">
+                                        <h5>Visitor Details</h5>
+                                    </th>
+                                </strong>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Name</strong>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <span t-field="o.visitor_name"/>
+                                    </strong>
+                                </td>
+                                <td>
+                                    <strong>Company</strong>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <span t-field="o.company_name"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Phone</strong>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <span t-field="o.phone"/>
+                                    </strong>
+                                </td>
+                                <td>
+                                    <strong>Mobile</strong>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <span t-field="o.mobile"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                            <tr t-if="o.email">
+                                <td>
+                                    <strong>Email</strong>
+                                </td>
+                                <td colspan="3">
+                                    <strong>
+                                        <span t-field="o.email"/>
+                                    </strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br/>
+                    <div class="row">
+                        <div class="col-6" t-if="o.destination_id or o.visitor_type_id or o.visitor_category_id">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr t-if="o">
+                                        <strong>
+                                            <th colspan="100" class="text-center" style="font-size:16px;">
+                                                <h5>Visit Details</h5>
+                                            </th>
+                                        </strong>
+                                    </tr>
+                                    <tr t-if="o.destination_id">
+                                        <td>
+                                            <strong>Visit Destination</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.destination_id"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.visitor_type_id">
+                                        <td>
+                                            <strong>Visit Type</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.visitor_type_id"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.visitor_category_id">
+                                        <td>
+                                            <strong>Visit Category</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.visitor_category_id"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-6" t-if="o.reference or o.employee_id or o.destination_id">
+                            <table class="table table-sm table-bordered">
+                                <tbody>
+                                    <tr t-if="o">
+                                        <strong>
+                                            <th colspan="100" class="text-center" style="font-size:16px;">
+                                                <h5>Contact Details</h5>
+                                            </th>
+                                        </strong>
+                                    </tr>
+                                    <tr t-if="o.reference">
+                                        <td>
+                                            <strong>Reference</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.reference"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.employee_id">
+                                        <td>
+                                            <strong>Employee</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.employee_id"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    <tr t-if="o.department_id">
+                                        <td>
+                                            <strong>Department</strong>
+                                        </td>
+                                        <td>
+                                            <strong>
+                                                <span t-field="o.department_id"/>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row" t-if="o.purpose">
+                        <div class="col-3">
+                            <h6>Purpose  :</h6>
+                        </div>
+                        <div class="col-9">
+                            <h6>
+                                <span t-field="o.purpose"/>
+                            </h6>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
+                    <div class="row" style="margin-top:150px;">
+                        <div class="col-6">
+                            <div class="mt-4 text-center">____________________________</div>
+                            <div class="mt-2 text-center">Visitor</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="mt-4 text-center">____________________________</div>
+                            <div class="mt-2 text-center">Whom to Meet</div>
+                        </div>
+                    </div>
+                    <p style="page-break-after:always;"/>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_visitor_pass">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="bi_visitor_management.report_visitor_pass_template" t-lang="o.env.user.lang"/>
+            </t>
+        </t>
+    </template>
+</odoo>

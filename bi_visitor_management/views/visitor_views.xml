@@ -1,0 +1,89 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="visitor_action" model="ir.actions.act_window">
+        <field name="name">Visitors</field>
+        <field name="res_model">visitor.visitor</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+    <menuitem id="bi_visitor_management.visitor_menu_action" name="Visitor Management" action="visitor_action"/>
+    <menuitem id="visitor_main_menu" name="Visitor" parent="bi_visitor_management.visitor_menu_action" sequence="10">
+        <menuitem id="visitor__menu" name="Visitor Details" action="visitor_action" sequence="10"/>
+    </menuitem>
+
+    <record id="visitor_view_form" model="ir.ui.view">
+        <field name="name">visitor.visitor.form</field>
+        <field name="model">visitor.visitor</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="visitor_details" string="Visitor Details">
+                            <field name="partner_id" />
+                            <field name="visitor_name"/>
+                            <field name="company_name"/>
+                            <field name="phone"/>
+                            <field name="mobile"/>
+                            <field name="email"/>
+                        </group>
+                        <group name="check_in_out" string="Check In/Out">
+                            <field name="check_in"/>
+                            <field name="check_out"/>
+                            <field name="duration" widget="timesheet_uom" type="measure"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group name="visit_details" string="Visit Details">
+                            <field name="destination_id" />
+                            <field name="visitor_type_id"/>
+                            <field name="visitor_category_id"/>
+                        </group>
+                        <group name="contact_details" string="Contact Details">
+                            <field name="reference"/>
+                            <field name="employee_id"/>
+                            <field name="department_id" force_save="1" readonly="1" />
+                            <field name="user_id" widget="many2one_avatar_user"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="purpose" string="Purpose">
+                            <field name="purpose" placeholder="Purpose is..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="freight_vessel_view_tree" model="ir.ui.view">
+        <field name="name">visitor.visitor.list</field>
+        <field name="model">visitor.visitor</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="visitor_name"/>
+                <field name="check_in"/>
+                <field name="check_out"/>
+                <field name="employee_id"/>
+                <field name="visitor_category_id"/>
+                <field name="visitor_type_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_visitor_pass" model="ir.actions.server">
+        <field name="name">Email Visitor Pass</field>
+        <field name="model_id" ref="bi_visitor_management.model_visitor_visitor"/>
+        <field name="binding_model_id" ref="bi_visitor_management.model_visitor_visitor"/>
+        <field name="groups_id" eval="[(4, ref('bi_visitor_management.group_visitor_manager'))]"/>
+        <field name="state">code</field>
+        <field name="code">
+        if records:
+            action = records.action_print_visitor_pass()</field>
+    </record>
+</odoo>
