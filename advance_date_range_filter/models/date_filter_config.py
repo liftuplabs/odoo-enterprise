@@ -13,6 +13,11 @@ class DateFilterConfig(models.Model):
         ondelete='cascade'
     )
     active = fields.Boolean(default=True)
+    field_technical_name = fields.Char(
+        related='date_field_id.name',
+        string="Technical Name",
+        store=True
+    )
 
     def _compute_name(self):
         for record in self:

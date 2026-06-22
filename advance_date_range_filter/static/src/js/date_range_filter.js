@@ -23,16 +23,12 @@ patch(ControlPanel.prototype, {
             const configs = await this.env.services.orm.searchRead(
                 "date.filter.config",
                 [["model_name", "=", this.env.searchModel.resModel], ["active", "=", true]],
-                ["date_field_id"]
+                ["field_technical_name"]
             );
             if (configs.length > 0) {
                 this.dateFilterState.config = configs[0];
-                const fieldInfo = await this.env.services.orm.searchRead(
-                    "ir.model.fields",
-                    [["id", "=", configs[0].date_field_id[0]]],
-                    ["name"]
-                );
-                if(fieldInfo.length > 0) this.dateFilterState.fieldName = fieldInfo[0].name;
+                // Use the value directly from the record
+                this.dateFilterState.fieldName = configs[0].field_technical_name;
             }
         });
 
