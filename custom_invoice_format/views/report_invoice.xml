@@ -21,21 +21,21 @@
 
                     <t t-set="shrink_class" t-value="''"/>
                     <t t-set="base_font_size" t-value="'13px'"/>
-                    <t t-set="qr_max_height" t-value="'150px'"/>
+                    <t t-set="qr_max_height" t-value="'140px'"/>
                     <t t-set="spacing_modifier" t-value="'1.1'"/>
 
-                    <t t-if="line_count &gt; 6 and line_count &lt;= 12">
+                    <t t-if="line_count &gt; 6 and line_count &lt;= 14">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="base_font_size" t-value="'11px'"/>
-                        <t t-set="qr_max_height" t-value="'110px'"/>
+                        <t t-set="qr_max_height" t-value="'105px'"/>
                         <t t-set="spacing_modifier" t-value="'1.0'"/>
                     </t>
 
-                    <t t-if="line_count &gt; 12">
-                        <t t-set="shrink_class" t-value="'layout-ultra-compact'"/>
-                        <t t-set="base_font_size" t-value="'9.5px'"/>
-                        <t t-set="qr_max_height" t-value="'85px'"/>
-                        <t t-set="spacing_modifier" t-value="'0.95'"/>
+                    <t t-if="line_count &gt; 14">
+                        <t t-set="shrink_class" t-value="'layout-dense-30'"/>
+                        <t t-set="base_font_size" t-value="'9px'"/>
+                        <t t-set="qr_max_height" t-value="'75px'"/>
+                        <t t-set="spacing_modifier" t-value="'0.92'"/>
                     </t>
 
                     <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
@@ -69,6 +69,11 @@
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                             }
 
+                            /* Clean Multi-page Fallback Handling */
+                            tr {
+                                page-break-inside: avoid !important;
+                            }
+
                             /* Utility helpers */
                             .text-bold { font-weight: bold; }
 
@@ -84,20 +89,20 @@
                                 margin-bottom: 4px !important;
                             }
 
-                            /* Responsive Layout Ultra Compact Overrides */
-                            .layout-ultra-compact .table-custom-bordered th,
-                            .layout-ultra-compact .table-custom-bordered td,
-                            .layout-ultra-compact .table-header-grid td {
-                                padding: 0px 2px !important;
+                            /* Responsive Layout High Density Overrides (Up to 30 Lines) */
+                            .layout-dense-30 .table-custom-bordered th,
+                            .layout-dense-30 .table-custom-bordered td,
+                            .layout-dense-30 .table-header-grid td {
+                                padding: 1px 2px !important;
                             }
-                            .layout-ultra-compact .mt-2, .layout-ultra-compact .mt-3, .layout-ultra-compact .mt-5 {
-                                margin-top: 2px !important;
+                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 {
+                                margin-top: 1px !important;
                             }
-                            .layout-ultra-compact .mb-2, .layout-ultra-compact .mb-3 {
-                                margin-bottom: 2px !important;
-                            }
-                            .layout-ultra-compact .mb-3 {
+                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 {
                                 margin-bottom: 1px !important;
+                            }
+                            .layout-dense-30 h5 {
+                                font-size: 1.1em !important;
                             }
                         </style>
 
@@ -142,9 +147,6 @@
                                                         <strong>Code :</strong> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
-
-                                                <t t-if="not o.company_id.invoice_layout_boxed">
-                                                    </t>
 
                                                 <div t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)" class="mb-3">
                                                     <strong>Consignee (Ship To):</strong><br/>
@@ -214,28 +216,28 @@
                                 <table class="table-custom-bordered">
                                     <thead>
                                         <tr>
-                                            <th class="text-center" style="width: 5%;">SN</th>
-                                            <th class="text-start">Description of Goods</th>
-                                            <th class="text-center" style="width: 10%;">HSN/SAC</th>
+                                            <th class="text-center" style="width: 4%;">SN</th>
+                                            <th class="text-start" style="width: 46%;">Description of Goods</th>
+                                            <th class="text-center" style="width: 8%;">HSN/SAC</th>
                                             <th class="text-center" style="width: 10%;">Part No.</th>
-                                            <th class="text-end" style="width: 10%;">Quantity</th>
+                                            <th class="text-end" style="width: 8%;">Quantity</th>
                                             <th class="text-end" style="width: 10%;">Rate</th>
-                                            <th class="text-end" style="width: 5%;">Per</th>
-                                            <th class="text-end" style="width: 15%;">Amount</th>
+                                            <th class="text-end" style="width: 4%;">Per</th>
+                                            <th class="text-end" style="width: 10%;">Amount</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <t t-set="idx" t-value="1"/>
                                         <t t-foreach="o.invoice_line_ids" t-as="line">
                                             <tr t-if="line.display_type == 'product'">
-                                                <td class="text-center"><span t-esc="idx"/></td>
-                                                <td><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
-                                                <td class="text-center"><span t-field="line.l10n_in_hsn_code"/></td>
-                                                <td class="text-center"><span t-field="line.product_id.default_code"/></td>
-                                                <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom_id.name"/></td>
-                                                <td class="text-end"><span t-field="line.price_unit"/></td>
-                                                <td class="text-end"><span t-field="line.product_uom_id"/></td>
-                                                <td class="text-end"><span t-field="line.price_subtotal"/></td>
+                                                <td class="text-center" style="width: 4%;"><span t-esc="idx"/></td>
+                                                <td class="text-start" style="width: 46%;"><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
+                                                <td class="text-center" style="width: 8%;"><span t-field="line.l10n_in_hsn_code"/></td>
+                                                <td class="text-center" style="width: 10%;"><span t-field="line.product_id.default_code"/></td>
+                                                <td class="text-end" style="width: 8%; white-space: nowrap;"><span t-field="line.quantity"/> <span t-field="line.product_uom_id.name"/></td>
+                                                <td class="text-end" style="width: 10%;"><span t-field="line.price_unit"/></td>
+                                                <td class="text-end" style="width: 4%;"><span t-field="line.product_uom_id"/></td>
+                                                <td class="text-end" style="width: 10%;"><span t-field="line.price_subtotal"/></td>
                                                 <t t-set="idx" t-value="idx + 1"/>
                                             </tr>
                                         </t>
@@ -243,17 +245,12 @@
                                         <t t-set="total_uom" t-value="product_lines[0].product_uom_id.name if product_lines else ''"/>
                                         <tr>
                                             <td colspan="4" class="text-end text-bold">Total</td>
-
-                                            <td class="text-end text-bold">
+                                            <td class="text-end text-bold" style="white-space: nowrap;">
                                                 <span t-esc="total_qty"/> <span t-esc="total_uom"/>
                                             </td>
-
                                             <td class="text-end"></td>
                                             <td class="text-end"></td>
-
-                                            <td class="text-end text-bold">
-                                                <span t-field="o.amount_untaxed"/>
-                                            </td>
+                                            <td class="text-end text-bold"><span t-field="o.amount_untaxed"/></td>
                                         </tr>
 
                                         <t t-foreach="o.tax_totals['subtotals']" t-as="subtotal">
@@ -332,7 +329,7 @@
                                                     <span t-esc="total_tax_amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                                 </td>
                                             </tr>
-                                             <tr class="text-bold">
+                                            <tr class="text-bold">
                                                 <td class="text-end">Total:</td>
                                                 <td class="text-end"><span t-esc="sum(item['amount_untaxed'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                                                  <t t-if="hsn_summary['has_gst']">
@@ -362,7 +359,6 @@
                              </div>
                          </div>
 
-
                         <div class="row mt-5">
                             <div class="col-6">
                                 <strong>Company's PAN: </strong>
@@ -375,7 +371,6 @@
                                 <t t-if="o.company_id.show_bank_detail">
                                     <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">
                                         <strong>Company's Bank Details</strong><br/>
-
                                         <div class="row m-0">
                                             <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>
                                             <div class="p-0" style="width: 10px;">:</div>
