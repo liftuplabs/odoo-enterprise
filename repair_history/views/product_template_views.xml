@@ -27,5 +27,38 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="product_template_search_inherit_tracked" model="ir.ui.view">
+            <field name="name">product.template.search.inherit.tracked</field>
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_search_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="Tracked Goods" name="filter_tracked_goods"
+                            domain="[('type', '=', 'consu'), ('is_storable', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_product_search_inherit_tracked" model="ir.ui.view">
+            <field name="name">product.product.search.inherit.tracked</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="product.product_search_form_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//search" position="inside">
+                    <filter string="Tracked Goods" name="filter_tracked_goods"
+                            domain="[('type', '=', 'consu'), ('is_storable', '=', True)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="stock.product_template_action_product" model="ir.actions.act_window">
+            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'product'}</field>
+        </record>
+
+        <record id="stock.stock_product_normal_action" model="ir.actions.act_window">
+            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'product'}</field>
+        </record>
+
     </data>
 </odoo>
