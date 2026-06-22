@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_date_filter_config_root" name="Date Filter for Modules" parent="base.menu_custom" sequence="99"/>
+    <menuitem id="menu_date_filter_config" name="Date Filters" parent="menu_date_filter_config_root" action="action_date_filter_config" sequence="1"/>
+</odoo>

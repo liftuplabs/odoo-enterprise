@@ -1,0 +1,7 @@
+.o_date_range_filter .dropdown-menu {
+    cursor: default; /* Prevents text selection weirdness */
+}
+/* Ensure the button doesn't look weird when active */
+.o_date_range_filter .btn:active {
+    box-shadow: none !important;
+}
