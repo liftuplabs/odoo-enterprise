@@ -24,14 +24,14 @@
                     <t t-set="qr_max_height" t-value="'140px'"/>
                     <t t-set="spacing_modifier" t-value="'1.1'"/>
 
-                    <t t-if="line_count &gt; 6 and line_count &lt;= 14">
+                    <t t-if="line_count &gt; 10 and line_count &lt;= 20">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="base_font_size" t-value="'11px'"/>
                         <t t-set="qr_max_height" t-value="'105px'"/>
                         <t t-set="spacing_modifier" t-value="'1.0'"/>
                     </t>
 
-                    <t t-if="line_count &gt; 14">
+                    <t t-if="line_count &gt; 20">
                         <t t-set="shrink_class" t-value="'layout-dense-30'"/>
                         <t t-set="base_font_size" t-value="'9px'"/>
                         <t t-set="qr_max_height" t-value="'75px'"/>
@@ -59,51 +59,53 @@
                                 text-transform: uppercase;
                                 font-size: 0.9em;
                             }
-                            /* Main Header Table Styles */
+
+                            /* Main Header Table Grid Base Styling */
                             .table-header-grid {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 border-collapse: collapse !important;
                                 width: 100%;
+                                table-layout: fixed;
                             }
-                            .table-header-grid td {
+                            .table-header-grid > tbody > tr > td {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                vertical-align: top;
                             }
 
-                            /* Clean Multi-page Fallback Handling */
+                            /* Specific padding control to prevent text from touching lines */
+                            .address-box {
+                                padding: 6px 8px !important;
+                            }
+                            .meta-cell {
+                                padding: 5px 6px !important;
+                                vertical-align: top !important;
+                            }
+
                             tr {
                                 page-break-inside: avoid !important;
                             }
-
-                            /* Utility helpers */
                             .text-bold { font-weight: bold; }
 
-                            /* Responsive Layout Compact Overrides */
+                            /* Compact Layout Adjustments */
                             .layout-compact .table-custom-bordered th,
                             .layout-compact .table-custom-bordered td {
                                 padding: 1px 3px !important;
                             }
-                            .layout-compact .mt-2, .layout-compact .mt-3, .layout-compact .mt-5 {
-                                margin-top: 4px !important;
-                            }
-                            .layout-compact .mb-2, .layout-compact .mb-3 {
-                                margin-bottom: 4px !important;
-                            }
+                            .layout-compact .address-box { padding: 4px 6px !important; }
+                            .layout-compact .meta-cell { padding: 4px 5px !important; }
+                            .layout-compact .mt-2, .layout-compact .mt-3, .layout-compact .mt-5 { margin-top: 4px !important; }
+                            .layout-compact .mb-2, .layout-compact .mb-3 { margin-bottom: 4px !important; }
 
-                            /* Responsive Layout High Density Overrides (Up to 30 Lines) */
+                            /* High Density 30-Line Layout Adjustments */
                             .layout-dense-30 .table-custom-bordered th,
-                            .layout-dense-30 .table-custom-bordered td,
-                            .layout-dense-30 .table-header-grid td {
+                            .layout-dense-30 .table-custom-bordered td {
                                 padding: 1px 2px !important;
                             }
-                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 {
-                                margin-top: 1px !important;
-                            }
-                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 {
-                                margin-bottom: 1px !important;
-                            }
-                            .layout-dense-30 h5 {
-                                font-size: 1.1em !important;
-                            }
+                            .layout-dense-30 .address-box { padding: 4px 5px !important; }
+                            .layout-dense-30 .meta-cell { padding: 3px 5px !important; } /* Safeguards metadata spacing */
+                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 1px !important; }
+                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 1px !important; }
+                            .layout-dense-30 h5 { font-size: 1.1em !important; }
                         </style>
 
                         <div t-if="l10n_in_einvoice_json" class="row mb-2">
@@ -135,10 +137,9 @@
                                 <table class="table-header-grid">
                                     <tbody>
                                         <tr>
-                                            <td style="width: 50%; vertical-align: center; padding: 5px;">
-
+                                            <td style="width: 50%; vertical-align: top;" class="address-box">
                                                 <div t-if="o.company_id.invoice_layout_boxed" class="mb-3">
-                                                    <strong style="font-size: 1.2em;"><span t-field="o.company_id.name"/></strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-field="o.company_id.name"/></strong><br/>
                                                     <span t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
                                                     <div t-if="o.company_id.vat"><strong>GSTIN:</strong> <span t-field="o.company_id.vat"/></div>
                                                     <div t-if="o.company_id.email"><strong>Email:</strong> <span t-field="o.company_id.email"/></div>
@@ -174,34 +175,34 @@
                                                 </div>
                                             </td>
 
-                                            <td style="width: 50%; padding: 0; vertical-align: top;">
-                                                <table class="table table-sm table-borderless mb-0 h-100" style="margin: 0; width: 100%;">
+                                            <td style="width: 50%; padding: 0 !important; vertical-align: top;">
+                                                <table style="margin: 0; width: 100%; border-collapse: collapse; height: 100%; table-layout: fixed;">
                                                      <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%; padding: 5px;"><strong>Invoice No:</strong> <br/><span t-field="o.name"/></td>
-                                                        <td style="padding: 5px;"><strong>Date:</strong> <br/><span t-field="o.invoice_date"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;"><strong>Invoice No:</strong><br/><span t-field="o.name"/></td>
+                                                        <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="o.invoice_date"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Delivery Note:</strong> <br/><span t-field="o.delivery_note"/></td>
-                                                        <td style="padding: 5px;"><strong>Pay Mode:</strong> <br/><span t-field="o.mode_of_payment"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.delivery_note"/></td>
+                                                        <td class="meta-cell"><strong>Pay Mode:</strong><br/><span t-field="o.mode_of_payment"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Supplier Ref:</strong> <br/><span t-field="o.supplier_reference"/></td>
-                                                        <td style="padding: 5px;"><strong>Other Ref:</strong> <br/><span t-field="o.other_reference"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="o.supplier_reference"/></td>
+                                                        <td class="meta-cell"><strong>Other Ref:</strong><br/><span t-field="o.other_reference"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Buyer Order No:</strong> <br/><span t-field="o.buyers_order_no"/></td>
-                                                        <td style="padding: 5px;"><strong>Dated:</strong> <br/><span t-field="o.buyers_order_date"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Buyer Order No:</strong><br/><span t-field="o.buyers_order_no"/></td>
+                                                        <td class="meta-cell"><strong>Dated:</strong><br/><span t-field="o.buyers_order_date"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Dispatch Doc No:</strong> <br/><span t-field="o.dispatch_doc_no"/></td>
-                                                        <td style="padding: 5px;"><strong>Del. Note Date:</strong> <br/><span t-field="o.delivery_note_date"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatch Doc No:</strong><br/><span t-field="o.dispatch_doc_no"/></td>
+                                                        <td class="meta-cell"><strong>Del. Note Date:</strong><br/><span t-field="o.delivery_note_date"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td t-attf-style="border-right: {{border_width}}px solid {{border_color}}; padding: 5px;"><strong>Dispatched Through:</strong> <br/><span t-field="o.dispatch_through"/></td>
-                                                        <td style="padding: 5px;"><strong>Destination:</strong> <br/><span t-field="o.destination"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatched Through:</strong><br/><span t-field="o.dispatch_through"/></td>
+                                                        <td class="meta-cell"><strong>Destination:</strong><br/><span t-field="o.destination"/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2" style="padding: 5px;"><strong>Terms of Delivery:</strong> <br/><span t-field="o.terms_of_delivery"/></td>
+                                                        <td colspan="2" class="meta-cell"><strong>Terms of Delivery:</strong><br/><span t-field="o.terms_of_delivery"/></td>
                                                     </tr>
                                                 </table>
                                             </td>
