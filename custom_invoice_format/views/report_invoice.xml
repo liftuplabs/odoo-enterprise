@@ -191,9 +191,30 @@
                                             <td style="width: 50%; padding: 0 !important; vertical-align: top;">
                                                 <table style="margin: 0; width: 100%; border-collapse: collapse; height: 100%; table-layout: fixed;">
                                                      <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;"><strong>Invoice No:</strong><br/><span t-field="o.name"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;">
+                                                            <t t-if="o.move_type in ['out_refund', 'in_refund']">
+                                                                <strong>Credit Note No:</strong>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <strong>Invoice No:</strong>
+                                                            </t>
+                                                            <br/><span t-field="o.name"/>
+                                                        </td>
                                                         <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="o.invoice_date"/></td>
                                                     </tr>
+
+                                                    <t t-if="o.move_type in ['out_refund', 'in_refund']">
+                                                        <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                            <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">
+                                                                <strong>Invoice No:</strong><br/>
+                                                                <span t-esc="o.reversed_entry_id.name or o.ref"/>
+                                                            </td>
+                                                            <td class="meta-cell">
+                                                                <strong>Inv. Date:</strong><br/>
+                                                                <span t-esc="o.reversed_entry_id.invoice_date"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.delivery_note"/></td>
                                                         <td class="meta-cell"><strong>Pay Mode:</strong><br/><span t-field="o.mode_of_payment"/></td>
