@@ -20,26 +20,42 @@
                     <t t-set="line_count" t-value="len(product_lines)"/>
 
                     <t t-set="shrink_class" t-value="''"/>
-                    <t t-set="base_font_size" t-value="'13px'"/>
-                    <t t-set="qr_max_height" t-value="'140px'"/>
+                    <t t-set="base_font_size" t-value="'12px'"/>
+                    <t t-set="qr_max_height" t-value="'120px'"/>
                     <t t-set="spacing_modifier" t-value="'1.1'"/>
 
                     <t t-if="line_count &gt; 10 and line_count &lt;= 20">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="base_font_size" t-value="'11px'"/>
-                        <t t-set="qr_max_height" t-value="'105px'"/>
+                        <t t-set="qr_max_height" t-value="'100px'"/>
                         <t t-set="spacing_modifier" t-value="'1.0'"/>
                     </t>
 
                     <t t-if="line_count &gt; 20">
                         <t t-set="shrink_class" t-value="'layout-dense-30'"/>
-                        <t t-set="base_font_size" t-value="'9px'"/>
-                        <t t-set="qr_max_height" t-value="'75px'"/>
-                        <t t-set="spacing_modifier" t-value="'0.92'"/>
+                        <t t-set="base_font_size" t-value="'10px'"/>
+                        <t t-set="qr_max_height" t-value="'80px'"/>
+                        <t t-set="spacing_modifier" t-value="'0.95'"/>
                     </t>
 
                     <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
+
                         <style t-attf-type="text/css">
+                            /* Force strict pagination so the document breaks instead of shrinking */
+                            table {
+                                page-break-inside: auto !important;
+                            }
+                            tr {
+                                page-break-inside: avoid !important;
+                                page-break-after: auto !important;
+                            }
+                            thead {
+                                display: table-header-group !important;
+                            }
+                            tbody {
+                                display: table-row-group !important;
+                            }
+
                             .table-custom-bordered {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 border-collapse: collapse !important;
@@ -66,6 +82,7 @@
                                 border-collapse: collapse !important;
                                 width: 100%;
                                 table-layout: fixed;
+                                page-break-inside: avoid !important;
                             }
                             .table-header-grid > tbody > tr > td {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
@@ -73,17 +90,8 @@
                             }
 
                             /* Specific padding control to prevent text from touching lines */
-                            .address-box {
-                                padding: 6px 8px !important;
-                            }
-                            .meta-cell {
-                                padding: 5px 6px !important;
-                                vertical-align: top !important;
-                            }
-
-                            tr {
-                                page-break-inside: avoid !important;
-                            }
+                            .address-box { padding: 6px 8px !important; }
+                            .meta-cell { padding: 5px 6px !important; vertical-align: top !important; }
                             .text-bold { font-weight: bold; }
 
                             /* Compact Layout Adjustments */
@@ -96,15 +104,15 @@
                             .layout-compact .mt-2, .layout-compact .mt-3, .layout-compact .mt-5 { margin-top: 4px !important; }
                             .layout-compact .mb-2, .layout-compact .mb-3 { margin-bottom: 4px !important; }
 
-                            /* High Density 30-Line Layout Adjustments */
+                            /* High Density 30-Line Layout Adjustments (Locked to allow overflow) */
                             .layout-dense-30 .table-custom-bordered th,
                             .layout-dense-30 .table-custom-bordered td {
-                                padding: 1px 2px !important;
+                                padding: 2px !important;
                             }
                             .layout-dense-30 .address-box { padding: 4px 5px !important; }
-                            .layout-dense-30 .meta-cell { padding: 3px 5px !important; } /* Safeguards metadata spacing */
-                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 1px !important; }
-                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 1px !important; }
+                            .layout-dense-30 .meta-cell { padding: 3px 5px !important; }
+                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 2px !important; }
+                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 2px !important; }
                             .layout-dense-30 h5 { font-size: 1.1em !important; }
                         </style>
 
@@ -272,14 +280,14 @@
                             </div>
                         </div>
 
-                         <div class="row mt-2">
+                         <div class="row mt-2" style="page-break-inside: avoid;">
                             <div class="col-12">
                                 <strong>Amount Chargeable (in words):  E. &amp; O.E</strong> <br/>
                                 <span t-field="o.amount_total_words"/>
                             </div>
                         </div>
 
-                        <div class="row mt-3">
+                        <div class="row mt-3" style="page-break-inside: auto;">
                              <t t-set="hsn_summary" t-value="o._l10n_in_get_hsn_summary_table()"/>
                              <t t-if="hsn_summary">
                                 <div class="col-12">
@@ -360,7 +368,7 @@
                              </div>
                          </div>
 
-                        <div class="row mt-5">
+                        <div class="row mt-5" style="page-break-inside: avoid;">
                             <div class="col-6">
                                 <strong>Company's PAN: </strong>
                                 <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
@@ -395,7 +403,7 @@
                                 </t>
                             </div>
                         </div>
-                        <div class="row mt-5">
+                        <div class="row mt-5" style="page-break-inside: avoid;">
                             <div class="col-6">
                                 <strong>Customer's Seal and Signature</strong><br/>
                             </div>
