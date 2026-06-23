@@ -12,7 +12,12 @@
                     <t t-set="header_bg" t-value="o.company_id.custom_invoice_header_bg_color or '#f0f0f0'"/>
                     <t t-set="header_text" t-value="o.company_id.custom_invoice_header_text_color or '#000000'"/>
                     <t t-set="font_family" t-value="o.company_id.custom_invoice_font_family or 'Arial'"/>
-                    <t t-set="page_title" t-value="o.company_id.custom_invoice_title or 'TAX INVOICE'"/>
+                    <t t-if="o.move_type in ['out_refund', 'in_refund']">
+                        <t t-set="page_title" t-value="'CREDIT NOTE'"/>
+                    </t>
+                    <t t-else="">
+                        <t t-set="page_title" t-value="o.company_id.custom_invoice_title or 'TAX INVOICE'"/>
+                    </t>
                     <t t-set="l10n_in_einvoice_json" t-value="o._get_l10n_in_edi_response_json()"/>
                     <t t-set="l10n_in_ewaybill_json" t-value="o._get_l10n_in_edi_ewaybill_response_json()"/>
 
