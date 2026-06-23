@@ -6,7 +6,7 @@ import { onWillStart, useState, onWillUnmount } from "@odoo/owl";
 patch(ControlPanel.prototype, {
     setup() {
         super.setup();
-        if (!this.env.searchModel) return;
+        if (!this.env.searchModel || !this.env.config || this.env.config.viewType !== 'list') return;
 
         this.dateFilterState = useState({
             config: null,
@@ -19,7 +19,7 @@ patch(ControlPanel.prototype, {
         this._onOutsideClick = this._onOutsideClick.bind(this);
 
         onWillStart(async () => {
-            if (!this.env.searchModel) return;
+            if (!this.env.searchModel || !this.env.config || this.env.config.viewType !== 'list') return;
             const configs = await this.env.services.orm.searchRead(
                 "date.filter.config",
                 [["model_name", "=", this.env.searchModel.resModel], ["active", "=", true]],

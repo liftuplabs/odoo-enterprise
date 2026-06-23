@@ -2,7 +2,7 @@
 <templates xml:space="preserve">
     <t t-inherit="web.ControlPanel" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('o_control_panel_main')]" position="inside">
-            <t t-if="dateFilterState and dateFilterState.config">
+            <t t-if="dateFilterState and dateFilterState.config and env.config and env.config.viewType === 'list'">
                 <div class="o_date_range_filter dropdown me-2">
                     <button class="btn btn-secondary dropdown-toggle" type="button" t-on-click="toggleDateDropdown">
                         <i class="fa fa-calendar me-1"/> Date Range
