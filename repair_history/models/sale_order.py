@@ -33,7 +33,7 @@ class SaleOrder(models.Model):
     dispatch_doc_no = fields.Char(string='Dispatch Doc No.')
     dispatch_through = fields.Char(string='Dispatched Through')
     destination = fields.Char(string='Destination')
-    terms_of_delivery = fields.Text(string='Terms of Delivery')
+    nature_of_process = fields.Text(string='Nature of Processing')
 
     supplier_reference = fields.Char(string='Supplier Reference')
     other_reference = fields.Char(string='Other Reference')
@@ -45,6 +45,9 @@ class SaleOrder(models.Model):
 
     buyers_order_no = fields.Char(string="Buyer's Order No.")
     buyers_order_date = fields.Date(string="Buyer's Order Date")
+    date_time_of_issue = fields.Datetime(string="Date & Time of Issue")
+    motor_vehicle_no = fields.Char(string="Motor Vehicle No.")
+    duration_of_process = fields.Char(string="Duration of Process")
     original_order_id = fields.Many2one('sale.order', string='Original Quotation', readonly=True)
 
     pending_product_ids = fields.Many2many(

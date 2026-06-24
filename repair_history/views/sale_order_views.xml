@@ -95,6 +95,7 @@
                                 <field name="destination"/>
                                 <field name="delivery_note"/>
                                 <field name="delivery_note_date"/>
+                                <field name="date_time_of_issue"/>
                             </group>
                             <group string="References">
                                 <field name="supplier_reference"/>
@@ -102,10 +103,12 @@
                                 <field name="buyers_order_no"/>
                                 <field name="buyers_order_date"/>
                                  <field name="mode_of_payment"/>
+                                 <field name="motor_vehicle_no"/>
+                                 <field name="duration_of_process"/>
                             </group>
                         </group>
-                        <group string="Terms">
-                             <field name="terms_of_delivery"/>
+                        <group string="Nature">
+                             <field name="nature_of_process"/>
                         </group>
                     </page>
                 </xpath>
