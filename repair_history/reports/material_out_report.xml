@@ -72,7 +72,7 @@
                                             </div>
 
                                             <div>
-                                                <strong>Party (Bill To):</strong><br/>
+                                                <strong>Party:</strong><br/>
                                                 <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
                                                 <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
                                                 <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
