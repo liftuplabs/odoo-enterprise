@@ -68,15 +68,26 @@ class MultiPartialPaymentWizard(models.TransientModel):
             # Context override mimics a single-invoice click inside core register action
             ctx = dict(self.env.context, active_model='account.move.line', active_ids=move_lines.ids)
 
-            # Create a separate register record for this specific line execution
-            register_wizard = PaymentRegister.with_context(**ctx).create({
+            wizard_fields = list(PaymentRegister._fields.keys())
+            default_vals = PaymentRegister.with_context(**ctx).default_get(wizard_fields)
+
+            # 2. Inject our custom partial payment details
+            default_vals.update({
                 'journal_id': self.journal_id.id,
                 'payment_date': self.payment_date,
                 'amount': line.amount_to_pay,
-                'group_payment': True,
+                'group_payment': False,
+                'communication': line.move_id.name,
             })
 
-            register_wizard._create_payments()
+            # 3. Create the fully-formed wizard record
+            register_wizard = PaymentRegister.with_context(**ctx).create(default_vals)
+
+            payment_record = register_wizard._create_payments()
+            if payment_record:
+                payment_record.action_validate()
+
+        return {'type': 'ir.actions.act_window_close'}
 
 
 class MultiPartialPaymentWizardLine(models.TransientModel):
