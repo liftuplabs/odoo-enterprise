@@ -251,7 +251,7 @@
                                             </tr>
                                         </t>
                                         <t t-set="total_qty" t-value="sum(line.product_uom_qty for line in doc.order_line)"/>
-                                        <t t-set="total_uom" t-value="product_lines[0].produc t_uom.name if product_lines else ''"/>
+                                        <t t-set="total_uom" t-value="product_lines[0].product_uom.name if product_lines else ''"/>
                                         <tr>
                                             <td colspan="4" class="text-end text-bold">Total</td>
                                             <td class="text-end text-bold" style="white-space: nowrap;">
