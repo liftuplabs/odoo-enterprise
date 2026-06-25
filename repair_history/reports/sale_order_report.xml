@@ -131,11 +131,10 @@
                                                 <div t-if="doc.company_id.invoice_layout_boxed" class="mb-3">
                                                     <strong style="font-size: 1.1em;"><span t-field="doc.company_id.name"/></strong><br/>
                                                     <span t-field="doc.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                    <div t-if="doc.company_id.vat"><strong>GSTIN:</strong> <span t-field="doc.company_id.vat"/></div>
-                                                    <div t-if="doc.company_id.email"><strong>Email:</strong> <span t-field="doc.company_id.email"/></div>
+                                                    <div t-if="doc.company_id.vat"><span>GSTIN:</span> <span t-field="doc.company_id.vat"/></div>
+                                                    <div t-if="doc.company_id.email"><span>Email:</span> <span t-field="doc.company_id.email"/></div>
                                                     <div t-if="doc.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="doc.company_id.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="doc.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                        <span>State Name :</span> <span t-field="doc.company_id.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.company_id.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
@@ -143,10 +142,9 @@
                                                     <strong>Consignee (Ship To):</strong><br/>
                                                     <strong style="font-size: 1.1em;"><span t-field="doc.partner_id.name"/></strong><br/>
                                                     <span t-field="doc.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                    <div t-if="doc.partner_shipping_id.vat"><strong>GSTIN:</strong> <span t-field="doc.partner_shipping_id.vat"/></div>
+                                                    <div t-if="doc.partner_shipping_id.vat"><span>GSTIN:</span> <span t-field="doc.partner_shipping_id.vat"/></div>
                                                     <div t-if="doc.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="doc.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
+                                                        <span>State Name :</span> <span t-field="doc.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
@@ -154,10 +152,9 @@
                                                     <strong>Bill To (Buyer):</strong><br/>
                                                     <strong style="font-size: 1.1em;"><span t-field="doc.partner_id.name"/></strong><br/>
                                                     <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                    <div t-if="doc.partner_id.vat"><strong>GSTIN:</strong> <span t-field="doc.partner_id.vat"/></div>
+                                                    <div t-if="doc.partner_id.vat"><span>GSTIN:</span> <span t-field="doc.partner_id.vat"/></div>
                                                     <div t-if="doc.company_id.partner_id.state_id">
-                                                        <strong>State Name :</strong> <span t-field="doc.partner_id.state_id.name"/>,
-                                                        <strong>Code :</strong> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
+                                                        <span>State Name :</span> <span t-field="doc.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
                                             </td>
@@ -169,26 +166,11 @@
                                                             <t t-if="doc.name">
                                                                 <strong>Quotation No.</strong>
                                                             </t>
-<!--                                                            <t t-else="">-->
-<!--                                                                <strong>Invoice No:</strong>-->
-<!--                                                            </t>-->
                                                             <br/><span t-field="doc.name"/>
                                                         </td>
                                                         <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="doc.date_order"/></td>
                                                     </tr>
 
-<!--                                                    <t t-if="doc.move_type in ['out_refund', 'in_refund']">-->
-<!--                                                        <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">-->
-<!--                                                            <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">-->
-<!--                                                                <strong>Invoice No:</strong><br/>-->
-<!--                                                                <span t-esc="doc.reversed_entry_id.name or doc.ref"/>-->
-<!--                                                            </td>-->
-<!--                                                            <td class="meta-cell">-->
-<!--                                                                <strong>Inv. Date:</strong><br/>-->
-<!--                                                                <span t-esc="doc.reversed_entry_id.invoice_date"/>-->
-<!--                                                            </td>-->
-<!--                                                        </tr>-->
-<!--                                                    </t>-->
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="doc.delivery_note"/></td>
                                                         <td class="meta-cell"><strong>Pay Mode:</strong><br/><span t-field="doc.mode_of_payment"/></td>
@@ -238,10 +220,10 @@
                                     <tbody>
                                         <t t-set="idx" t-value="1"/>
                                         <t t-foreach="doc.order_line" t-as="line">
-                                            <tr t-if="line.display_type == 'product'">
+                                            <tr t-if="not line.display_type">
                                                 <td class="text-center" style="width: 4%;"><span t-esc="idx"/></td>
                                                 <td class="text-start" style="width: 46%;"><span t-esc="line.product_template_id.name + (' - ' + line.product_template_id.description_sale if line.product_template_id.description_sale else '')"/></td>
-                                                <td class="text-center" style="width: 8%;"><span t-field="line.l10n_in_hsn_code"/></td>
+                                                <td class="text-center" style="width: 8%;"><span t-field="line.product_template_id.l10n_in_hsn_code"/></td>
                                                 <td class="text-center" style="width: 10%;"><span t-field="line.product_template_id.default_code"/></td>
                                                 <td class="text-end" style="width: 8%; white-space: nowrap;"><span t-field="line.product_uom_qty"/> <span t-field="line.product_uom.name"/></td>
                                                 <td class="text-end" style="width: 10%;"><span t-field="line.price_unit"/></td>
@@ -280,12 +262,12 @@
                             </div>
                         </div>
 
-<!--                         <div class="row mt-2" style="page-break-inside: avoid;">-->
-<!--                            <div class="col-12">-->
-<!--                                <strong>Amount Chargeable (in words):  E. &amp; doc.E</strong> <br/>-->
-<!--                                <span t-field="doc.amount_total_words"/>-->
-<!--                            </div>-->
-<!--                        </div>-->
+                        <div class="row mt-2" style="page-break-inside: avoid;">
+                            <div class="col-12">
+                                <strong>Amount Chargeable (in words): E. &amp; O.E.</strong> <br/>
+                                <span t-esc="doc.currency_id.amount_to_text(doc.amount_total)"/>
+                            </div>
+                        </div>
 
                         <div class="row mt-3" style="page-break-inside: auto;">
                              <t t-set="hsn_summary" t-value="doc._l10n_in_get_hsn_summary_table()"/>
@@ -393,23 +375,20 @@
                                         <div class="row m-0">
                                             <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>
                                             <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col">
-                                                <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
-                                                <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>
-                                                <span t-field="bank_info.bank_id.bic"/>
-                                            </div>
+                                            <div class="p-0 col"><span t-field="bank_info.bank_id.city"/> - <span t-field="bank_info.bank_id.bic"/></div>
                                         </div>
                                     </div>
                                 </t>
                             </div>
                         </div>
-                        <div class="row mt-5" style="page-break-inside: avoid;">
+
+                        <div class="row mt-4">
                             <div class="col-6">
-                                <strong>Customer's Seal and Signature</strong><br/>
+                                <br/><br/>
+                                <strong>Customer's Seal and Signature</strong>
                             </div>
                             <div class="col-6 text-end">
-                                <strong>For <span t-field="doc.company_id.name"/></strong>
-                                <br/><br/>
+                                <strong>For <span t-field="doc.company_id.name"/></strong><br/><br/>
                                 <t t-if="doc.company_id.digital_signature">
                                     <img t-att-src="image_data_uri(doc.company_id.digital_signature)" style="max-height: 80px;"/>
                                 </t>
@@ -417,6 +396,7 @@
                                 <strong>Authorized Signatory</strong>
                             </div>
                         </div>
+
                     </div>
                 </t>
             </xpath>
