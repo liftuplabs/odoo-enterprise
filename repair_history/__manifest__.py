@@ -34,12 +34,13 @@
         'views/stock_picking_views.xml',
         'views/stock_move_line_views.xml',
         'views/sale_order_views.xml',
-        'views/report_sale_order.xml',
+        # 'views/report_sale_order.xml',
         'views/report_purchase_order.xml',
         'views/check_list.xml',
         'views/hr_employee.xml',
         'views/res_company.xml',
         'reports/material_out_report.xml',
+        'reports/sale_order_report.xml',
         ],
 
     'assets': {
