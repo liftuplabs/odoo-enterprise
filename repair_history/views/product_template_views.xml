@@ -53,11 +53,11 @@
         </record>
 
         <record id="stock.product_template_action_product" model="ir.actions.act_window">
-            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'product'}</field>
+            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'consu'}</field>
         </record>
 
         <record id="stock.stock_product_normal_action" model="ir.actions.act_window">
-            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'product'}</field>
+            <field name="context">{'search_default_filter_tracked_goods': 1, 'default_type': 'consu'}</field>
         </record>
 
     </data>
