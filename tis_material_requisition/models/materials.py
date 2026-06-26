@@ -112,6 +112,17 @@ class MaterialRequisition(models.Model):
            self.repair_id.write({'state': 'confirmed'})
        return super(MaterialRequisition, self).unlink()
 
+    def remove_mismatch(self):
+        for record in self:
+            if record.repair_id and record.repair_id.move_ids:
+                repair_moves = record.repair_id.move_ids
+                move_ids = record.request_line_ids.mapped('move_id')
+                for line in repair_moves:
+                    if line not in move_ids and line.state not in ['done', 'cancel']:
+                        line.sudo().unlink()
+            else:
+                continue
+
 
 class MaterialRequestLine(models.Model):
     _name = "material.request.line"
@@ -154,7 +165,7 @@ class MaterialRequestLine(models.Model):
                     'company_id': repair.company_id.id,
                 })
                 line.write({'move_id': move.id})
-
+            line.requisition_id.remove_mismatch()  # Call the method to remove mismatched moves after creating new ones
         return lines
 
     def unlink(self):
@@ -163,6 +174,7 @@ class MaterialRequestLine(models.Model):
             # We only delete the move if it hasn't been processed (done) or cancelled yet
             if line.move_id and line.move_id.state not in ['done', 'cancel']:
                 line.move_id.sudo().unlink()
+        self.requisition_id.remove_mismatch()
         return super(MaterialRequestLine, self).unlink()
 
     def write(self, vals):
@@ -172,4 +184,5 @@ class MaterialRequestLine(models.Model):
             for line in self:
                 if line.move_id and line.move_id.state not in ['done', 'cancel']:
                     line.move_id.write({'product_uom_qty': line.quantity})
+        self.requisition_id.remove_mismatch()
         return res
