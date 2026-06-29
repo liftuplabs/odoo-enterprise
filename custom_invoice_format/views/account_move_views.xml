@@ -23,7 +23,7 @@
                             <field name="other_reference"/>
                             <field name="buyers_order_no"/>
                             <field name="buyers_order_date"/>
-                             <field name="mode_of_payment"/>
+                             <field name="mode_of_payment" invisible="1"/>
                         </group>
                     </group>
                     <group string="Terms">
