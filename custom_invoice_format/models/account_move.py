@@ -36,6 +36,14 @@ class AccountMove(models.Model):
         string='Ewb Valid Till',
     )
 
+    custom_layout_size = fields.Selection([
+        ('auto', 'Auto-Fit (Based on lines)'),
+        ('normal', 'Normal'),
+        ('compact', 'Compact'),
+        ('dense', 'Dense (30+ lines)')
+    ], string="PDF Layout Size", default='auto', copy=True,
+        help="Manually override the PDF layout density. 'Auto' calculates based on item count.")
+
     def action_compute_eway_bill_info(self):
         for move in self:
             move.eway_bill_no = False

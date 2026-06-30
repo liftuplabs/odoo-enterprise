@@ -24,19 +24,20 @@
                     <t t-set="product_lines" t-value="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')"/>
                     <t t-set="line_count" t-value="len(product_lines)"/>
 
+                    <t t-set="manual_size" t-value="o.custom_layout_size or 'auto'"/>
                     <t t-set="shrink_class" t-value="''"/>
                     <t t-set="base_font_size" t-value="'12px'"/>
                     <t t-set="qr_max_height" t-value="'120px'"/>
                     <t t-set="spacing_modifier" t-value="'1.1'"/>
 
-                    <t t-if="line_count &gt; 10 and line_count &lt;= 20">
+                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 10 and line_count &lt;= 20)">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="base_font_size" t-value="'11px'"/>
                         <t t-set="qr_max_height" t-value="'100px'"/>
                         <t t-set="spacing_modifier" t-value="'1.0'"/>
                     </t>
 
-                    <t t-if="line_count &gt; 20">
+                    <t t-if="manual_size == 'dense' or (manual_size == 'auto' and line_count &gt; 20)">
                         <t t-set="shrink_class" t-value="'layout-dense-30'"/>
                         <t t-set="base_font_size" t-value="'10px'"/>
                         <t t-set="qr_max_height" t-value="'80px'"/>
