@@ -8,8 +8,20 @@
             <xpath expr="//field[@name='invoice_line_ids']/list/field[@name='product_id']" position="attributes">
                 <attribute name="options">{'no_quick_create': True}</attribute>
             </xpath>
-            <xpath expr="//group[@id='header_right_group']" position="inside">
-                <field name="custom_layout_size" invisible="move_type not in ('out_invoice', 'out_refund')"/>
+            <xpath expr="//notebook" position="inside">
+                <page string="Print Layout Settings" name="print_layout_settings">
+                    <group>
+                        <group string="Typography &amp; Spacing">
+                            <field name="custom_layout_size" widget="radio" options="{'horizontal': true}"/>
+                            <field name="custom_font_size"/>
+                        </group>
+
+                        <group string="Table Configurations">
+                            <field name="custom_table_style"/>
+                            <field name="custom_bold_table_data"/>
+                        </group>
+                    </group>
+                </page>
             </xpath>
             <xpath expr="//notebook" position="inside">
                  <page string="Transport &amp; Delivery" name="custom_transport_info" invisible="move_type not in ('out_invoice', 'out_refund')">
