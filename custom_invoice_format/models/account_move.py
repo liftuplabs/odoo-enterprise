@@ -57,7 +57,7 @@ class AccountMove(models.Model):
             ('xlarge', 'Extra Large (15px)')
         ],
         string='Base Font Size',
-        default='standard'
+        default='large'
     )
 
     # 2. Table Configurations
@@ -68,7 +68,7 @@ class AccountMove(models.Model):
             ('striped', 'Striped Rows')
         ],
         string='Table Style',
-        default='bordered'
+        default='striped'
     )
 
     custom_bold_table_data = fields.Boolean(
