@@ -2,7 +2,6 @@
 <odoo>
     <data>
         <template id="report_custom_tax_invoice_document" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">
-
              <xpath expr="//t[@t-call='web.external_layout']" position="replace">
                 <t t-call="web.basic_layout">
                     <t t-set="o" t-value="o.with_context(lang=lang)" />
@@ -25,6 +24,7 @@
                     <t t-set="line_count" t-value="len(product_lines)"/>
 
                     <t t-set="manual_size" t-value="o.custom_layout_size or 'auto'"/>
+
                     <t t-set="shrink_class" t-value="''"/>
                     <t t-set="base_font_size" t-value="'12px'"/>
                     <t t-set="qr_max_height" t-value="'120px'"/>
@@ -44,6 +44,8 @@
                         <t t-set="spacing_modifier" t-value="'0.95'"/>
                     </t>
 
+                    <t t-set="table_font_size" t-value="o.custom_table_font_size or base_font_size"/>
+                    <t t-set="table_font_weight" t-value="'bold' if o.custom_table_font_bold else 'normal'"/>
                     <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
 
                         <style t-attf-type="text/css">
@@ -67,12 +69,22 @@
                                 border-collapse: collapse !important;
                                 width: 100%;
                             }
-                            .table-custom-bordered th,
+
+                            /* Typography overrides applied to table data cells */
                             .table-custom-bordered td {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 padding: 2px 4px !important;
                                 vertical-align: middle;
+                                font-size: <t t-esc="table_font_size"/> !important;
+                                font-weight: <t t-esc="table_font_weight"/> !important;
                             }
+
+                            .table-custom-bordered th {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                padding: 2px 4px !important;
+                                vertical-align: middle;
+                            }
+
                             .table-custom-bordered thead th {
                                 border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 font-weight: bold;
@@ -388,65 +400,9 @@
                                 </div>
                              </t>
                         </div>
-
-                         <div class="row mt-2">
-                             <div class="col-12 text-end">
-                                 Tax Amount (in words): <span t-esc="o.currency_id.amount_to_text(o.amount_tax)"/>
-                             </div>
-                         </div>
-
-                        <div class="row mt-5" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <strong>Company's PAN: </strong>
-                                <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
-                                <strong>Declaration:</strong><br/>
-                                <span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
-                            </div>
-                            <div class="col-6 text-end">
-                                <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>
-                                <t t-if="o.company_id.show_bank_detail">
-                                    <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">
-                                        <strong>Company's Bank Details</strong><br/>
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>
-                                        </div>
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>A/C No.</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>
-                                        </div>
-                                        <div class="row m-0">
-                                            <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>
-                                            <div class="p-0" style="width: 10px;">:</div>
-                                            <div class="p-0 col">
-                                                <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
-                                                <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>
-                                                <span t-field="bank_info.bank_id.bic"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </t>
-                            </div>
-                        </div>
-                        <div class="row mt-5" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <strong>Customer's Seal and Signature</strong><br/>
-                            </div>
-                            <div class="col-6 text-end">
-                                <strong>For <span t-field="o.company_id.name"/></strong>
-                                <br/><br/>
-                                <t t-if="o.company_id.digital_signature">
-                                    <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
-                                </t>
-                                <br/><br/>
-                                <strong>Authorized Signatory</strong>
-                            </div>
-                        </div>
                     </div>
                 </t>
-            </xpath>
+             </xpath>
         </template>
     </data>
 </odoo>

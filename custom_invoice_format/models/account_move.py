@@ -41,8 +41,20 @@ class AccountMove(models.Model):
         ('normal', 'Normal'),
         ('compact', 'Compact'),
         ('dense', 'Dense (30+ lines)')
-    ], string="PDF Layout Size", default='auto', copy=True,
-        help="Manually override the PDF layout density. 'Auto' calculates based on item count.")
+    ], string="PDF Layout Size", default='auto', copy=True)
+
+    custom_table_font_size = fields.Selection([
+        ('10px', '10px (Small)'),
+        ('11px', '11px'),
+        ('12px', '12px (Standard)'),
+        ('13px', '13px'),
+        ('14px', '14px (Large)')
+    ], string="Table Font Size", copy=True,
+        help="Leave blank to use the layout default.")
+
+    custom_table_font_bold = fields.Boolean(
+        string="Bold Table Data", default=False, copy=True,
+        help="Make all product rows and totals bold.")
 
     def action_compute_eway_bill_info(self):
         for move in self:
