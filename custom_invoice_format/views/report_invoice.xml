@@ -42,9 +42,7 @@
                     <t t-set="shrink_class" t-value="''"/>
                     <t t-set="base_font_size" t-value="'14px'"/>
                     <t t-set="qr_max_height" t-value="'120px'"/>
-                    <t t-set="spacing_modifier" t-value="'1.2'"/>
-
-                    <t t-if="user_font_size == 'small'">
+                    <t t-set="spacing_modifier" t-value="'1.3'"/> <t t-if="user_font_size == 'small'">
                         <t t-set="base_font_size" t-value="'10px'"/>
                     </t>
                     <t t-elif="user_font_size == 'standard'">
@@ -60,15 +58,15 @@
                         <t t-set="base_font_size" t-value="'15px'"/>
                     </t>
 
-                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 10 and line_count &lt;= 20)">
+                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 20 and line_count &lt;= 30)">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="qr_max_height" t-value="'100px'"/>
-                        <t t-set="spacing_modifier" t-value="'1.05'"/>
+                        <t t-set="spacing_modifier" t-value="'1.15'"/>
                     </t>
 
-                    <t t-if="manual_size == 'dense' or (manual_size == 'auto' and line_count &gt; 20)">
+                    <t t-if="manual_size == 'dense' or (manual_size == 'auto' and line_count &gt; 30)">
                         <t t-set="shrink_class" t-value="'layout-dense-30'"/>
-                        <t t-if="user_font_size in ['standard', 'medium', 'large']"><t t-set="base_font_size" t-value="'11px'"/></t>
+                        <t t-if="user_font_size in ['standard', 'medium', 'large', 'xlarge']"><t t-set="base_font_size" t-value="'11px'"/></t>
                         <t t-set="qr_max_height" t-value="'80px'"/>
                         <t t-set="spacing_modifier" t-value="'0.95'"/>
                     </t>
@@ -103,7 +101,7 @@
                             }
                             .table-custom-bordered th, .table-custom-bordered td {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                padding: 2px 4px !important;
+                                padding: 3px 5px !important;
                                 vertical-align: middle;
                             }
                             .table-custom-bordered thead th {
@@ -119,7 +117,7 @@
                                 border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                             }
                             .table-custom-minimal th, .table-custom-minimal td {
-                                padding: 2px 4px !important;
+                                padding: 3px 5px !important;
                                 vertical-align: middle;
                                 border-bottom: 1px solid #ddd !important;
                             }
@@ -129,29 +127,31 @@
                                 text-transform: uppercase; font-size: 0.9em;
                             }
 
-                            /* Style 3: Striped (Fixed to remove horizontal lines) */
-                            .table-custom-striped {
+                            /* Style 3: Striped (Hyper-specific to kill Bootstrap borders) */
+                            table.table-custom-striped {
                                 border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 border-collapse: collapse !important;
                                 width: 100%;
                             }
-                            .table-custom-striped th, .table-custom-striped td {
+                            table.table-custom-striped thead th {
+                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                border-top: none !important;
-                                border-bottom: none !important;
-                                padding: 2px 4px !important;
-                                vertical-align: middle;
-                            }
-                            .table-custom-striped tbody tr:nth-child(even) {
-                                background-color: #f5f5f5 !important;
-                            }
-                            .table-custom-striped thead th {
-                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                 font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
                                 text-transform: uppercase; font-size: 0.9em;
                             }
-                            .table-custom-striped tr.totals-row td {
+                            table.table-custom-striped tbody td {
+                                border-top: 0 !important;
+                                border-bottom: 0 !important;
+                                border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                padding: 4px 6px !important;
+                                vertical-align: middle;
+                            }
+                            table.table-custom-striped tbody tr:nth-child(even) td {
+                                background-color: #f5f5f5 !important;
+                            }
+                            table.table-custom-striped tr.totals-row td {
                                 border-top: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                             }
 
@@ -163,8 +163,8 @@
                             /* Compact Layout Adjustments */
                             .layout-compact .table-custom-bordered th, .layout-compact .table-custom-bordered td,
                             .layout-compact .table-custom-minimal th, .layout-compact .table-custom-minimal td,
-                            .layout-compact .table-custom-striped th, .layout-compact .table-custom-striped td {
-                                padding: 1px 3px !important;
+                            .layout-compact table.table-custom-striped th, .layout-compact table.table-custom-striped tbody td {
+                                padding: 2px 4px !important;
                             }
                             .layout-compact .address-box { padding: 4px 6px !important; }
                             .layout-compact .meta-cell { padding: 4px 5px !important; }
@@ -174,11 +174,11 @@
                             /* High Density Layout Adjustments */
                             .layout-dense-30 .table-custom-bordered th, .layout-dense-30 .table-custom-bordered td,
                             .layout-dense-30 .table-custom-minimal th, .layout-dense-30 .table-custom-minimal td,
-                            .layout-dense-30 .table-custom-striped th, .layout-dense-30 .table-custom-striped td {
-                                padding: 2px !important;
+                            .layout-dense-30 table.table-custom-striped th, .layout-dense-30 table.table-custom-striped tbody td {
+                                padding: 1px 2px !important;
                             }
-                            .layout-dense-30 .address-box { padding: 4px 5px !important; }
-                            .layout-dense-30 .meta-cell { padding: 3px 5px !important; }
+                            .layout-dense-30 .address-box { padding: 3px 4px !important; }
+                            .layout-dense-30 .meta-cell { padding: 3px 4px !important; }
                             .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 2px !important; }
                             .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 2px !important; }
                             .layout-dense-30 h5 { font-size: 1.1em !important; }
@@ -417,7 +417,7 @@
                              <t t-if="hsn_summary">
                                 <div class="col-12">
                                     <strong class="mb-1 d-block">HSN/SAC Summary:</strong>
-                                    <table t-attf-class="{{table_class}}">
+                                    <table class="table-custom-bordered">
                                         <thead>
                                             <tr>
                                                 <th rowspan="2" class="text-center" style="vertical-align: middle;">HSN/SAC</th>
@@ -463,7 +463,7 @@
                                                     <span t-esc="total_tax_amount" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
                                                 </td>
                                             </tr>
-                                            <tr class="totals-row text-bold">
+                                            <tr class="text-bold">
                                                 <td class="text-end">Total:</td>
                                                 <td class="text-end"><span t-esc="sum(item['amount_untaxed'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                                                  <t t-if="hsn_summary['has_gst']">
