@@ -58,7 +58,7 @@
                         <t t-set="base_font_size" t-value="'15px'"/>
                     </t>
 
-                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 20 and line_count &lt;= 30)">
+                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 10 and line_count &lt;= 30)">
                         <t t-set="shrink_class" t-value="'layout-compact'"/>
                         <t t-set="qr_max_height" t-value="'100px'"/>
                         <t t-set="spacing_modifier" t-value="'1.15'"/>
