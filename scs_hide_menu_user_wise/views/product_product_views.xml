@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hide in Variant Form View -->
+    <record id="product_product_form_view_hide_prices" model="ir.ui.view">
+        <field name="name">product.product.form.hide.prices</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lst_price']" position="attributes">
+                <attribute name="groups">!scs_hide_menu_user_wise.group_hide_sale_price</attribute>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="groups">!scs_hide_menu_user_wise.group_hide_cost_price</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Hide in Variant List (Tree) View -->
+    <record id="product_product_tree_view_hide_prices" model="ir.ui.view">
+        <field name="name">product.product.tree.hide.prices</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='lst_price']" position="attributes">
+                <attribute name="groups">!scs_hide_menu_user_wise.group_hide_sale_price</attribute>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="groups">!scs_hide_menu_user_wise.group_hide_cost_price</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>
