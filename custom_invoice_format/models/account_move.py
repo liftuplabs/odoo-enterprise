@@ -7,6 +7,12 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+try:
+    from num2words import num2words
+except ImportError:
+    _logger.warning("The num2words python library is not installed.")
+    num2words = None
+
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
@@ -77,6 +83,28 @@ class AccountMove(models.Model):
         help='Check this to make all text within the product lines bold.'
     )
 
+    # 3. Custom INR Word Formatter
+    def _get_inr_amount_in_words(self, amount):
+        self.ensure_one()
+        if num2words:
+            try:
+                integer_part = int(amount)
+                fractional_part = int(round((amount - integer_part) * 100))
+
+                # Force Indian numbering (Lakhs/Crores)
+                words = num2words(integer_part, lang='en_IN').title().replace(',', '')
+                result = words
+
+                if fractional_part > 0:
+                    dec_words = num2words(fractional_part, lang='en_IN').title().replace(',', '')
+                    result += f" and {dec_words} Paise"
+
+                return result + " Only"
+            except Exception:
+                pass
+
+        # Fallback to standard Odoo method if library behaves unexpectedly
+        return self.currency_id.amount_to_text(amount) + " Only"
 
     def action_compute_eway_bill_info(self):
         for move in self:

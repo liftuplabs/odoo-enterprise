@@ -419,11 +419,12 @@
                         <div class="row mt-2" style="page-break-inside: avoid;">
                             <div class="col-12">
                                 <strong>Amount Chargeable (in words):  E. &amp; O.E</strong> <br/>
-                                <span t-field="o.amount_total_words"/>
+                                <!-- Using our custom Python fallback method -->
+                                <span t-esc="o._get_inr_amount_in_words(o.amount_total)"/>
 
                                 <br/>
                                 <strong>Tax Amount (in words): </strong> <br/>
-                                <span t-esc="o.currency_id.amount_to_text(o.amount_tax)"/>
+                                <span t-esc="o._get_inr_amount_in_words(o.amount_tax)"/>
                             </div>
                         </div>
 
