@@ -156,7 +156,7 @@
             <!--            </xpath>-->
             <xpath expr="//page[@name='page_miscellaneous']" position="after">
                 <page string="Test Checklist" name="testing_checklist">
-                    <field name="check_list_ids">
+                    <field name="check_list_ids" readonly="state in ['done','delivered']">
                         <list editable="bottom">
                             <field name="question_id" />
                             <field name="is_check" />
@@ -177,14 +177,14 @@
                 <page string="Error And Failure Info" name="error_info">
                     <group>
                         <field name="incoming_software" invisible="1" />
-                        <field name="incoming_software_label" />
-                        <field name="customer_error" />
-                        <field name="reported_issue" />
-                        <field name="failure_category_main_info" />
-                        <field name="failure_sub_info" />
-                        <field name="failure_date" />
-                        <field name="failure_days" />
-                        <field name="failure_description" />
+                        <field name="incoming_software_label" readonly="state in ['done','delivered']"/>
+                        <field name="customer_error" readonly="state in ['done','delivered']"/>
+                        <field name="reported_issue" readonly="state in ['done','delivered']"/>
+                        <field name="failure_category_main_info" readonly="state in ['done','delivered']"/>
+                        <field name="failure_sub_info" readonly="state in ['done','delivered']"/>
+                        <field name="failure_date" readonly="state in ['done','delivered']"/>
+                        <field name="failure_days" readonly="state in ['done','delivered']"/>
+                        <field name="failure_description" readonly="state in ['done','delivered']"/>
                     </group>
                 </page>
             </xpath>
@@ -193,11 +193,17 @@
             </xpath>
             <xpath expr="//page[@name='repair_notes']" position="after">
                 <page string="Photo Evidence " name="action_notes">
-                    <field name="recommended_notes" placeholder="Add internal notes." />
+                    <field name="recommended_notes" placeholder="Add internal notes." readonly="state in ['done','delivered']"/>
                 </page>
             </xpath>
             <xpath expr="//page[@name='parts']" position="attributes">
                 <attribute name="string">New Parts</attribute>
+            </xpath>
+            <xpath expr="//page[@name='parts']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='internal_notes']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
             </xpath>
             <xpath expr="//page[@name='parts']//field[@name='move_ids']/list/field[@name='product_id']" position="attributes">
                 <attribute name="domain">[('type', 'in', ['consu', 'service'])]</attribute>
@@ -205,10 +211,10 @@
             </xpath>
             <xpath expr="//page[@name='parts']" position="after">
                 <page string="Old Parts" name="old_part">
-                    <field name="old_part_ids" />
+                    <field name="old_part_ids" readonly="state in ['done','delivered']"/>
                 </page>
                 <page string="Failure Parts" name="failure_part">
-                    <field name="failure_part_ids">
+                    <field name="failure_part_ids" readonly="state in ['done','delivered']">
                         <list editable="bottom">
                             <field name="product_id" />
                             <field name="barcode_text" />
@@ -217,7 +223,7 @@
                     </field>
                 </page>
                 <page string="Time Tracking" name="tracker">
-                    <field name="work_time_id2" />
+                    <field name="work_time_id2" readonly="state in ['done','delivered']"/>
                 </page>
                 <page string="QR Code" name="qr_tracker">
                     <div class="oe_button_box" name="qr_actions" style="margin-bottom: 1rem;">
@@ -231,13 +237,13 @@
                 <field name="return_date" invisible="1" />
                 <field name="can_edit_parts" invisible="1" />
                 <field name="quotation_day" invisible="1" />
-                <field name="account_en" />
-                <field name="sw_label" invisible="0" />
-                <field name="customer_po" />
-                <field name="start_date" />
-                <field name="end_date" />
-                <field name="warranty_days" />
-                <field name="warranty_validity" />
+                <field name="account_en" readonly="state in ['done','delivered']"/>
+                <field name="sw_label" readonly="state in ['done','delivered']"/>
+                <field name="customer_po" readonly="state in ['done','delivered']"/>
+                <field name="start_date" readonly="state in ['done','delivered']"/>
+                <field name="end_date" readonly="state in ['done','delivered']"/>
+                <field name="warranty_days" readonly="state in ['done','delivered']"/>
+                <field name="warranty_validity" readonly="state in ['done','delivered']"/>
             </xpath>
             <xpath expr="//field[@name='partner_id']" position="before">
                 <field name="rep_india" invisible="1" />
@@ -248,29 +254,53 @@
             <xpath expr="//field[@name='product_id']" position="attributes">
                 <attribute name="required">1</attribute>
             </xpath>
-            <xpath expr="//field[@name='product_id']" position="after">
-                <field name="lot_id" readonly="0" />
-                <field name="dc_number" string="DC Number" />
-                <field name="unit_status_us" invisible="0" />
-                <field name="partner_id" required="1" readonly="1" />
-                <field name="inward_date" invisible="0" />
-                <field name="customer_state" invisible="0" />
-                <field name="plant" invisible="0" />
-                <field name="open_by_customer" />
-                <field name="last_repair_date" />
+            <xpath expr="//field[@name='product_id']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_id']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='picking_type_id']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='schedule_date']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='move_ids']" position="attributes">
+                <attribute name="readonly">state in ['done','delivered']</attribute>
+            </xpath>
+            <xpath expr="//field[@name='lot_id']" position="after">
+<!--                <field name="lot_id" readonly="0" />-->
+                <field name="dc_number" string="DC Number" readonly="state in ['done','delivered']"/>
+                <field name="unit_status_us" readonly="state in ['done','delivered']" />
+                <field name="partner_id" required="1" readonly="state in ['done','delivered']"/>
+                <field name="inward_date" readonly="state in ['done','delivered']"/>
+                <field name="customer_state" readonly="state in ['done','delivered']"/>
+                <field name="plant" readonly="state in ['done','delivered']"/>
+                <field name="open_by_customer" readonly="state in ['done','delivered']"/>
+                <field name="last_repair_date" readonly="state in ['done','delivered']"/>
             </xpath>
             <!-- <xpath expr="//field[@name='partner_id']" position="attributes">
                 <attribute name="invisible">1</attribute>
             </xpath>
  -->
             <xpath expr="//field[@name='tag_ids']" position="after">
-                <field name="related_repair_ids" widget="many2many_tags" />
-                <field name="priority_level" />
+                <field name="related_repair_ids" widget="many2many_tags" readonly="state in ['done','delivered']"/>
+                <field name="priority_level" readonly="state in ['done','delivered']"/>
                 <field name="delivery_id" invisible="1" />
-                <field name="barcode" />
+                <field name="barcode" readonly="state in ['done','delivered']"/>
                 <field name="qr_code" widget="qrcode" options="{'size': 256}" invisible="1" />
                 <field name="qr_code_url" invisible="1" />
-                <field name="duration_expected" widget="float_time" />
+                <field name="duration_expected" widget="float_time" readonly="state in ['done','delivered']"/>
                 <field name="duration" invisible="0" widget="float_time" readonly="1" />
                 <field name="duration_compute" invisible="1" />
                 <field name="efficiency" invisible="0" readonly="1" />
@@ -408,254 +438,152 @@
     <template id="repair.report_repairorder">
         <t t-call="web.external_layout">
             <t t-set="o" t-value="doc.with_context(lang=doc.partner_id.lang)" />
-            <div class="page" style="font-family: Arial, sans-serif; font-size: 12px; padding-top: 10px;">
-                <!-- Top Section -->
-                <div style="
-    border: 1.5px solid #333;
-    padding: 18px;
-    margin-top: 20px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
-                    <div class="row" style="display: flex; justify-content: space-between;padding-top: 20px;">
-                        <div style="width: 48%;">
-                            <p style="margin: 6px 0;">
-                                <strong>Repair Order #:</strong>
-                                <span t-field="o.name" />
-                            </p>
-                            <p t-if="o.partner_id" style="margin: 6px 0;">
-                                <strong>Indian Repair NR:</strong>
-                            </p>
-                            <p t-if="o.product_id" style="margin: 6px 0;">
-                                <strong>Product:</strong>
-                                <span t-field="o.product_id" />
-                            </p>
-                            <p t-if="o.lot_id" style="margin: 6px 0;">
-                                <strong>Serial No.:</strong>
-                                <span t-field="o.lot_id.name" />
-                            </p>
-                        </div>
-                        <div style="width: 48%;">
-                            <p style="margin: 6px 0;">
-                                <strong>Status:</strong>
-                                <span t-field="o.state" />
-                            </p>
-                            <p style="margin: 6px 0;">
-                                <strong>Customer PO:</strong>
-                                <span t-field="o.customer_po" />
-                            </p>
-                            <p t-if="o.user_id" style="margin: 6px 0;">
-                                <strong>Responsible:</strong>
-                                <span t-field="o.user_id" />
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <!-- Title -->
-                <h2 style="text-align: center; margin-top: 20px; text-transform: uppercase;">Repair Report</h2>
-                <p style="text-align: center; font-size: 14px; margin-top: 20px;">
-                    <strong>Start Date:</strong>
-                    <span t-field="o.start_date" t-options='{"format": "dd MMMM yyyy"}' />
-                </p>
-                <!-- Section: Customer Info -->
-                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 20px;">Customer Info</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
+            <div class="page" style="font-family: Arial, sans-serif; font-size: 11px;">
+
+                <table class="table table-bordered table-sm">
+                    <tr>
+                        <td style="width: 50%;"><strong>INDIA Repair NR: </strong> <span t-field="o.name" /></td>
+                        <td style="width: 50%;"><strong>2M: </strong> <span t-field="o.name" /></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Customer PO: </strong> <span t-field="o.customer_po" /></td>
+                        <td><strong>2R: </strong> <span t-field="o.name" /></td>
+                    </tr>
+                </table>
+
+                <h5 style="background-color: #f2f2f2; padding: 5px; border: 1px solid #000; margin: 0;">Customer Info</h5>
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <tr>
+                        <th>Customer Number</th>
+                        <th>Customer Name</th>
+                        <th>Info</th>
+                        <th>Incoming Date</th>
+                        <th>Shipment Carrier</th>
+                    </tr>
+                    <tr>
+                        <td><span t-field="o.partner_id.ref" /></td>
+                        <td><span t-field="o.partner_id.name" /></td>
+                        <td><span t-field="o.partner_id.comment" /></td>
+                        <td><span t-field="o.inward_date" /></td>
+                        <td><span t-field="o.shipment_carrier" /></td>
+                    </tr>
+                </table>
+
+                <h5 style="background-color: #f2f2f2; padding: 5px; border: 1px solid #000; margin: 0;">Unit Info</h5>
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <tr>
+                        <th>Part Number</th>
+                        <th>Unit Type</th>
+                        <th>Serial Number</th>
+                        <th>Production Date</th>
+                        <th>Modul</th>
+                        <th>SW_on_Label</th>
+                        <th>Unit Status</th>
+                    </tr>
+                    <tr>
+                        <td><span t-field="o.product_id.default_code" /></td>
+                        <td><span t-field="o.unit" /></td>
+                        <td><span t-field="o.lot_id.name" /></td>
+                        <td><span t-field="o.inward_date" /></td>
+                        <td><span t-field="o.module" /></td>
+                        <td><span t-field="o.sw_on_label" /></td>
+                        <td><span t-field="o.unit_status_us" /></td>
+                    </tr>
+                </table>
+
+                <h5 style="background-color: #f2f2f2; padding: 5px; border: 1px solid #000; margin: 0;">Error Info</h5>
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <tr>
+                        <td><strong>Incoming Software:</strong> <span t-field="o.incoming_software" /></td>
+                        <td><strong>Failure Date:</strong> <span t-field="o.failure_date" /></td>
+                        <td><strong>Customer Error:</strong> <span t-field="o.customer_error" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Failure Description:</strong><br/><span t-field="o.failure_description" /></td>
+                    </tr>
+                </table>
+
+                <h5 style="background-color: #f2f2f2; padding: 5px; border: 1px solid #000; margin: 0;">OLD Parts</h5>
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <thead>
                         <tr>
-                            <th>Customer Number</th>
-                            <th>Customer Name</th>
+                            <th>Part Number</th>
+                            <th>Description</th>
                             <th>Info</th>
-                            <th>Incoming Date</th>
-                            <th>Shipment Carrier</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <t t-esc="o.partner_id.ref or 'N/A'" />
-                            </td>
-                            <td>
-                                <t t-esc="o.partner_id.name" />
-                            </td>
-                            <td>
-                                <t t-esc="o.partner_id.comment or 'N/A'" />
-                            </td>
-                            <td>
-                                <t t-esc="o.start_date.strftime('%d-%m-%Y') if o.start_date else ''" />
-                            </td>
-                            <td>
-                                <t t-esc="o.shipment_carrier if o.shipment_carrier else 'N/A'" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Section: Unit Info -->
-                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Unit Info</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
-                        <tr>
-                            <th>Part number</th>
-                            <th>Unit Type</th>
-                            <th>Serial Number</th>
-                            <th>HSN Number</th>
-                            <th>Production date</th>
-                            <th>Module</th>
-                            <th>Sw_on_label</th>
-                            <th>Unit Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="o.move_ids.filtered(lambda l: l.repair_line_type == 'add')" t-as="line">
-                            <td>
-                                <span t-field="o.product_id.default_code" />
-                            </td>
-                            <td>
-                                <span t-field="o.unit" />
-                            </td>
-                            <td>
-                                <span t-field="o.lot_id.name" />
-                            </td>
-                            <td>
-                                <span t-field="o.product_id.l10n_in_hsn_code" />
-                            </td>
-                            <td>
-                                <span t-field="o.module" />
-                            </td>
-                            <td>
-                                <span t-field="o.sw_on_label" />
-                            </td>
-                            <td>
-                                <span t-field="o.unit_status" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">New Parts Used</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
-                        <tr>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>UoM</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr t-foreach="o.move_ids.filtered(lambda l: l.repair_line_type == 'add')" t-as="line">
-                            <td>
-                                <span t-field="line.product_id" />
-                            </td>
-                            <td>
-                                <span t-field="line.product_uom_qty" />
-                            </td>
-                            <td>
-                                <span t-field="line.product_uom.name" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Section: Error Info -->
-                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Error Info</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
-                        <tr>
-                            <th>Incoming Software</th>
-                            <th>Failure Date</th>
-                            <th>Customer Error</th>
-                            <th>Failure Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>
-                                <t t-esc="o.get_selection_label('incoming_software_label')" />
-                            </td>
-                            <td>
-                                <t t-esc="o.failure_date" />
-                            </td>
-                            <td>
-                                <t t-esc="o.customer_error" />
-                            </td>
-                            <td>
-                                <t t-esc="o.failure_description" />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!-- Section: New Parts Used -->
-                <!-- Section: Old Parts -->
-                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">Old/Removed Parts</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
-                        <tr>
-                            <th>Description</th>
-                            <th>Qty</th>
-                            <th>UoM</th>
+                            <th>Info_</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr t-foreach="o.old_part_ids" t-as="line">
-                            <td>
-                                <span t-field="line.product_id" />
-                            </td>
+                            <td><span t-field="line.product_id.default_code" /></td>
+                            <td><span t-field="line.fi_part_old" /></td>
+                            <td><span t-field="line.warranty_validity" /></td>
+                            <td><span t-field="line.tag_ids" /></td>
                         </tr>
                     </tbody>
                 </table>
-                <!-- Section: Technician Work -->
-                <h4 style="background-color: #dfe6e9; padding: 6px;  margin-top: 40px;">Technician Work</h4>
-                <table class="table table-sm table-bordered" style="width: 100%;">
-                    <thead style="background-color: #b2bec3;">
+
+                <h5 style="background-color: #f2f2f2; padding: 5px; border: 1px solid #000; margin: 0;">NEW Parts</h5>
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <thead>
                         <tr>
-                            <th>Technician</th>
-                            <th>Duration (min)</th>
-                            <th>Status</th>
+                            <th>Part Number</th>
+                            <th>Description</th>
+                            <th>Info</th>
+                            <th>Info_</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr t-foreach="o.work_time_id2" t-as="work">
-                            <td>
-                                <span t-field="work.employee_id" />
-                            </td>
-                            <td>
-                                <span t-field="work.duration" />
-                            </td>
-                            <td>
-                                <span t-field="work.state" />
-                            </td>
+                        <tr t-foreach="o.move_ids.filtered(lambda l: l.repair_line_type == 'add')" t-as="line">
+                            <td><span t-field="line.product_id.default_code" /></td>
+                            <td><span t-field="line.product_id.name" /></td>
+                            <td><span t-field="line.name" /></td>
+                            <td><span t-field="line.product_id.categ_id.name" /></td>
                         </tr>
                     </tbody>
                 </table>
-                <!-- Remarks -->
-                <t t-if="o.internal_notes">
-                    <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">Technician Remarks</h4>
-                    <p t-field="o.internal_notes" />
-                </t>
-                <!-- Checklist -->
-                <h4 style="background-color: #dfe6e9; padding: 6px; margin-top: 40px;">
-                    Test With Motor Checklist
-                </h4>
-                <ul style="list-style-type: none; padding-left: 0; font-size: 14px;">
-                    <t t-foreach="o.check_list_ids" t-as="check">
-                        <li>
-                            <t t-if="check.is_check">☑</t>
-                            <t t-else="">☐</t>
-                            <t t-esc="check.question_id.name" />
-                        </li>
-                    </t>
-                </ul>
-                <!-- Signatures -->
-                <div style="margin-top: 80px; display: flex; justify-content: center; gap: 80px;">
-                    <div style="text-align: center;">
-                        <p>__________________________</p>
-                        <p>Customer Signature</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <p>__________________________</p>
-                        <p>Technician Signature</p>
-                    </div>
+
+                <table class="table table-bordered table-sm" style="margin-bottom: 20px;">
+                    <tr>
+                        <td style="width: 50%; vertical-align: top;">
+                            <strong>Test With Motor Checklist</strong>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li t-foreach="o.check_list_ids" t-as="check">
+                                    <t t-if="check.is_check">☑</t><t t-else="">☐</t>
+                                    <span t-field="check.question_id.name" />
+                                </li>
+                            </ul>
+                        </td>
+                        <td style="width: 50%; vertical-align: top;">
+                            <strong>Possible Reason:</strong><br/>
+                            <span t-field="o.failure_description" />
+                        </td>
+                    </tr>
+                </table>
+
+                <table class="table table-bordered table-sm">
+                    <tr style="background-color: #f2f2f2;">
+                        <td><strong>Repair Time</strong></td>
+                        <td><strong>Technician</strong></td>
+                        <td><strong>Outgoing Software</strong></td>
+                        <td><strong>Account</strong></td>
+                    </tr>
+                    <tr>
+                        <td><span t-field="o.duration" /></td>
+                        <td><span t-field="o.user_id" /></td>
+                        <td><span t-field="o.sw_on_label" /></td>
+                        <td><span t-field="o.account_en" /></td>
+                    </tr>
+                </table>
+
+                <div style="margin-top: 30px;">
+                     <strong>Sign:</strong> _______________
                 </div>
+
             </div>
         </t>
     </template>
+
     <template id="repair_tracking_template" name="Repair Order Tracking">
         <html>
 

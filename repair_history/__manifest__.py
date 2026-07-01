@@ -28,6 +28,7 @@
         'security/ir.model.access.csv',
         'views/custom.xml',
         # 'views/account_move_view.xml',
+        # update account_followup
         'views/res_partner_view.xml',
         # 'views/report_invoice.xml',
         'views/product_template_views.xml',
@@ -41,6 +42,7 @@
         'views/res_company.xml',
         'reports/material_out_report.xml',
         'reports/sale_order_report.xml',
+        # 'reports/repair_order_report.xml',
         ],
 
     'assets': {
