@@ -12,10 +12,15 @@
         <field name="sequence">10</field>
     </record>
 
+    <record id="group_repair_read_only" model="res.groups">
+        <field name="name">Read Only</field>
+        <field name="category_id" ref="module_category_repair_management"/>
+    </record>
+
     <record id="group_repair_user" model="res.groups">
         <field name="name">User</field>
         <field name="category_id" ref="module_category_repair_management"/>
-        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('stock.group_stock_user')), (4, ref('group_repair_read_only'))]"/>
     </record>
 
     <record id="group_repair_manager" model="res.groups">

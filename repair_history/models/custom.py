@@ -162,7 +162,7 @@ class StockMove(models.Model):
 
 class RepairOrderInherit(models.Model):
     _inherit = 'repair.order'
-    _description = 'Work Order'
+    _description = 'Work Orders'
 
 
     can_edit_parts = fields.Boolean(string="Can Edit Parts", compute='_compute_can_edit_parts', default=True,)
@@ -458,7 +458,7 @@ class RepairOrderInherit(models.Model):
 
     start_date = fields.Date("Start Date", default=fields.Date.today)
     inward_date = fields.Date("Inward Date", default=fields.Date.today)
-    delivery_id = fields.Many2one("stock.picking", "Stock Transfer", comppute='get_delivery_id')
+    delivery_id = fields.Many2one("stock.picking", "Stock Transfer", compute='get_delivery_id')
     return_date = fields.Date("Return Date")
     quotation_day = fields.Date("Quotation Day")
     recommended_notes = fields.Html(string="Recommended Notes")
@@ -495,9 +495,12 @@ class RepairOrderInherit(models.Model):
     requisition_count = fields.Integer(string='Requisition Count', compute='_compute_requisition_count')
 
     def get_delivery_id(self):
-        self.delivery_id = False
-        delivery = self.env['stock.picking'].search_count([('origin', '=', self.name)], limit=1)
-        self.delivery_id = delivery.id
+        for rec in self:
+            delivery = self.env['stock.picking'].search([('origin', '=', rec.name)], limit=1)
+            if delivery:
+                rec.delivery_id = delivery  # You can assign the record directly
+            else:
+                rec.delivery_id =  False
 
     def open_repair_confirmation_wizard(self):
         return {
@@ -518,7 +521,7 @@ class RepairOrderInherit(models.Model):
                 if rec.warranty_days:
                     rec.warranty_validity = self.end_date + timedelta(days=rec.warranty_days)
 
-    duration = fields.Float(string="Real Duration")
+    duration = fields.Float(string="Real Duration", compute='_compute_efficiency', store=True)
     warranty_days = fields.Integer(string="Warranty Duration (Days)")
     failure_days = fields.Integer(string="Failure Days (Days)")
     sw_on_label = fields.Char(string='Sw_On_Label')
@@ -594,7 +597,7 @@ class RepairOrderInherit(models.Model):
     last_repair_date = fields.Date(string=" Last repair day")
     duration_compute = fields.Float(string="Real Duration", compute='_compute_efficiency')
     duration_expected = fields.Float(string="Production Time")
-    efficiency = fields.Float("Efficiency (%)", store=True)
+    efficiency = fields.Float("Efficiency (%)", compute='_compute_efficiency', store=True)
     barcode = fields.Char(string='Barcode', related='product_id.barcode')
     sw_label = fields.Selection([
         ('v003_10_01', 'V003.10-01'),
@@ -806,7 +809,6 @@ class RepairOrderInherit(models.Model):
             duration_sum = sum(record.work_time_id2.mapped('duration'))  # this is already float
             duration_str = self.float_to_hours_minutes(duration_sum)  # for display/logging only
 
-            # ✅ Store float only
             record.duration_compute = duration_sum
             record.duration = duration_sum
 

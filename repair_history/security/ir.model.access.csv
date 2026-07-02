@@ -10,6 +10,8 @@ access_hr_employee_document_user,access.hr.employee.document.user,model_hr_emplo
 access_hr_employee_document_hr,access.hr.employee.document.hr,model_hr_employee_document,hr.group_hr_user,1,1,1,1
 access_serial_excel_import_wizard,access_serial_excel_import_wizard,model_serial_excel_import_wizard,,1,1,1,1
 access_serial_import_line,access_serial_import_line,model_serial_import_line,,1,1,1,1
+access_repair_order_read_only,repair.order.read.only,repair.model_repair_order,repair_history.group_repair_read_only,1,0,0,0
+access_repair_tags_read_only,repair.tags.read.only,repair.model_repair_tags,repair_history.group_repair_read_only,1,0,0,0
 repair.access_repair_user,Repair Order User,repair.model_repair_order,group_repair_user,1,1,1,0
 access_repair_order_manager,Repair Order Manager,repair.model_repair_order,group_repair_manager,1,1,1,1
 repair.access_repair_tag_user,Repair Tags User,repair.model_repair_tags,group_repair_user,1,1,1,1
