@@ -234,7 +234,7 @@
                 </page>
             </xpath>
             <xpath expr="//field[@name='under_warranty']" position="before">
-                <field name="return_date" invisible="1" />
+                <field name="return_date"/>
                 <field name="can_edit_parts" invisible="1" />
                 <field name="quotation_day" invisible="1" />
                 <field name="account_en" readonly="state in ['done','delivered']"/>

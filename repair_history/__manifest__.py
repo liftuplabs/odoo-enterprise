@@ -42,7 +42,7 @@
         'views/res_company.xml',
         'reports/material_out_report.xml',
         'reports/sale_order_report.xml',
-        # 'reports/repair_order_report.xml',
+        'reports/repair_order_report.xml',
         ],
 
     'assets': {
