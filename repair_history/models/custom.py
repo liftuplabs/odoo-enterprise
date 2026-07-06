@@ -26,6 +26,10 @@ class StockMove(models.Model):
     scan_data = fields.Text(string="Scan Data")
     customer_product_id = fields.Many2one('product.product', 'Product (Customer)', readonly=True)
     actual_product_id = fields.Many2one('product.product', 'Product (Actual)', readonly=True)
+    is_auto_added_service_part = fields.Boolean(
+        string="Auto-added Service Part",
+        default=False
+    )
     # product_id = fields.Many2one(
     #     'product.product', 'Product',
     #     check_company=True,
@@ -204,6 +208,45 @@ class RepairOrderInherit(models.Model):
         string="Related Repairs",
         domain="[('partner_id', '=', partner_id)]"
     )
+
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        new_service_products = self.env['product.product']
+        if self.product_id and self.product_id.product_tmpl_id.service_product_ids:
+            new_service_products = self.product_id.product_tmpl_id.service_product_ids
+
+        ui_lines_to_remove = self.move_ids.filtered(
+            lambda m: m.is_auto_added_service_part or (m.product_id and m.product_id.id in new_service_products.ids)
+        )
+        if ui_lines_to_remove:
+            self.move_ids -= ui_lines_to_remove
+
+        existing_product_ids = [m.product_id.id for m in self.move_ids if m.product_id]
+
+        new_moves = self.env['stock.move']
+
+        for sp in new_service_products:
+            if sp.id in existing_product_ids:
+                continue
+
+            move_vals = {
+                'name': sp.display_name,
+                'product_id': sp.id,
+                'product_uom_qty': 1.0,
+                'product_uom': sp.uom_id.id,
+                'repair_id': self._origin.id if self._origin else False,
+                'repair_line_type': 'add',
+                'location_id': self.location_id.id,
+                'location_dest_id': sp.with_company(self.company_id).property_stock_inventory.id,
+                'company_id': self.company_id.id,
+                'is_auto_added_service_part': True,  # Custom field set to True
+            }
+
+            new_moves += self.env['stock.move'].new(move_vals)
+            existing_product_ids.append(sp.id)
+
+        if new_moves:
+            self.move_ids += new_moves
 
     @api.model
     def default_get(self, fields_list):
@@ -647,6 +690,8 @@ class RepairOrderInherit(models.Model):
     qr_code_url = fields.Char(string="QR Code URL", compute="_compute_qr_code_url")
     qr_code = fields.Char(string="QR Code")
     qr_code_image = fields.Binary("QR Code", compute="_compute_qr_code_image", store=True)
+
+
 
     def action_repair_end(self):
         res = super(RepairOrderInherit, self).action_repair_end()

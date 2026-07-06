@@ -8,6 +8,8 @@ class ProductTemplate(models.Model):
 
     _inherit = 'product.template'
 
+    service_product_ids = fields.Many2many('product.product', string='Service Products', tracking=True)
+
     @api.constrains('name', 'default_code')
     def _check_unique_fields(self):
         for record in self:

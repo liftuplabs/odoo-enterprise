@@ -11,6 +11,15 @@
                 <xpath expr="//field[@name='default_code']" position="attributes">
                     <attribute name="string">Part Code</attribute>
                 </xpath>
+                <notebook position="inside">
+                    <page string="Services" name="services">
+                        <field name="service_product_ids">
+                            <list editable="top">
+                                <field name="name"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
             </field>
         </record>
 
