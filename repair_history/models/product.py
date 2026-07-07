@@ -10,7 +10,8 @@ class ProductTemplate(models.Model):
 
     service_product_ids = fields.Many2many('product.product', string='Service Products', tracking=True)
 
-    @api.constrains('name', 'default_code')
+    # @api.constrains('name', 'default_code')
+    @api.constrains('name')
     def _check_unique_fields(self):
         for record in self:
             if record.name:
@@ -18,10 +19,10 @@ class ProductTemplate(models.Model):
                 if self.search_count(domain) > 0:
                     raise ValidationError(_("The product name '%s' already exists!", record.name))
 
-            if record.default_code:
-                domain = [('default_code', '=', record.default_code), ('id', '!=', record.id)]
-                if self.search_count(domain) > 0:
-                    raise ValidationError(_("The part code '%s' is already exists!", record.default_code))
+            # if record.default_code:
+            #     domain = [('default_code', '=', record.default_code), ('id', '!=', record.id)]
+            #     if self.search_count(domain) > 0:
+            #         raise ValidationError(_("The part code '%s' is already exists!", record.default_code))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -59,7 +60,8 @@ class ProductProduct(models.Model):
 
     _inherit = 'product.product'
 
-    @api.constrains('name', 'default_code')
+    # @api.constrains('name', 'default_code')
+    @api.constrains('name')
     def _check_unique_fields(self):
         for record in self:
             if record.name:
@@ -67,10 +69,10 @@ class ProductProduct(models.Model):
                 if self.search_count(domain) > 0:
                     raise ValidationError(_("The product name '%s' already exists!", record.name))
 
-            if record.default_code:
-                domain = [('default_code', '=', record.default_code), ('id', '!=', record.id)]
-                if self.search_count(domain) > 0:
-                    raise ValidationError(_("The part code '%s' is already exists!", record.default_code))
+            # if record.default_code:
+            #     domain = [('default_code', '=', record.default_code), ('id', '!=', record.id)]
+            #     if self.search_count(domain) > 0:
+            #         raise ValidationError(_("The part code '%s' is already exists!", record.default_code))
 
     @api.model_create_multi
     def create(self, vals_list):
