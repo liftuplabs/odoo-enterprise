@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
 
 class AccountGroups(models.Model):
     _inherit = "account.group"
@@ -56,6 +57,9 @@ class AccountGroups(models.Model):
 
                 # Accounts that were added or kept: set their group_id
                 if new_accounts:
+                    for account in new_accounts:
+                        if account.group_id and account.group_id != record:
+                            raise ValidationError(f"Account '{account.name}' is already assigned to another group '{account.group_id.name}'. Please remove it from that group first.")
                     new_accounts.write({'group_id': record.id})
 
         return res
