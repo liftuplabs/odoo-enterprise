@@ -14,24 +14,58 @@
                     <t t-set="font_family" t-value="doc.company_id.custom_invoice_font_family or 'Arial'"/>
                     <t t-set="page_title" t-value="'QUOTATION'"/>
 
-                    <t t-set="product_lines" t-value="doc.order_line"/>
+                    <t t-set="product_lines" t-value="doc.order_line.filtered(lambda l: not l.display_type)"/>
                     <t t-set="line_count" t-value="len(product_lines)"/>
 
-                    <t t-set="shrink_class" t-value="''"/>
-                    <t t-set="base_font_size" t-value="'12px'"/>
-                    <t t-set="qr_max_height" t-value="'120px'"/>
-                    <t t-set="spacing_modifier" t-value="'1.1'"/>
+                    <!-- Custom Settings Configuration -->
+                    <t t-set="manual_size" t-value="doc.custom_layout_size or 'auto'"/>
+                    <t t-set="user_font_size" t-value="doc.custom_font_size or 'large'"/>
+                    <t t-set="table_style" t-value="doc.custom_table_style or 'striped'"/>
+                    <t t-set="bold_class" t-value="'text-bold' if doc.custom_bold_table_data else ''"/>
 
-                    <t t-if="line_count &gt; 10 and line_count &lt;= 20">
-                        <t t-set="shrink_class" t-value="'layout-compact'"/>
-                        <t t-set="base_font_size" t-value="'11px'"/>
-                        <t t-set="qr_max_height" t-value="'100px'"/>
-                        <t t-set="spacing_modifier" t-value="'1.0'"/>
+                    <!-- INLINE STYLE INJECTION FOR STRIPED FIX -->
+                    <t t-set="striped_inline" t-value="'border-top: 0px solid transparent !important; border-bottom: 0px solid transparent !important;' if table_style == 'striped' else ''"/>
+                    <t t-set="totals_top_border" t-value="'border-top: %spx solid %s !important;' % (border_width, border_color)"/>
+
+                    <t t-set="table_class" t-value="'table-custom-bordered'"/>
+                    <t t-if="table_style == 'minimal'">
+                        <t t-set="table_class" t-value="'table-custom-minimal'"/>
+                    </t>
+                    <t t-if="table_style == 'striped'">
+                        <t t-set="table_class" t-value="'table-custom-striped'"/>
                     </t>
 
-                    <t t-if="line_count &gt; 20">
-                        <t t-set="shrink_class" t-value="'layout-dense-30'"/>
+                    <t t-set="shrink_class" t-value="''"/>
+                    <t t-set="base_font_size" t-value="'14px'"/>
+                    <t t-set="qr_max_height" t-value="'120px'"/>
+                    <t t-set="spacing_modifier" t-value="'1.3'"/>
+
+                    <!-- Explicit Font Size Override -->
+                    <t t-if="user_font_size == 'small'">
                         <t t-set="base_font_size" t-value="'10px'"/>
+                    </t>
+                    <t t-elif="user_font_size == 'standard'">
+                        <t t-set="base_font_size" t-value="'12px'"/>
+                    </t>
+                    <t t-elif="user_font_size == 'medium'">
+                        <t t-set="base_font_size" t-value="'13px'"/>
+                    </t>
+                    <t t-elif="user_font_size == 'large'">
+                        <t t-set="base_font_size" t-value="'14px'"/>
+                    </t>
+                    <t t-elif="user_font_size == 'xlarge'">
+                        <t t-set="base_font_size" t-value="'15px'"/>
+                    </t>
+
+                    <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 10 and line_count &lt;= 30)">
+                        <t t-set="shrink_class" t-value="'layout-compact'"/>
+                        <t t-set="qr_max_height" t-value="'100px'"/>
+                        <t t-set="spacing_modifier" t-value="'1.15'"/>
+                    </t>
+
+                    <t t-if="manual_size == 'dense' or (manual_size == 'auto' and line_count &gt; 30)">
+                        <t t-set="shrink_class" t-value="'layout-dense-30'"/>
+                        <t t-if="user_font_size in ['standard', 'medium', 'large', 'xlarge']"><t t-set="base_font_size" t-value="'11px'"/></t>
                         <t t-set="qr_max_height" t-value="'80px'"/>
                         <t t-set="spacing_modifier" t-value="'0.95'"/>
                     </t>
@@ -40,39 +74,10 @@
 
                         <style t-attf-type="text/css">
                             /* Force strict pagination so the document breaks instead of shrinking */
-                            table {
-                                page-break-inside: auto !important;
-                            }
-                            tr {
-                                page-break-inside: avoid !important;
-                                page-break-after: auto !important;
-                            }
-                            thead {
-                                display: table-header-group !important;
-                            }
-                            tbody {
-                                display: table-row-group !important;
-                            }
-
-                            .table-custom-bordered {
-                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                border-collapse: collapse !important;
-                                width: 100%;
-                            }
-                            .table-custom-bordered th,
-                            .table-custom-bordered td {
-                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                padding: 2px 4px !important;
-                                vertical-align: middle;
-                            }
-                            .table-custom-bordered thead th {
-                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
-                                font-weight: bold;
-                                background-color: <t t-esc="header_bg"/> !important;
-                                color: <t t-esc="header_text"/> !important;
-                                text-transform: uppercase;
-                                font-size: 0.9em;
-                            }
+                            table { page-break-inside: auto !important; }
+                            tr { page-break-inside: avoid !important; page-break-after: auto !important; }
+                            thead { display: table-header-group !important; }
+                            tbody { display: table-row-group !important; }
 
                             /* Main Header Table Grid Base Styling */
                             .table-header-grid {
@@ -87,28 +92,87 @@
                                 vertical-align: top;
                             }
 
-                            /* Specific padding control to prevent text from touching lines */
+                            /* Style 1: Fully Bordered */
+                            .table-custom-bordered {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-collapse: collapse !important;
+                                width: 100%;
+                            }
+                            .table-custom-bordered th, .table-custom-bordered td {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                padding: 3px 5px !important;
+                                vertical-align: middle;
+                            }
+                            .table-custom-bordered thead th {
+                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
+                                text-transform: uppercase; font-size: 0.9em;
+                            }
+
+                            /* Style 2: Minimal */
+                            .table-custom-minimal {
+                                border-collapse: collapse !important;
+                                width: 100%;
+                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                            }
+                            .table-custom-minimal th, .table-custom-minimal td {
+                                padding: 3px 5px !important;
+                                vertical-align: middle;
+                                border-bottom: 1px solid #ddd !important;
+                            }
+                            .table-custom-minimal thead th {
+                                border-bottom: 2px solid <t t-esc="border_color"/> !important;
+                                font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
+                                text-transform: uppercase; font-size: 0.9em;
+                            }
+
+                            /* Style 3: Striped */
+                            table.table-custom-striped {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-collapse: collapse !important;
+                                width: 100%;
+                            }
+                            table.table-custom-striped thead th {
+                                border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
+                                text-transform: uppercase; font-size: 0.9em;
+                            }
+                            table.table-custom-striped tbody td {
+                                border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                padding: 4px 6px !important;
+                                vertical-align: middle;
+                            }
+                            table.table-custom-striped tbody tr:nth-child(even) td {
+                                background-color: #f5f5f5 !important;
+                            }
+
+                            /* Specific padding control */
                             .address-box { padding: 6px 8px !important; }
                             .meta-cell { padding: 5px 6px !important; vertical-align: top !important; }
-                            .text-bold { font-weight: bold; }
+                            .text-bold { font-weight: bold !important; }
 
                             /* Compact Layout Adjustments */
-                            .layout-compact .table-custom-bordered th,
-                            .layout-compact .table-custom-bordered td {
-                                padding: 1px 3px !important;
+                            .layout-compact .table-custom-bordered th, .layout-compact .table-custom-bordered td,
+                            .layout-compact .table-custom-minimal th, .layout-compact .table-custom-minimal td,
+                            .layout-compact table.table-custom-striped th, .layout-compact table.table-custom-striped tbody td {
+                                padding: 2px 4px !important;
                             }
                             .layout-compact .address-box { padding: 4px 6px !important; }
                             .layout-compact .meta-cell { padding: 4px 5px !important; }
                             .layout-compact .mt-2, .layout-compact .mt-3, .layout-compact .mt-5 { margin-top: 4px !important; }
                             .layout-compact .mb-2, .layout-compact .mb-3 { margin-bottom: 4px !important; }
 
-                            /* High Density 30-Line Layout Adjustments (Locked to allow overflow) */
-                            .layout-dense-30 .table-custom-bordered th,
-                            .layout-dense-30 .table-custom-bordered td {
-                                padding: 2px !important;
+                            /* High Density 30-Line Layout Adjustments */
+                            .layout-dense-30 .table-custom-bordered th, .layout-dense-30 .table-custom-bordered td,
+                            .layout-dense-30 .table-custom-minimal th, .layout-dense-30 .table-custom-minimal td,
+                            .layout-dense-30 table.table-custom-striped th, .layout-dense-30 table.table-custom-striped tbody td {
+                                padding: 1px 2px !important;
                             }
-                            .layout-dense-30 .address-box { padding: 4px 5px !important; }
-                            .layout-dense-30 .meta-cell { padding: 3px 5px !important; }
+                            .layout-dense-30 .address-box { padding: 3px 4px !important; }
+                            .layout-dense-30 .meta-cell { padding: 3px 4px !important; }
                             .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 2px !important; }
                             .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 2px !important; }
                             .layout-dense-30 h5 { font-size: 1.1em !important; }
@@ -140,11 +204,11 @@
 
                                                 <div t-if="doc.partner_shipping_id and (doc.partner_shipping_id != doc.partner_id)" class="mb-3">
                                                     <strong>Consignee (Ship To):</strong><br/>
-                                                    <strong style="font-size: 1.1em;"><span t-field="doc.partner_id.name"/></strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-field="doc.partner_shipping_id.name"/></strong><br/>
                                                     <span t-field="doc.partner_shipping_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
                                                     <div t-if="doc.partner_shipping_id.vat"><span>GSTIN:</span> <span t-field="doc.partner_shipping_id.vat"/></div>
-                                                    <div t-if="doc.company_id.partner_id.state_id">
-                                                        <span>State Name :</span> <span t-field="doc.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
+                                                    <div t-if="doc.partner_shipping_id.state_id">
+                                                        <span>State Name :</span> <span t-field="doc.partner_shipping_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.partner_shipping_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
@@ -153,7 +217,7 @@
                                                     <strong style="font-size: 1.1em;"><span t-field="doc.partner_id.name"/></strong><br/>
                                                     <span t-field="doc.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
                                                     <div t-if="doc.partner_id.vat"><span>GSTIN:</span> <span t-field="doc.partner_id.vat"/></div>
-                                                    <div t-if="doc.company_id.partner_id.state_id">
+                                                    <div t-if="doc.partner_id.state_id">
                                                         <span>State Name :</span> <span t-field="doc.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="doc.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
@@ -168,15 +232,17 @@
                                                             </t>
                                                             <br/><span t-field="doc.name"/>
                                                         </td>
-                                                        <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="doc.date_order"/></td>
+                                                        <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
                                                     </tr>
 
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="doc.delivery_note"/></td>
-                                                        <td class="meta-cell"><strong>Pay Mode:</strong><br/><span t-field="doc.mode_of_payment"/></td>
+                                                        <td class="meta-cell"><strong>Pay Mode:</strong><br/>
+                                                            <span t-if="doc.payment_term_id" t-field="doc.payment_term_id.name"/>
+                                                        </td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="doc.supplier_reference"/></td>
+                                                        <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="doc.client_order_ref"/></td>
                                                         <td class="meta-cell"><strong>Other Ref:</strong><br/><span t-field="doc.other_reference"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
@@ -192,7 +258,7 @@
                                                         <td class="meta-cell"><strong>Destination:</strong><br/><span t-field="doc.destination"/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2" class="meta-cell"><strong>Nature of Processig:</strong><br/><span t-field="doc.nature_of_process"/></td>
+                                                        <td colspan="2" class="meta-cell"><strong>Nature of Processing:</strong><br/><span t-field="doc.nature_of_process"/></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -204,7 +270,7 @@
 
                         <div class="row mt-3">
                             <div class="col-12">
-                                <table class="table-custom-bordered">
+                                <table t-attf-class="{{table_class}}">
                                     <thead>
                                         <tr>
                                             <th class="text-center" style="width: 4%;">SN</th>
@@ -221,27 +287,29 @@
                                         <t t-set="idx" t-value="1"/>
                                         <t t-foreach="doc.order_line" t-as="line">
                                             <tr t-if="not line.display_type">
-                                                <td class="text-center" style="width: 4%;"><span t-esc="idx"/></td>
-                                                <td class="text-start" style="width: 46%;"><span t-esc="line.product_template_id.name + (' - ' + line.product_template_id.description_sale if line.product_template_id.description_sale else '')"/></td>
-                                                <td class="text-center" style="width: 8%;"><span t-field="line.product_template_id.l10n_in_hsn_code"/></td>
-                                                <td class="text-center" style="width: 10%;"><span t-field="line.product_template_id.default_code"/></td>
-                                                <td class="text-end" style="width: 8%; white-space: nowrap;"><span t-field="line.product_uom_qty"/> <span t-field="line.product_uom.name"/></td>
-                                                <td class="text-end" style="width: 10%;"><span t-field="line.price_unit"/></td>
-                                                <td class="text-end" style="width: 4%;"><span t-field="line.product_uom"/></td>
-                                                <td class="text-end" style="width: 10%;"><span t-field="line.price_subtotal"/></td>
+                                                <td class="text-center" t-attf-style="width: 4%; {{striped_inline}}"><span t-esc="idx"/></td>
+                                                <td t-attf-class="text-start {{bold_class}}" t-attf-style="width: 46%; {{striped_inline}}"><span t-esc="line.product_template_id.name + (' - ' + line.product_template_id.description_sale if line.product_template_id.description_sale else '')"/></td>
+                                                <td class="text-center" t-attf-style="width: 8%; {{striped_inline}}"><span t-field="line.product_template_id.l10n_in_hsn_code"/></td>
+                                                <td class="text-center" t-attf-style="width: 10%; {{striped_inline}}"><span t-field="line.product_template_id.default_code"/></td>
+                                                <td t-attf-class="text-end {{bold_class}}" t-attf-style="width: 8%; white-space: nowrap; {{striped_inline}}"><span t-field="line.product_uom_qty"/> <span t-field="line.product_uom.name"/></td>
+                                                <td class="text-end" t-attf-style="width: 10%; {{striped_inline}}"><span t-field="line.price_unit"/></td>
+                                                <td class="text-end" t-attf-style="width: 4%; {{striped_inline}}"><span t-field="line.product_uom"/></td>
+                                                <td t-attf-class="text-end {{bold_class}}" t-attf-style="width: 10%; {{striped_inline}}"><span t-field="line.price_subtotal"/></td>
                                                 <t t-set="idx" t-value="idx + 1"/>
                                             </tr>
                                         </t>
-                                        <t t-set="total_qty" t-value="sum(line.product_uom_qty for line in doc.order_line)"/>
+                                        <t t-set="total_qty" t-value="sum(line.product_uom_qty for line in doc.order_line if not line.display_type)"/>
                                         <t t-set="total_uom" t-value="product_lines[0].product_uom.name if product_lines else ''"/>
+
+                                        <!-- Totals Row with enforced Top Border -->
                                         <tr>
-                                            <td colspan="4" class="text-end text-bold">Total</td>
-                                            <td class="text-end text-bold" style="white-space: nowrap;">
+                                            <td colspan="4" class="text-end text-bold" t-attf-style="{{totals_top_border}}">Total</td>
+                                            <td class="text-end text-bold" style="white-space: nowrap;" t-attf-style="{{totals_top_border}}">
                                                 <span t-esc="total_qty"/> <span t-esc="total_uom"/>
                                             </td>
-                                            <td class="text-end"></td>
-                                            <td class="text-end"></td>
-                                            <td class="text-end text-bold"><span t-field="doc.amount_untaxed"/></td>
+                                            <td class="text-end" t-attf-style="{{totals_top_border}}"></td>
+                                            <td class="text-end" t-attf-style="{{totals_top_border}}"></td>
+                                            <td class="text-end text-bold" t-attf-style="{{totals_top_border}}"><span t-field="doc.amount_untaxed"/></td>
                                         </tr>
 
                                         <t t-foreach="doc.tax_totals['subtotals']" t-as="subtotal">
@@ -269,6 +337,7 @@
                             </div>
                         </div>
 
+                        <!-- HSN Summary Table (Hardcoded to bordered class) -->
                         <div class="row mt-3" style="page-break-inside: auto;">
                              <t t-set="hsn_summary" t-value="doc._l10n_in_get_hsn_summary_table()"/>
                              <t t-if="hsn_summary">
@@ -355,7 +424,7 @@
                                 <strong>Company's PAN: </strong>
                                 <span t-field="doc.company_id.l10n_in_pan"/><br/><br/>
                                 <strong>Declaration:</strong><br/>
-                                <span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
+                                <span>We declare that this quotation shows the actual price of the goods described and that all particulars are true and correct.</span>
                             </div>
                             <div class="col-6 text-end">
                                 <t t-set="bank_info" t-value="doc.company_id.partner_id.bank_ids[:1]"/>

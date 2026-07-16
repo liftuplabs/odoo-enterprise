@@ -361,6 +361,9 @@
             <xpath expr="field[@name='state']" position="after">
                 <field name="tag_ids" widget="many2many_tags" options="{'no_create': True}" />
             </xpath>
+            <xpath expr="field[@name='sale_order_id']" position="after">
+                <field name="sale_order_date"/>
+            </xpath>
         </field>
     </record>
     <record id="action_return_all_and_validate" model="ir.actions.server">

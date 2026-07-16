@@ -49,6 +49,22 @@
         </field>
     </record>
 
+    <record id="view_out_invoice_tree_inherit_sale_info" model="ir.ui.view">
+        <field name="name">account.move.tree.inherit.sale.info</field>
+        <field name="model">account.move</field>
+        <!-- Inheriting the specific tree view for Customer Invoices -->
+        <field name="inherit_id" ref="account.view_out_invoice_tree"/>
+        <field name="arch" type="xml">
+
+            <!-- Insert the new columns after the Invoice Date -->
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="sale_order_name" optional="show"/>
+                <field name="sale_order_date" optional="show" widget="date"/>
+            </xpath>
+
+        </field>
+    </record>
+
     <record id="view_move_form_custom_eway" model="ir.ui.view">
         <field name="name">account.move.form.custom.eway</field>
         <field name="model">account.move</field>

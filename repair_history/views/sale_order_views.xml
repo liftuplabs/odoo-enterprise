@@ -112,6 +112,20 @@
                         </group>
                     </page>
                 </xpath>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Print Layout Settings" name="print_layout_settings">
+                        <group>
+                            <group string="Typography &amp; Spacing">
+                                <field name="custom_layout_size" widget="radio" options="{'horizontal': true}"/>
+                                <field name="custom_font_size"/>
+                            </group>
+                            <group string="Table Configurations">
+                                <field name="custom_table_style"/>
+                                <field name="custom_bold_table_data"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
             </field>
         </record>
     </data>

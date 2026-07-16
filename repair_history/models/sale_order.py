@@ -58,6 +58,47 @@ class SaleOrder(models.Model):
 
     alternate_so_ids = fields.One2many('sale.order', 'original_order_id', string='Alternate Orders')
     alternate_so_count = fields.Integer(compute='_compute_alternate_so_count', string='Alternate SO Count')
+    # 1. Spacing and Typography
+    custom_layout_size = fields.Selection(
+        selection=[
+            ('auto', 'Auto (Based on Lines)'),
+            ('compact', 'Compact'),
+            ('dense', 'Dense (30+ Lines)')
+        ],
+        string='Layout Size',
+        default='auto',
+        help='Controls the padding and line height of the printed document.'
+    )
+
+    custom_font_size = fields.Selection(
+        selection=[
+            ('small', 'Small (10px)'),
+            ('standard', 'Standard (12px)'),
+            ('medium', 'Medium (13px)'),
+            ('large', 'Large (14px)'),
+            ('xlarge', 'Extra Large (15px)')
+        ],
+        string='Base Font Size',
+        default='large'
+    )
+
+    # 2. Table Configurations
+    custom_table_style = fields.Selection(
+        selection=[
+            ('bordered', 'Fully Bordered'),
+            ('minimal', 'Minimal (Horizontal Lines Only)'),
+            ('striped', 'Striped Rows')
+        ],
+        string='Table Style',
+        default='striped'
+    )
+
+    custom_bold_table_data = fields.Boolean(
+        string='Bold Table Data',
+        default=False,
+        help='Check this to make all text within the product lines bold.'
+    )
+
 
     @api.depends('alternate_so_ids')
     def _compute_alternate_so_count(self):

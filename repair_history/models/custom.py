@@ -178,6 +178,11 @@ class RepairOrderInherit(models.Model):
         store=True,
         tracking=True,
     )
+    sale_order_date = fields.Datetime(
+        string="Sale Date",
+        related='sale_order_id.date_order',
+        store=True
+    )
 
     @api.constrains('name')
     def _check_duplicate_name(self):

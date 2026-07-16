@@ -83,6 +83,33 @@ class AccountMove(models.Model):
         help='Check this to make all text within the product lines bold.'
     )
 
+    sale_order_name = fields.Char(
+        string="Sale Order",
+        compute="_compute_sale_order_info",
+        store=True
+    )
+    sale_order_date = fields.Datetime(
+        string="Sale Date",
+        compute="_compute_sale_order_info",
+        store=True
+    )
+
+    @api.depends('invoice_line_ids.sale_line_ids.order_id')
+    def _compute_sale_order_info(self):
+        for move in self:
+            # Find all sale orders linked to this invoice's lines
+            sale_orders = move.invoice_line_ids.mapped('sale_line_ids.order_id')
+
+            if sale_orders:
+                # If multiple SOs exist for one invoice, join them with a comma
+                move.sale_order_name = ', '.join(sale_orders.mapped('name'))
+                # Fetch the date of the first related sale order
+                move.sale_order_date = sale_orders[0].date_order
+            else:
+                # Fallback to standard invoice_origin if not linked via lines
+                move.sale_order_name = move.invoice_origin or False
+                move.sale_order_date = False
+
     # 3. Custom INR Word Formatter
     def _get_inr_amount_in_words(self, amount):
         self.ensure_one()
