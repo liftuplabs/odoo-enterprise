@@ -13,8 +13,12 @@
                     <t t-set="header_text" t-value="o.company_id.custom_invoice_header_text_color or '#000000'"/>
                     <t t-set="font_family" t-value="o.company_id.custom_invoice_font_family or 'Arial'"/>
 
+                    <!-- Title Logic Updated for Debit Note -->
                     <t t-if="o.move_type in ['out_refund', 'in_refund']">
                         <t t-set="page_title" t-value="'CREDIT NOTE'"/>
+                    </t>
+                    <t t-elif="o.debit_origin_id">
+                        <t t-set="page_title" t-value="'DEBIT NOTE'"/>
                     </t>
                     <t t-else="">
                         <t t-set="page_title" t-value="o.company_id.custom_invoice_title or 'TAX INVOICE'"/>
@@ -298,8 +302,12 @@
                                                 <table style="margin: 0; width: 100%; border-collapse: collapse; height: 100%; table-layout: fixed;">
                                                      <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;">
+                                                            <!-- Label Logic Updated -->
                                                             <t t-if="o.move_type in ['out_refund', 'in_refund']">
                                                                 <strong>Credit Note No:</strong>
+                                                            </t>
+                                                            <t t-elif="o.debit_origin_id">
+                                                                <strong>Debit Note No:</strong>
                                                             </t>
                                                             <t t-else="">
                                                                 <strong>Invoice No:</strong>
@@ -309,10 +317,11 @@
                                                         <td class="meta-cell" style="width: 50%;"><strong>Date:</strong><br/><span t-field="o.invoice_date"/></td>
                                                     </tr>
 
+                                                    <!-- Original Invoice logic updated to handle both Credit and Debit Notes -->
                                                     <t t-if="o.move_type in ['out_refund', 'in_refund']">
                                                         <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                             <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">
-                                                                <strong>Invoice No:</strong><br/>
+                                                                <strong>Original Invoice No:</strong><br/>
                                                                 <span t-esc="o.reversed_entry_id.name or o.ref"/>
                                                             </td>
                                                             <td class="meta-cell">
@@ -321,6 +330,19 @@
                                                             </td>
                                                         </tr>
                                                     </t>
+                                                    <t t-elif="o.debit_origin_id">
+                                                        <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                            <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">
+                                                                <strong>Original Invoice No:</strong><br/>
+                                                                <span t-esc="o.debit_origin_id.name or o.ref"/>
+                                                            </td>
+                                                            <td class="meta-cell">
+                                                                <strong>Inv. Date:</strong><br/>
+                                                                <span t-esc="o.debit_origin_id.invoice_date"/>
+                                                            </td>
+                                                        </tr>
+                                                    </t>
+
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.delivery_note"/></td>
                                                         <td class="meta-cell"><strong>Pay Mode:</strong><br/><span t-field="o.invoice_payment_term_id.name"/></td>
