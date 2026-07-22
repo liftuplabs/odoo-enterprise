@@ -79,7 +79,9 @@
                         <button name="action_compute_eway_bill_info" type="object" string="Fetch Ewb info" class="btn btn-link"/>
                         <button name="action_update_eway_bill_json" invisible='not eway_bill_no' type="object" string="Update Ewb info" class="btn btn-link"/>
                     </group>
-                    <group></group>
+                    <group>
+                        <field name="transaction_type"/>
+                    </group>
                 </group>
             </xpath>
         </field>
