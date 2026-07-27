@@ -43,13 +43,12 @@ class AccountMove(models.Model):
     )
     transaction_type = fields.Selection(
         selection=[
-            ('regular', 'Regular'),
-            ('bill_to_ship_to', 'Bill To - Ship To'),
-            ('bill_from_dispatch_from', 'Bill From - Dispatch From'),
-            ('combination_of_2_and_3', 'Combination of 2 and 3')
+            ('1', 'Regular'),
+            ('2', 'Bill To - Ship To'),
+            ('3', 'Bill From - Dispatch From'),
+            ('4', 'Combination of 2 and 3')
         ],
         string='Transaction Type',
-        default='regular',
         help='Select the transaction type for this invoice.'
     )
 

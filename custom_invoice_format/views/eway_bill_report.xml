@@ -123,8 +123,8 @@
                     <div class="col-3 font-bold">: Outward</div>
                     <div class="col-2">Transaction Type</div>
                     <div class="col-5 font-bold">
-                        <t t-set="tx_type" t-value="doc.transaction_type if 'transaction_type' in doc and doc.transaction_type else 'regular'"/>
-                        <t t-set="tx_mapping" t-value="{'regular': 'Regular', 'bill_to_ship_to': 'Bill To - Ship To', 'bill_from_dispatch_from': 'Bill From - Dispatch From', 'combination_of_2_and_3': 'Combination of 2 and 3'}"/>
+                        <t t-set="tx_type" t-value="doc.transaction_type if 'transaction_type' in doc and doc.transaction_type else '1'"/>
+                        <t t-set="tx_mapping" t-value="{'1': 'Regular', '2': 'Bill To - Ship To', '3': 'Bill From - Dispatch From', '4': 'Combination of 2 and 3'}"/>
                         : <t t-out="tx_mapping.get(tx_type, tx_type)"/>
                     </div>
                 </div>
