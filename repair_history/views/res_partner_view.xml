@@ -10,5 +10,23 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="view_res_partner_filter_inherit_parent_only" model="ir.ui.view">
+            <field name="name">res.partner.search.inherit.parent.only</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <xpath expr="//filter[@name='type_person']" position="after">
+                    <filter string="Main Contacts" name="filter_main_contacts" domain="[('parent_id', '=', False)]"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="contacts.action_contacts" model="ir.actions.act_window">
+            <field name="context">{
+                'default_is_company': True,
+                'search_default_filter_main_contacts': 1
+            }</field>
+        </record>
     </data>
 </odoo>
