@@ -249,7 +249,7 @@
                                                 </div>
 
                                                 <!-- Consignee Address Box -->
-                                                <div t-if="o.partner_shipping_id and (o.partner_shipping_id != o.partner_id)" class="mb-3">
+                                                <div t-if="o.partner_shipping_id" class="mb-3">
                                                     <strong>Consignee (Ship To):</strong><br/>
                                                     <strong style="font-size: 1.1em;"><span t-field="o.partner_shipping_id.name"/></strong><br/>
 
