@@ -20,6 +20,46 @@ class PurchaseOrder(models.Model):
     buyers_order_no = fields.Char(string="Buyer's Order No.")
     buyers_order_date = fields.Date(string="Buyer's Order Date")
 
+    custom_layout_size = fields.Selection(
+        selection=[
+            ('auto', 'Auto (Based on Lines)'),
+            ('compact', 'Compact'),
+            ('dense', 'Dense (30+ Lines)')
+        ],
+        string='Layout Size',
+        default='auto',
+        help='Controls the padding and line height of the printed document.'
+    )
+
+    custom_font_size = fields.Selection(
+        selection=[
+            ('small', 'Small (10px)'),
+            ('standard', 'Standard (12px)'),
+            ('medium', 'Medium (13px)'),
+            ('large', 'Large (14px)'),
+            ('xlarge', 'Extra Large (15px)')
+        ],
+        string='Base Font Size',
+        default='large'
+    )
+
+    # 2. Table Configurations
+    custom_table_style = fields.Selection(
+        selection=[
+            ('bordered', 'Fully Bordered'),
+            ('minimal', 'Minimal (Horizontal Lines Only)'),
+            ('striped', 'Striped Rows')
+        ],
+        string='Table Style',
+        default='striped'
+    )
+
+    custom_bold_table_data = fields.Boolean(
+        string='Bold Table Data',
+        default=False,
+        help='Check this to make all text within the product lines bold.'
+    )
+
     def _l10n_in_get_hsn_summary_table(self):
         self.ensure_one()
         if self.company_id.country_id.code != 'IN':
