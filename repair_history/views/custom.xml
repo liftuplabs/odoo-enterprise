@@ -117,6 +117,9 @@
             <xpath expr="//button[@name='action_repair_start']" position="replace">
                 <button name="action_repair_start" invisible="state != 'confirmed' or not sale_order_id" type="object" string="Start Repair" class="oe_highlight" data-hotkey="q" />
             </xpath> -->
+            <xpath expr="//field[@name='schedule_date']" position="after">
+                <field name="delivery_date" readonly="1"/>
+            </xpath>
             <xpath expr="//button[@name='action_create_sale_order']" position="replace" />
             <xpath expr="//button[@name='action_repair_end']" position="replace">
                 <attribute name="invisible"></attribute>
@@ -363,6 +366,7 @@
             </xpath>
             <xpath expr="field[@name='sale_order_id']" position="after">
                 <field name="sale_order_date"/>
+                <field name="delivery_date" readonly="1"/>
             </xpath>
         </field>
     </record>

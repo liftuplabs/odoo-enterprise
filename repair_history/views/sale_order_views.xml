@@ -128,5 +128,18 @@
                 </xpath>
             </field>
         </record>
+
+        <record id="action_update_invoice_status_historical" model="ir.actions.server">
+            <field name="name">Update Invoice Status (Historical)</field>
+            <field name="model_id" ref="sale.model_sale_order"/>
+            <field name="binding_model_id" ref="sale.model_sale_order"/>
+            <field name="binding_view_types">list,form</field>
+            <field name="state">code</field>
+            <field name="code">
+                if records:
+                    records.action_update_historical_invoice_status()
+            </field>
+        </record>
+
     </data>
 </odoo>

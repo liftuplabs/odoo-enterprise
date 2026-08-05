@@ -99,6 +99,41 @@ class SaleOrder(models.Model):
         help='Check this to make all text within the product lines bold.'
     )
 
+    invoice_status = fields.Selection(
+        selection=[
+            ('upselling', 'Upselling Opportunity'),
+            ('invoiced', 'Invoiced'),  # Updated label here
+            ('to invoice', 'To Invoice'),
+            ('no', 'Nothing to Invoice')
+        ],
+        string="Invoice Status",
+        compute='_compute_invoice_status',
+        store=True
+    )
+
+    # 2. Override the compute method with your new logic
+    @api.depends('state', 'invoice_ids', 'invoice_ids.state')
+    def _compute_invoice_status(self):
+        for order in self:
+            # If order is not confirmed (Draft, Sent, Cancelled)
+            if order.state not in ['sale', 'done']:
+                order.invoice_status = 'no'
+                continue
+
+            # Look for any invoices linked to this SO that are NOT cancelled
+            active_invoices = order.invoice_ids.filtered(lambda inv: inv.state != 'cancel')
+
+            if active_invoices:
+                # If at least one active invoice exists, mark as Invoiced
+                order.invoice_status = 'invoiced'
+            else:
+                # If no invoices exist yet, mark as Nothing to Invoice
+                order.invoice_status = 'no'
+
+    def action_update_historical_invoice_status(self):
+        """ Manually force recompute of invoice_status for selected older records """
+        for order in self:
+            order._compute_invoice_status()
 
     @api.depends('alternate_so_ids')
     def _compute_alternate_so_count(self):

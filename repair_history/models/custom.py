@@ -183,6 +183,27 @@ class RepairOrderInherit(models.Model):
         related='sale_order_id.date_order',
         store=True
     )
+    delivery_date = fields.Datetime(
+        string="Delivery Date",
+        compute='_compute_delivery_date',
+        store=True,
+        tracking=True
+    )
+
+    @api.depends('sale_order_id.picking_ids.state', 'sale_order_id.picking_ids.date_done')
+    def _compute_delivery_date(self):
+        for record in self:
+            delivery_date = False
+            if record.sale_order_id and record.sale_order_id.picking_ids:
+                # Find all 'done' outgoing deliveries linked to the Sales Order
+                done_deliveries = record.sale_order_id.picking_ids.filtered(
+                    lambda p: p.picking_type_code == 'outgoing' and p.state == 'done' and p.date_done
+                )
+                if done_deliveries:
+                    # If there are multiple deliveries, get the most recent one
+                    delivery_date = max(done_deliveries.mapped('date_done'))
+
+            record.delivery_date = delivery_date
 
     @api.constrains('name')
     def _check_duplicate_name(self):
