@@ -5,6 +5,10 @@
             <t t-call="web.basic_layout">
                 <t t-set="o" t-value="o.with_context(lang=lang)" />
 
+                <!-- Check context for the selected print type -->
+                <t t-set="requested_copy" t-value="o.env.context.get('custom_print_copy', 'Original')"/>
+                <t t-set="copies_to_print" t-value="['Original', 'Duplicate', 'Triplicate'] if requested_copy == 'All' else [requested_copy]"/>
+
                 <t t-set="border_color" t-value="o.company_id.custom_invoice_border_color or '#000000'"/>
                 <t t-set="border_width" t-value="o.company_id.custom_invoice_border_thickness or 1"/>
                 <t t-set="header_bg" t-value="o.company_id.custom_invoice_header_bg_color or '#f0f0f0'"/>
@@ -27,159 +31,172 @@
                     <t t-set="base_font_size" t-value="'10px'"/>
                 </t>
 
-                <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: #{font_family}, sans-serif; font-size: #{base_font_size}; line-height: #{spacing_modifier}; padding-top: 0px; margin-top: 0px;">
+                <!-- Loop over the required copies -->
+                <t t-foreach="copies_to_print" t-as="copy_name">
+                    <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: #{font_family}, sans-serif; font-size: #{base_font_size}; line-height: #{spacing_modifier}; padding-top: 0px; margin-top: 0px;">
 
-                    <style type="text/css">
-                        .table-custom-bordered { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
-                        .table-custom-bordered th, .table-custom-bordered td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 2px 4px !important; vertical-align: middle; }
-                        .table-custom-bordered thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; }
+                        <style type="text/css">
+                            .table-custom-bordered { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
+                            .table-custom-bordered th, .table-custom-bordered td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 2px 4px !important; vertical-align: middle; }
+                            .table-custom-bordered thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; }
 
-                        .table-header-grid { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
-                        .table-header-grid td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 5px; vertical-align: top; }
-                    </style>
+                            .table-header-grid { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
+                            .table-header-grid td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 5px; vertical-align: top; }
+                        </style>
 
-                    <div class="row">
-                        <div class="col-12 text-end"><em>(Duplicate)</em></div>
-                    </div>
-
-                    <div class="row mb-1 text-center">
-                        <div class="col-12"><h5 style="font-weight: bold; margin: 0; text-transform: uppercase;">Material Out</h5></div>
-                    </div>
-
-                    <div class="row mt-2">
-                        <div class="col-12">
-                            <table class="table-header-grid">
-                                <tbody>
-                                    <tr>
-                                        <td style="width: 50%;">
-                                            <div t-if="o.company_id.invoice_layout_boxed" class="mb-2">
-                                                <strong><span t-field="o.company_id.name"/></strong><br/>
-                                                <span t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                <div t-if="o.company_id.vat"><span>GSTIN:</span> <span t-field="o.company_id.vat"/></div>
-                                                <div t-if="o.company_id.partner_id.state_id">
-                                                    <span>State Name :</span> <span t-field="o.company_id.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
-                                                </div>
-                                            </div>
-
-                                            <div class="mb-2">
-                                                <strong>Dispatch To:</strong><br/>
-                                                <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
-                                                <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
-                                                <div t-if="o.partner_id.state_id">
-                                                    <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
-                                                </div>
-                                            </div>
-
-                                            <div>
-                                                <strong>Party:</strong><br/>
-                                                <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
-                                                <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
-                                                <div t-if="o.partner_id.state_id">
-                                                    <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                        <td style="width: 50%; padding: 0 !important;">
-                                            <table style="width: 100%; border-collapse: collapse;">
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; width: 50%; padding: 5px;"><strong>Challan No:</strong><br/><span t-field="o.name"/></td>
-                                                    <td style="padding: 5px;"><strong>Date:</strong><br/><span t-field="o.scheduled_date"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
-                                                    <td style="padding: 5px;"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.sale_id.mode_of_payment"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Supplier Ref:</strong><br/><span t-field="o.sale_id.supplier_reference"/></td>
-                                                    <td style="padding: 5px;"><strong>Other Ref:</strong><br/><span t-field="o.sale_id.other_reference"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Buyer Order No:</strong><br/><span t-field="o.sale_id.buyers_order_no"/></td>
-                                                    <td style="padding: 5px;"><strong>Dated:</strong><br/><span t-field="o.sale_id.buyers_order_date"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatch Doc No:</strong><br/><span t-field="o.sale_id.dispatch_doc_no"/></td>
-                                                    <td style="padding: 5px;"><strong>Del. Note Date:</strong><br/><span t-field="o.sale_id.delivery_note_date"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatched Through:</strong><br/><span t-field="o.sale_id.dispatch_through"/></td>
-                                                    <td style="padding: 5px;"><strong>Destination:</strong><br/><span t-field="o.sale_id.destination"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td style="border-right: 1px solid #000; padding: 5px;"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.sale_id.date_time_of_issue"/></td>
-                                                    <td style="padding: 5px;"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="2" style="padding: 5px;"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
-                                                </tr>
-                                                <tr><td colspan="2" style="padding: 5px;"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td></tr>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Dynamic Label (Original, Duplicate, etc.) -->
+                        <div class="row">
+                            <div class="col-12 text-end" style="min-height: 20px;">
+                                <em t-if="copy_name != 'Not Applicable'">(<t t-esc="copy_name"/>)</em>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <table class="table-custom-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="text-center" style="width: 5%;">SN</th>
-                                        <th class="text-start">Description of Goods</th>
-                                        <th class="text-center" style="width: 10%;">Part No.</th>
-                                        <th class="text-end" style="width: 10%;">Quantity</th>
-                                        <th class="text-end" style="width: 10%;">Rate</th>
-                                        <th class="text-end" style="width: 5%;">Per</th>
-                                        <th class="text-end" style="width: 15%;">Amount</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <t t-set="idx" t-value="1"/>
-                                    <t t-foreach="product_lines" t-as="line">
+                        <div class="row mb-1 text-center">
+                            <div class="col-12"><h5 style="font-weight: bold; margin: 0; text-transform: uppercase;">Material Out</h5></div>
+                        </div>
+
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <table class="table-header-grid">
+                                    <tbody>
                                         <tr>
-                                            <td class="text-center"><span t-esc="idx"/></td>
-                                            <td><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
-                                            <td class="text-center"><span t-field="line.product_id.default_code"/></td>
-                                            <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom.name"/></td>
-                                            <td></td>
-                                            <td></td>
-                                            <td></td>
+                                            <td style="width: 50%;">
+                                                <div t-if="o.company_id.invoice_layout_boxed" class="mb-2">
+                                                    <strong><span t-field="o.company_id.name"/></strong><br/>
+                                                    <span t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                                    <div t-if="o.company_id.vat"><span>GSTIN:</span> <span t-field="o.company_id.vat"/></div>
+                                                    <div t-if="o.company_id.partner_id.state_id">
+                                                        <span>State Name :</span> <span t-field="o.company_id.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-2">
+                                                    <strong>Dispatch To:</strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
+                                                    <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                                    <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
+                                                    <div t-if="o.partner_id.state_id">
+                                                        <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <strong>Party:</strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
+                                                    <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                                    <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
+                                                    <div t-if="o.partner_id.state_id">
+                                                        <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
+                                                    </div>
+                                                </div>
+                                            </td>
+
+                                            <td style="width: 50%; padding: 0 !important;">
+                                                <table style="width: 100%; border-collapse: collapse;">
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; width: 50%; padding: 5px;"><strong>Challan No:</strong><br/><span t-field="o.name"/></td>
+                                                        <td style="padding: 5px;"><strong>Date:</strong><br/><span t-field="o.scheduled_date"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
+                                                        <td style="padding: 5px;"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.sale_id.mode_of_payment"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Supplier Ref:</strong><br/><span t-field="o.sale_id.supplier_reference"/></td>
+                                                        <td style="padding: 5px;"><strong>Other Ref:</strong><br/><span t-field="o.sale_id.other_reference"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Buyer Order No:</strong><br/><span t-field="o.sale_id.buyers_order_no"/></td>
+                                                        <td style="padding: 5px;"><strong>Dated:</strong><br/><span t-field="o.sale_id.buyers_order_date"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatch Doc No:</strong><br/><span t-field="o.sale_id.dispatch_doc_no"/></td>
+                                                        <td style="padding: 5px;"><strong>Del. Note Date:</strong><br/><span t-field="o.sale_id.delivery_note_date"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatched Through:</strong><br/><span t-field="o.sale_id.dispatch_through"/></td>
+                                                        <td style="padding: 5px;"><strong>Destination:</strong><br/><span t-field="o.sale_id.destination"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.sale_id.date_time_of_issue"/></td>
+                                                        <td style="padding: 5px;"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" style="padding: 5px;"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
+                                                    </tr>
+                                                    <tr><td colspan="2" style="padding: 5px;"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td></tr>
+                                                </table>
+                                            </td>
                                         </tr>
-                                        <t t-set="idx" t-value="idx + 1"/>
-                                    </t>
-
-                                    <tr>
-                                        <td colspan="3" class="text-end font-weight-bold">Total</td>
-                                        <td class="text-end font-weight-bold"><span t-esc="sum(l.quantity for l in product_lines)"/></td>
-                                        <td></td><td></td><td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="row mt-5">
-                        <div class="col-6"><strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/></div>
-                    </div>
-                    <div class="row mt-5">
-                        <div class="col-6 text-end offset-6">
-                            <strong>For <span t-field="o.company_id.name"/></strong><br/><br/>
-                            <t t-if="o.company_id.digital_signature"><img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/></t><br/><br/>
-                            <strong>Authorized Signatory</strong>
-                        </div>
-                    </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <table class="table-custom-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center" style="width: 5%;">SN</th>
+                                            <th class="text-start">Description of Goods</th>
+                                            <th class="text-center" style="width: 10%;">Part No.</th>
+                                            <th class="text-center" style="width: 15%;">Serial No.</th>
+                                            <th class="text-end" style="width: 10%;">Quantity</th>
+                                            <th class="text-end" style="width: 10%;">Rate</th>
+                                            <th class="text-end" style="width: 5%;">Per</th>
+                                            <th class="text-end" style="width: 15%;">Amount</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <t t-set="idx" t-value="1"/>
+                                        <t t-foreach="product_lines" t-as="line">
+                                            <tr>
+                                                <td class="text-center"><span t-esc="idx"/></td>
+                                                <td><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
+                                                <td class="text-center"><span t-field="line.product_id.default_code"/></td>
+                                                <td class="text-center">
+                                                    <span t-esc="', '.join([x for x in line.move_line_ids.mapped('lot_id.name') + line.move_line_ids.mapped('lot_name') if x])"/>
+                                                </td>
+                                                <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom.name"/></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            <t t-set="idx" t-value="idx + 1"/>
+                                        </t>
 
-                    <div class="row mt-5">
-                        <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
-                            <span style="font-size: 0.8em;">This is a computer generated document</span>
+                                        <tr>
+                                            <td colspan="4" class="text-end font-weight-bold">Total</td>
+                                            <td class="text-end font-weight-bold"><span t-esc="sum(l.quantity for l in product_lines)"/></td>
+                                            <td></td><td></td><td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+
+                        <div class="row mt-5">
+                            <div class="col-6"><strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/></div>
+                        </div>
+                        <div class="row mt-5">
+                            <div class="col-6 text-end offset-6">
+                                <strong>For <span t-field="o.company_id.name"/></strong><br/><br/>
+                                <t t-if="o.company_id.digital_signature"><img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/></t><br/><br/>
+                                <strong>Authorized Signatory</strong>
+                            </div>
+                        </div>
+
+                        <div class="row mt-5">
+                            <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
+                                <span style="font-size: 0.8em;">This is a computer generated document</span>
+                            </div>
+                        </div>
+
+                        <!-- Force a page break between copies if iterating over 'All' -->
+                        <p style="page-break-after: always;" t-if="not copy_name_last"/>
                     </div>
-                </div>
+                </t>
             </t>
         </xpath>
     </template>

@@ -11,3 +11,4 @@ from .import stock_picking
 from . import stock_move_line
 from . import customer_pending_product
 from . import product
+from . import material_out_print_wizard

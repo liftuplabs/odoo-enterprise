@@ -9,6 +9,7 @@ class ProductTemplate(models.Model):
     _inherit = 'product.template'
 
     service_product_ids = fields.Many2many('product.product', string='Service Products', tracking=True)
+    item_code = fields.Char(string='Item Code', tracking=True)
 
     # @api.constrains('name', 'default_code')
     @api.constrains('name')
@@ -59,6 +60,8 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
 
     _inherit = 'product.product'
+
+    item_code = fields.Char(string='Item Code', tracking=True)
 
     # @api.constrains('name', 'default_code')
     @api.constrains('name')
