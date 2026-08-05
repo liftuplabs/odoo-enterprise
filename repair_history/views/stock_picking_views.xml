@@ -114,7 +114,7 @@
                     <field name="is_inward_confirm" invisible="1"/>
                 </xpath>
                 <xpath expr="//header" position="inside">
-                    <button name="action_open_print_wizard" type="object" string="Print Delivery Challan" class="oe_highlight" invisible="state != 'done'"/>
+                    <button name="action_open_print_wizard" type="object" string="Print Delivery Challan" class="oe_highlight"/>
                 </xpath>
             </field>
         </record>
