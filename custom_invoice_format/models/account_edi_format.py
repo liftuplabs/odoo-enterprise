@@ -209,3 +209,38 @@ class AccountEdiFormatInt(models.Model):
                 },
             })
         return json_payload
+
+    def _l10n_in_edi_generate_invoice_json(self, invoice):
+        json_payload = super()._l10n_in_edi_generate_invoice_json(invoice)
+
+        saler_buyer = self._get_l10n_in_edi_saler_buyer_party(invoice)
+        is_overseas = invoice.l10n_in_gst_treatment == "overseas"
+
+        json_payload.pop("DispDtls", None)
+        json_payload.pop("ShipDtls", None)
+
+        if not invoice.transaction_type:
+            raise UserError(_("Please select transaction type."))
+
+        if invoice.transaction_type in ('2', '4'):
+            ship_to = saler_buyer.get("ship_to_details")
+            if ship_to:
+                json_payload.update({
+                    "ShipDtls": self._get_l10n_in_edi_partner_details(
+                        ship_to,
+                        is_overseas=is_overseas
+                    )
+                })
+
+        if invoice.transaction_type in ('3', '4'):
+            dispatch = saler_buyer.get("dispatch_details")
+            if dispatch:
+                json_payload.update({
+                    "DispDtls": self._get_l10n_in_edi_partner_details(
+                        dispatch,
+                        set_vat=False,
+                        set_phone_and_email=False
+                    )
+                })
+
+        return json_payload

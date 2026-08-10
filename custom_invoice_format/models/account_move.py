@@ -4,7 +4,7 @@ import logging
 import json
 import base64
 from odoo.exceptions import UserError
-
+import re
 _logger = logging.getLogger(__name__)
 
 try:
@@ -49,6 +49,9 @@ class AccountMove(models.Model):
             ('4', 'Combination of 2 and 3')
         ],
         string='Transaction Type',
+        compute='_compute_transaction_type',
+        store=True,
+        readonly=False,  # <--- Crucial: Allows manual user override after auto-computation
         help='Select the transaction type for this invoice.'
     )
 
@@ -104,6 +107,53 @@ class AccountMove(models.Model):
         compute="_compute_sale_order_info",
         store=True
     )
+
+    @api.depends('partner_id', 'partner_shipping_id', 'company_id')
+    def _compute_transaction_type(self):
+        for move in self:
+            # Only apply this logic to Indian Sales Invoices
+            if move.country_code != 'IN' or not move.is_sale_document():
+                if not move.transaction_type:
+                    move.transaction_type = '1'
+                continue
+
+            def extract_digits(string):
+                return "".join(re.findall(r"\d+", string)) if string else ""
+
+            # 1. Get Seller and Dispatch Details
+            seller = move.company_id.partner_id
+            # Odoo's base function to get the warehouse address
+            dispatch = move._l10n_in_get_warehouse_address() or move.company_id.partner_id
+
+            # 2. Get Buyer and Ship To Details
+            buyer = move.partner_id
+            ship_to = move.partner_shipping_id or move.partner_id
+
+            # 3. Extract GSTINs
+            seller_gstin = seller.vat or "URP"
+            dispatch_gstin = dispatch.vat or "URP"
+            buyer_gstin = buyer.commercial_partner_id.vat or "URP"
+            ship_to_gstin = ship_to.commercial_partner_id.vat or "URP"
+
+            # 4. Extract PINs cleanly
+            seller_pin = extract_digits(seller.zip)
+            dispatch_pin = extract_digits(dispatch.zip)
+            buyer_pin = extract_digits(buyer.zip)
+            ship_to_pin = extract_digits(ship_to.zip)
+
+            # 5. Compare GSTINs and PINs
+            seller_diff = (seller_gstin != dispatch_gstin) or (seller_pin != dispatch_pin)
+            buyer_diff = (buyer_gstin != ship_to_gstin) or (buyer_pin != ship_to_pin)
+
+            # 6. Set Transaction Type
+            if seller_diff and buyer_diff:
+                move.transaction_type = '4'
+            elif seller_diff:
+                move.transaction_type = '3'
+            elif buyer_diff:
+                move.transaction_type = '2'
+            else:
+                move.transaction_type = '1'
 
     @api.depends('invoice_line_ids.sale_line_ids.order_id')
     def _compute_sale_order_info(self):

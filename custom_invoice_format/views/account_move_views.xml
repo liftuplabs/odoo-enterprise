@@ -70,6 +70,10 @@
         <field name="model">account.move</field>
         <field name="inherit_id" ref="l10n_in_edi_ewaybill.invoice_form_inherit_l10n_in_edi_ewaybill"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="transaction_type" readonly="edi_state in ('sent', 'successful') or eway_bill_no"/>
+                <field name="edi_state" invisible="1"/>
+            </xpath>
             <xpath expr="//page[@name='l10n_in_edi_ewaybill_page']/group[@name='ewaybill_group']" position="before">
                 <group name="ewaybill_info_group" string="E-Way Bill Info">
                     <group>
@@ -78,9 +82,6 @@
                         <field name="eway_bill_valid_till" invisible="not eway_bill_valid_till"/>
                         <button name="action_compute_eway_bill_info" type="object" string="Fetch Ewb info" class="btn btn-link"/>
                         <button name="action_update_eway_bill_json" invisible='not eway_bill_no' type="object" string="Update Ewb info" class="btn btn-link"/>
-                    </group>
-                    <group>
-                        <field name="transaction_type"/>
                     </group>
                 </group>
             </xpath>
