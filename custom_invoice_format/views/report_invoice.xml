@@ -251,7 +251,7 @@
                                                 <!-- Consignee Address Box -->
                                                 <div t-if="o.partner_shipping_id" class="mb-3">
                                                     <strong>Consignee (Ship To):</strong><br/>
-                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_shipping_id.name"/></strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-esc="o.partner_shipping_id.name or o.partner_shipping_id.parent_id.name or o.partner_shipping_id.display_name"/></strong><br/>
 
                                                     <!-- Inline Address For Consignee -->
                                                     <div>
@@ -274,7 +274,7 @@
                                                 <!-- Bill To Address Box -->
                                                 <div>
                                                     <strong>Bill To (Buyer):</strong><br/>
-                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
+                                                    <strong style="font-size: 1.1em;"><span t-esc="o.partner_id.name or o.partner_id.parent_id.name or o.partner_id.display_name"/></strong><br/>
 
                                                     <!-- Inline Address For Buyer -->
                                                     <div>
