@@ -18,30 +18,116 @@
                 <t t-set="product_lines" t-value="o.move_ids_without_package"/>
                 <t t-set="line_count" t-value="len(product_lines)"/>
 
-                <t t-set="shrink_class" t-value="''"/>
-                <t t-set="base_font_size" t-value="'12px'"/>
-                <t t-set="spacing_modifier" t-value="'1.1'"/>
+                <!-- Custom Settings Configuration -->
+                <t t-set="manual_size" t-value="o.custom_layout_size or 'auto'"/>
+                <t t-set="user_font_size" t-value="o.custom_font_size or 'large'"/>
+                <t t-set="table_style" t-value="o.custom_table_style or 'striped'"/>
+                <t t-set="bold_class" t-value="'text-bold' if o.custom_bold_table_data else ''"/>
 
-                <t t-if="line_count &gt; 10 and line_count &lt;= 20">
-                    <t t-set="shrink_class" t-value="'layout-compact'"/>
-                    <t t-set="base_font_size" t-value="'11px'"/>
+                <!-- INLINE STYLE INJECTION FOR STRIPED FIX -->
+                <t t-set="striped_inline" t-value="'border-top: 0px solid transparent !important; border-bottom: 0px solid transparent !important;' if table_style == 'striped' else ''"/>
+                <t t-set="totals_top_border" t-value="'border-top: %spx solid %s !important;' % (border_width, border_color)"/>
+
+                <t t-set="table_class" t-value="'table-custom-bordered'"/>
+                <t t-if="table_style == 'minimal'">
+                    <t t-set="table_class" t-value="'table-custom-minimal'"/>
                 </t>
-                <t t-if="line_count &gt; 20">
-                    <t t-set="shrink_class" t-value="'layout-dense-30'"/>
+                <t t-if="table_style == 'striped'">
+                    <t t-set="table_class" t-value="'table-custom-striped'"/>
+                </t>
+
+                <t t-set="shrink_class" t-value="''"/>
+                <t t-set="base_font_size" t-value="'14px'"/>
+                <t t-set="spacing_modifier" t-value="'1.3'"/>
+
+                <!-- Explicit Font Size Override -->
+                <t t-if="user_font_size == 'small'">
                     <t t-set="base_font_size" t-value="'10px'"/>
+                </t>
+                <t t-elif="user_font_size == 'standard'">
+                    <t t-set="base_font_size" t-value="'12px'"/>
+                </t>
+                <t t-elif="user_font_size == 'medium'">
+                    <t t-set="base_font_size" t-value="'13px'"/>
+                </t>
+                <t t-elif="user_font_size == 'large'">
+                    <t t-set="base_font_size" t-value="'14px'"/>
+                </t>
+                <t t-elif="user_font_size == 'xlarge'">
+                    <t t-set="base_font_size" t-value="'15px'"/>
+                </t>
+
+                <t t-if="manual_size == 'compact' or (manual_size == 'auto' and line_count &gt; 10 and line_count &lt;= 30)">
+                    <t t-set="shrink_class" t-value="'layout-compact'"/>
+                    <t t-set="spacing_modifier" t-value="'1.15'"/>
+                </t>
+
+                <t t-if="manual_size == 'dense' or (manual_size == 'auto' and line_count &gt; 30)">
+                    <t t-set="shrink_class" t-value="'layout-dense-30'"/>
+                    <t t-if="user_font_size in ['standard', 'medium', 'large', 'xlarge']"><t t-set="base_font_size" t-value="'11px'"/></t>
+                    <t t-set="spacing_modifier" t-value="'0.95'"/>
                 </t>
 
                 <!-- Loop over the required copies -->
                 <t t-foreach="copies_to_print" t-as="copy_name">
-                    <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: #{font_family}, sans-serif; font-size: #{base_font_size}; line-height: #{spacing_modifier}; padding-top: 0px; margin-top: 0px;">
+                    <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
 
                         <style type="text/css">
+                            /* Force strict pagination */
+                            table { page-break-inside: auto !important; }
+                            tr { page-break-inside: avoid !important; page-break-after: auto !important; }
+                            thead { display: table-header-group !important; }
+                            tbody { display: table-row-group !important; }
+
+                            /* Main Header Table Grid Base Styling */
+                            .table-header-grid {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                border-collapse: collapse !important;
+                                width: 100%;
+                                table-layout: fixed;
+                                page-break-inside: avoid !important;
+                            }
+                            .table-header-grid > tbody > tr > td {
+                                border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
+                                vertical-align: top;
+                            }
+
+                            /* Style 1: Fully Bordered */
                             .table-custom-bordered { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
-                            .table-custom-bordered th, .table-custom-bordered td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 2px 4px !important; vertical-align: middle; }
+                            .table-custom-bordered th, .table-custom-bordered td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 3px 5px !important; vertical-align: middle; }
                             .table-custom-bordered thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; }
 
-                            .table-header-grid { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
-                            .table-header-grid td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 5px; vertical-align: top; }
+                            /* Style 2: Minimal */
+                            .table-custom-minimal { border-collapse: collapse !important; width: 100%; border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; }
+                            .table-custom-minimal th, .table-custom-minimal td { padding: 3px 5px !important; vertical-align: middle; border-bottom: 1px solid #ddd !important; }
+                            .table-custom-minimal thead th { border-bottom: 2px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; }
+
+                            /* Style 3: Striped */
+                            table.table-custom-striped { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
+                            table.table-custom-striped thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; }
+                            table.table-custom-striped tbody td { border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 4px 6px !important; vertical-align: middle; }
+                            table.table-custom-striped tbody tr:nth-child(even) td { background-color: #f5f5f5 !important; }
+
+                            /* Helper Classes */
+                            .address-box { padding: 6px 8px !important; }
+                            .text-bold { font-weight: bold !important; }
+
+                            /* Compact Layout Adjustments */
+                            .layout-compact .table-custom-bordered th, .layout-compact .table-custom-bordered td,
+                            .layout-compact .table-custom-minimal th, .layout-compact .table-custom-minimal td,
+                            .layout-compact table.table-custom-striped th, .layout-compact table.table-custom-striped tbody td { padding: 2px 4px !important; }
+                            .layout-compact .address-box { padding: 4px 6px !important; }
+                            .layout-compact .mt-2, .layout-compact .mt-3, .layout-compact .mt-5 { margin-top: 4px !important; }
+                            .layout-compact .mb-2, .layout-compact .mb-3 { margin-bottom: 4px !important; }
+
+                            /* High Density Layout Adjustments */
+                            .layout-dense-30 .table-custom-bordered th, .layout-dense-30 .table-custom-bordered td,
+                            .layout-dense-30 .table-custom-minimal th, .layout-dense-30 .table-custom-minimal td,
+                            .layout-dense-30 table.table-custom-striped th, .layout-dense-30 table.table-custom-striped tbody td { padding: 1px 2px !important; }
+                            .layout-dense-30 .address-box { padding: 3px 4px !important; }
+                            .layout-dense-30 .mt-2, .layout-dense-30 .mt-3, .layout-dense-30 .mt-5 { margin-top: 2px !important; }
+                            .layout-dense-30 .mb-1, .layout-dense-30 .mb-2, .layout-dense-30 .mb-3 { margin-bottom: 2px !important; }
+                            .layout-dense-30 h5 { font-size: 1.1em !important; }
                         </style>
 
                         <!-- Dynamic Label (Original, Duplicate, etc.) -->
@@ -60,71 +146,99 @@
                                 <table class="table-header-grid">
                                     <tbody>
                                         <tr>
-                                            <td style="width: 50%;">
-                                                <div t-if="o.company_id.invoice_layout_boxed" class="mb-2">
-                                                    <strong><span t-field="o.company_id.name"/></strong><br/>
-                                                    <span t-field="o.company_id.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
+                                            <td style="width: 50%;" class="address-box">
+                                                <div t-if="o.company_id.invoice_layout_boxed" class="mb-3">
+                                                    <strong style="font-size: 1.1em;"><span t-field="o.company_id.name"/></strong><br/>
+                                                    <div>
+                                                        <span t-if="o.company_id.street"><span t-field="o.company_id.street"/></span>
+                                                        <span t-if="o.company_id.street2">, <span t-field="o.company_id.street2"/></span>
+                                                        <br t-if="o.company_id.street or o.company_id.street2"/>
+                                                        <span t-if="o.company_id.city"><span t-field="o.company_id.city"/> </span>
+                                                        <span t-if="o.company_id.zip"><span t-field="o.company_id.zip"/>, </span>
+                                                        <span t-if="o.company_id.state_id"><span t-field="o.company_id.state_id.name"/>, </span>
+                                                    </div>
                                                     <div t-if="o.company_id.vat"><span>GSTIN:</span> <span t-field="o.company_id.vat"/></div>
                                                     <div t-if="o.company_id.partner_id.state_id">
-                                                        <span>State Name :</span> <span t-field="o.company_id.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
+                                                        <span>State Name:</span> <span t-field="o.company_id.partner_id.state_id.name"/>, <span>Code:</span> <span t-field="o.company_id.partner_id.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
-                                                <div class="mb-2">
+                                                <!-- Dispatch To Address Box (Pulls strictly from SO Shipping Address) -->
+                                                <t t-set="dispatch_partner" t-value="o.sale_id.partner_shipping_id if o.sale_id else o.partner_id"/>
+                                                <div class="mb-3">
                                                     <strong>Dispatch To:</strong><br/>
-                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
-                                                    <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                    <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
-                                                    <div t-if="o.partner_id.state_id">
-                                                        <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
+                                                    <strong style="font-size: 1.1em;"><span t-esc="dispatch_partner.name or dispatch_partner.parent_id.name or dispatch_partner.display_name"/></strong><br/>
+                                                    <div>
+                                                        <span t-if="dispatch_partner.street"><span t-field="dispatch_partner.street"/></span>
+                                                        <span t-if="dispatch_partner.street2">, <span t-field="dispatch_partner.street2"/></span>
+                                                        <br t-if="dispatch_partner.street or dispatch_partner.street2"/>
+                                                        <span t-if="dispatch_partner.city"><span t-field="dispatch_partner.city"/> </span>
+                                                        <span t-if="dispatch_partner.zip"><span t-field="dispatch_partner.zip"/>, </span>
+                                                        <span t-if="dispatch_partner.state_id"><span t-field="dispatch_partner.state_id.name"/>, </span>
+                                                        <span t-if="dispatch_partner.country_id"><span t-field="dispatch_partner.country_id.name"/></span>
+                                                    </div>
+                                                    <div t-if="dispatch_partner.vat"><span>GSTIN:</span> <span t-field="dispatch_partner.vat"/></div>
+                                                    <div t-if="dispatch_partner.state_id">
+                                                        <span>State Name:</span> <span t-field="dispatch_partner.state_id.name"/>, <span>Code:</span> <span t-field="dispatch_partner.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
 
+                                                <t t-set="party_partner" t-value="o.sale_id.partner_invoice_id if o.sale_id else (o.partner_id.parent_id or o.partner_id)"/>
                                                 <div>
                                                     <strong>Party:</strong><br/>
-                                                    <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
-                                                    <span t-field="o.partner_id" t-options='{"widget": "contact", "fields": ["address"], "no_marker": True}' />
-                                                    <div t-if="o.partner_id.vat"><span>GSTIN:</span> <span t-field="o.partner_id.vat"/></div>
-                                                    <div t-if="o.partner_id.state_id">
-                                                        <span>State Name :</span> <span t-field="o.partner_id.state_id.name"/>, <span>Code :</span> <span t-field="o.partner_id.state_id.l10n_in_tin"/>
+                                                    <strong style="font-size: 1.1em;"><span t-esc="party_partner.name or party_partner.parent_id.name or party_partner.display_name"/></strong><br/>
+                                                    <div>
+                                                        <span t-if="party_partner.street"><span t-field="party_partner.street"/></span>
+                                                        <span t-if="party_partner.street2">, <span t-field="party_partner.street2"/></span>
+                                                        <br t-if="party_partner.street or party_partner.street2"/>
+                                                        <span t-if="party_partner.city"><span t-field="party_partner.city"/> </span>
+                                                        <span t-if="party_partner.zip"><span t-field="party_partner.zip"/>, </span>
+                                                        <span t-if="party_partner.state_id"><span t-field="party_partner.state_id.name"/>, </span>
+                                                        <span t-if="party_partner.country_id"><span t-field="party_partner.country_id.name"/></span>
+                                                    </div>
+                                                    <div t-if="party_partner.vat"><span>GSTIN:</span> <span t-field="party_partner.vat"/></div>
+                                                    <div t-if="party_partner.state_id">
+                                                        <span>State Name:</span> <span t-field="party_partner.state_id.name"/>, <span>Code:</span> <span t-field="party_partner.state_id.l10n_in_tin"/>
                                                     </div>
                                                 </div>
                                             </td>
 
                                             <td style="width: 50%; padding: 0 !important;">
-                                                <table style="width: 100%; border-collapse: collapse;">
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; width: 50%; padding: 5px;"><strong>Challan No:</strong><br/><span t-field="o.name"/></td>
-                                                        <td style="padding: 5px;"><strong>Date:</strong><br/><span t-field="o.scheduled_date"/></td>
+                                                <table style="margin: 0; width: 100%; border-collapse: collapse; height: 100%; table-layout: fixed;">
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;"><strong>Challan No:</strong><br/><span t-field="o.name"/></td>
+                                                        <td class="address-box" style="width: 50%;"><strong>Date:</strong><br/><span t-field="o.scheduled_date"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
+                                                        <td class="address-box"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.sale_id.mode_of_payment"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="o.sale_id.supplier_reference"/></td>
+                                                        <td class="address-box"><strong>Other Ref:</strong><br/><span t-field="o.sale_id.other_reference"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Buyer Order No:</strong><br/><span t-field="o.sale_id.buyers_order_no"/></td>
+                                                        <td class="address-box"><strong>Dated:</strong><br/><span t-field="o.sale_id.buyers_order_date"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatch Doc No:</strong><br/><span t-field="o.sale_id.dispatch_doc_no"/></td>
+                                                        <td class="address-box"><strong>Del. Note Date:</strong><br/><span t-field="o.sale_id.delivery_note_date"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatched Through:</strong><br/><span t-field="o.sale_id.dispatch_through"/></td>
+                                                        <td class="address-box"><strong>Destination:</strong><br/><span t-field="o.sale_id.destination"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.sale_id.date_time_of_issue"/></td>
+                                                        <td class="address-box"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
+                                                    </tr>
+                                                    <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                        <td colspan="2" class="address-box"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
-                                                        <td style="padding: 5px;"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.sale_id.mode_of_payment"/></td>
+                                                        <td colspan="2" class="address-box"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td>
                                                     </tr>
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Supplier Ref:</strong><br/><span t-field="o.sale_id.supplier_reference"/></td>
-                                                        <td style="padding: 5px;"><strong>Other Ref:</strong><br/><span t-field="o.sale_id.other_reference"/></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Buyer Order No:</strong><br/><span t-field="o.sale_id.buyers_order_no"/></td>
-                                                        <td style="padding: 5px;"><strong>Dated:</strong><br/><span t-field="o.sale_id.buyers_order_date"/></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatch Doc No:</strong><br/><span t-field="o.sale_id.dispatch_doc_no"/></td>
-                                                        <td style="padding: 5px;"><strong>Del. Note Date:</strong><br/><span t-field="o.sale_id.delivery_note_date"/></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Dispatched Through:</strong><br/><span t-field="o.sale_id.dispatch_through"/></td>
-                                                        <td style="padding: 5px;"><strong>Destination:</strong><br/><span t-field="o.sale_id.destination"/></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="border-right: 1px solid #000; padding: 5px;"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.sale_id.date_time_of_issue"/></td>
-                                                        <td style="padding: 5px;"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" style="padding: 5px;"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
-                                                    </tr>
-                                                    <tr><td colspan="2" style="padding: 5px;"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td></tr>
                                                 </table>
                                             </td>
                                         </tr>
@@ -133,9 +247,10 @@
                             </div>
                         </div>
 
+                        <!-- Product Table -->
                         <div class="row mt-3">
                             <div class="col-12">
-                                <table class="table-custom-bordered">
+                                <table t-attf-class="{{table_class}}">
                                     <thead>
                                         <tr>
                                             <th class="text-center" style="width: 5%;">SN</th>
@@ -152,34 +267,36 @@
                                         <t t-set="idx" t-value="1"/>
                                         <t t-foreach="product_lines" t-as="line">
                                             <tr>
-                                                <td class="text-center"><span t-esc="idx"/></td>
-                                                <td><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
-                                                <td class="text-center"><span t-field="line.product_id.default_code"/></td>
-                                                <td class="text-center">
+                                                <td class="text-center" t-attf-style="{{striped_inline}}"><span t-esc="idx"/></td>
+                                                <td t-attf-class="text-start {{bold_class}}" t-attf-style="{{striped_inline}}"><span t-esc="line.product_id.name + (' - ' + line.product_id.product_tmpl_id.description_sale if line.product_id.product_tmpl_id.description_sale else '')"/></td>
+                                                <td class="text-center" t-attf-style="{{striped_inline}}"><span t-field="line.product_id.default_code"/></td>
+                                                <td class="text-center" t-attf-style="{{striped_inline}}">
                                                     <span t-esc="', '.join([x for x in line.move_line_ids.mapped('lot_id.name') + line.move_line_ids.mapped('lot_name') if x])"/>
                                                 </td>
-                                                <td class="text-end"><span t-field="line.quantity"/> <span t-field="line.product_uom.name"/></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
+                                                <td t-attf-class="text-end {{bold_class}}" t-attf-style="white-space: nowrap; {{striped_inline}}"><span t-field="line.quantity"/> <span t-field="line.product_uom.name"/></td>
+                                                <td t-attf-style="{{striped_inline}}"></td>
+                                                <td t-attf-style="{{striped_inline}}"></td>
+                                                <td t-attf-style="{{striped_inline}}"></td>
                                             </tr>
                                             <t t-set="idx" t-value="idx + 1"/>
                                         </t>
 
                                         <tr>
-                                            <td colspan="4" class="text-end font-weight-bold">Total</td>
-                                            <td class="text-end font-weight-bold"><span t-esc="sum(l.quantity for l in product_lines)"/></td>
-                                            <td></td><td></td><td></td>
+                                            <td colspan="4" class="text-end text-bold" t-attf-style="{{totals_top_border}}">Total</td>
+                                            <td class="text-end text-bold" t-attf-style="{{totals_top_border}}"><span t-esc="sum(l.quantity for l in product_lines)"/></td>
+                                            <td t-attf-style="{{totals_top_border}}"></td>
+                                            <td t-attf-style="{{totals_top_border}}"></td>
+                                            <td t-attf-style="{{totals_top_border}}"></td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
 
-                        <div class="row mt-5">
+                        <div class="row mt-5" style="page-break-inside: avoid;">
                             <div class="col-6"><strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/></div>
                         </div>
-                        <div class="row mt-5">
+                        <div class="row mt-5" style="page-break-inside: avoid;">
                             <div class="col-6 text-end offset-6">
                                 <strong>For <span t-field="o.company_id.name"/></strong><br/><br/>
                                 <t t-if="o.company_id.digital_signature"><img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/></t><br/><br/>
