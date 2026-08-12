@@ -260,7 +260,7 @@
                                                     <!-- Using Custom Fields -->
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.delivery_note"/></td>
-                                                        <td class="meta-cell"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.mode_of_payment"/></td>
+                                                        <td class="meta-cell"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.payment_term_id.name"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="o.supplier_reference"/></td>
