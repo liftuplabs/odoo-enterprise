@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Ensure the hidden security group exists -->
+    <record id="group_hide_standard_reports" model="res.groups">
+        <field name="name">Hidden Reports Group</field>
+        <field name="comment">Assign standard core reports to this group to hide them from the Print menu.</field>
+    </record>
+
+    <!-- 2. Restrict the standard Repair Order report to ONLY the hidden group -->
+    <record id="repair.action_report_repair_order" model="ir.actions.report">
+        <field name="groups_id" eval="[(6, 0, [ref('group_hide_standard_reports')])]"/>
+    </record>
+
+    <!-- 3. Repair Order Wizard Form View -->
+    <record id="view_repair_order_print_wizard_form" model="ir.ui.view">
+        <field name="name">repair.order.print.wizard.form</field>
+        <field name="model">repair.order.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Print Copy">
+                <group>
+                    <field name="repair_id" invisible="1"/>
+                    <field name="copy_type" widget="radio"/>
+                </group>
+                <footer>
+                    <button string="Download PDF" type="object" name="action_print" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 4. Bind the Custom Wizard to the "Print" / "Download" Menu -->
+    <record id="action_repair_order_print_wizard" model="ir.actions.act_window">
+        <field name="name">Repair Order</field>
+        <field name="res_model">repair.order.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="repair.model_repair_order"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">form,list</field>
+    </record>
+
+</odoo>

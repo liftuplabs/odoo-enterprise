@@ -268,3 +268,14 @@ class AccountMove(models.Model):
         })
 
         return True
+
+    def action_open_print_wizard(self):
+        self.ensure_one()
+        return {
+            'name': 'Print Tax Invoice',
+            'type': 'ir.actions.act_window',
+            'res_model': 'account.move.print.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_move_id': self.id}
+        }

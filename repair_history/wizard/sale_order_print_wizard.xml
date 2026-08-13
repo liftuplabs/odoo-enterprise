@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. Unbind the standard Odoo Sale Order Report from the dropdown -->
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <record id="sale.action_report_pro_forma_invoice" model="ir.actions.report">
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+
+    <!-- 2. Sale Order Wizard Form View -->
+    <record id="view_sale_order_print_wizard_form" model="ir.ui.view">
+        <field name="name">sale.order.print.wizard.form</field>
+        <field name="model">sale.order.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Print Copy">
+                <group>
+                    <field name="order_id" invisible="1"/>
+                    <field name="copy_type" widget="radio"/>
+                </group>
+                <footer>
+                    <button string="Download PDF" type="object" name="action_print" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 3. Bind the Custom Wizard to the "Print" / "Download" Menu -->
+    <record id="action_sale_order_print_wizard" model="ir.actions.act_window">
+        <!-- The name here is exactly what will show up in the dropdown menu -->
+        <field name="name">Quotation / Order</field>
+        <field name="res_model">sale.order.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">form,list</field>
+    </record>
+
+</odoo>

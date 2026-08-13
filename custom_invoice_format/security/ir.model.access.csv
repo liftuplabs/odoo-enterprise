@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_account_move_print_wizard,account.move.print.wizard,model_account_move_print_wizard,base.group_user,1,1,1,1
+access_eway_bill_print_wizard,eway.bill.print.wizard,model_eway_bill_print_wizard,base.group_user,1,1,1,1
+access_invoice_eway_combined_print_wizard,invoice.eway.combined.print.wizard,model_invoice_eway_combined_print_wizard,base.group_user,1,1,1,1

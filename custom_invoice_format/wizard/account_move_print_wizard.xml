@@ -1,0 +1,43 @@
+<odoo>
+<!--    <record id="account.account_invoices" model="ir.actions.report">-->
+<!--        <field name="binding_model_id" eval="False"/>-->
+<!--    </record>-->
+
+<!--    <record id="account.account_invoices_without_payment" model="ir.actions.report">-->
+<!--        <field name="binding_model_id" eval="False"/>-->
+<!--    </record>-->
+
+
+<!--    &lt;!&ndash; 2. Bind your custom Wizard to the "Download" Menu &ndash;&gt;-->
+<!--    <record id="action_account_move_print_wizard" model="ir.actions.act_window">-->
+<!--        &lt;!&ndash; The name here is exactly what will show up in the Download dropdown menu &ndash;&gt;-->
+<!--        <field name="name">PDF</field>-->
+<!--        <field name="res_model">account.move.print.wizard</field>-->
+<!--        <field name="view_mode">form</field>-->
+<!--        <field name="target">new</field>-->
+
+<!--        &lt;!&ndash; This binds it to the Invoice model &ndash;&gt;-->
+<!--        <field name="binding_model_id" ref="account.model_account_move"/>-->
+
+<!--        &lt;!&ndash; Setting binding_type to 'report' pushes it into the Download/Print menu &ndash;&gt;-->
+<!--        <field name="binding_type">report</field>-->
+<!--        <field name="binding_view_types">form,list</field>-->
+<!--    </record>-->
+
+    <record id="view_account_move_print_wizard_form" model="ir.ui.view">
+        <field name="name">account.move.print.wizard.form</field>
+        <field name="model">account.move.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Print Copy">
+                <group>
+                    <field name="move_id" invisible="1"/>
+                    <field name="copy_type" widget="radio"/>
+                </group>
+                <footer>
+                    <button string="Print Report" type="object" name="action_print" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

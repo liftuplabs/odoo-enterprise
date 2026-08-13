@@ -17,5 +17,8 @@ access_repair_order_manager,Repair Order Manager,repair.model_repair_order,group
 repair.access_repair_tag_user,Repair Tags User,repair.model_repair_tags,group_repair_user,1,1,1,1
 access_customer_pending_product_user,access_customer_pending_product,model_customer_pending_product,base.group_user,1,1,1,1
 access_material_out_print_wizard,material.out.print.wizard.access,model_material_out_print_wizard,base.group_user,1,1,1,1
+access_sale_order_print_wizard,sale.order.print.wizard,model_sale_order_print_wizard,base.group_user,1,1,1,1
+access_purchase_order_print_wizard,purchase.order.print.wizard,model_purchase_order_print_wizard,base.group_user,1,1,1,1
+access_repair_order_print_wizard,repair.order.print.wizard,model_repair_order_print_wizard,base.group_user,1,1,1,1
 
 

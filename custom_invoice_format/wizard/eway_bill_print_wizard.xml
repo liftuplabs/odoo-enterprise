@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- 1. E-Way Bill Wizard Form View -->
+    <record id="view_eway_bill_print_wizard_form" model="ir.ui.view">
+        <field name="name">eway.bill.print.wizard.form</field>
+        <field name="model">eway.bill.print.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Print Copy">
+                <group>
+                    <field name="move_id" invisible="1"/>
+                    <field name="copy_type" widget="radio"/>
+                </group>
+                <footer>
+                    <button string="Download PDF" type="object" name="action_print" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- 2. Bind the Custom Wizard to the "Download" Menu -->
+    <record id="action_eway_bill_print_wizard" model="ir.actions.act_window">
+        <field name="name">E-Way Bill</field>
+        <field name="res_model">eway.bill.print.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="binding_view_types">form,list</field>
+    </record>
+
+</odoo>
