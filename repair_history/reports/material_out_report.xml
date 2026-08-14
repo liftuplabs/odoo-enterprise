@@ -70,9 +70,27 @@
 
                 <!-- Loop over the required copies -->
                 <t t-foreach="copies_to_print" t-as="copy_name">
-                    <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
+                    <!-- Added page-container class for flexbox layout -->
+                    <div t-attf-class="page page-container #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
 
                         <style type="text/css">
+                            /* Force flex layout for PDF Engine to push footer down naturally */
+                            .page-container {
+                                display: -webkit-box;
+                                display: -webkit-flex;
+                                display: flex;
+                                -webkit-box-orient: vertical;
+                                -webkit-flex-direction: column;
+                                flex-direction: column;
+                                min-height: 850px;
+                            }
+                            .flex-spacer {
+                                -webkit-box-flex: 1;
+                                -webkit-flex-grow: 1;
+                                flex-grow: 1;
+                                min-height: 20px;
+                            }
+
                             /* Force strict pagination */
                             table { page-break-inside: auto !important; }
                             tr { page-break-inside: avoid !important; page-break-after: auto !important; }
@@ -95,23 +113,16 @@
                             /* Style 1: Fully Bordered */
                             .table-custom-bordered { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
                             .table-custom-bordered th, .table-custom-bordered td { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 5px 8px !important; vertical-align: middle; }
-
-                            /* FIX: Added forced 8px vertical and 10px horizontal padding to headers */
                             .table-custom-bordered thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important; }
 
                             /* Style 2: Minimal */
                             .table-custom-minimal { border-collapse: collapse !important; width: 100%; border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; }
                             .table-custom-minimal th, .table-custom-minimal td { padding: 5px 8px !important; vertical-align: middle; border-bottom: 1px solid #ddd !important; }
-
-                            /* FIX: Added forced padding */
                             .table-custom-minimal thead th { border-bottom: 2px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important; }
 
                             /* Style 3: Striped */
                             table.table-custom-striped { border: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-collapse: collapse !important; width: 100%; }
-
-                            /* FIX: Added forced padding */
                             table.table-custom-striped thead th { border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important; text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important; }
-
                             table.table-custom-striped tbody td { border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important; padding: 5px 8px !important; vertical-align: middle; }
                             table.table-custom-striped tbody tr:nth-child(even) td { background-color: #f5f5f5 !important; }
 
@@ -254,8 +265,8 @@
                             </div>
                         </div>
 
-                        <!-- Product Table -->
-                        <div class="row mt-3">
+                        <!-- Product Table with min-height fallback -->
+                        <div class="row mt-3" style="min-height: 350px;">
                             <div class="col-12">
                                 <table t-attf-class="{{table_class}}">
                                     <thead>
@@ -299,8 +310,12 @@
                                 </table>
                             </div>
                         </div>
+
+                        <!-- FLEX SPACER to dynamically consume remaining empty space -->
+                        <div class="flex-spacer"></div>
+
                         <!-- Signature Section (Inside the page flow) -->
-                        <div class="row mt-5" style="page-break-inside: avoid;">
+                        <div class="row mt-4" style="page-break-inside: avoid;">
                             <div class="col-6">
                                 <strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/>
                             </div>
@@ -315,7 +330,7 @@
                             </div>
                         </div>
 
-                        <div class="row mt-5" style="page-break-inside: avoid;">
+                        <div class="row mt-4" style="page-break-inside: avoid;">
                             <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
                                 <span style="font-size: 0.8em;">This is a computer generated document</span>
                             </div>
