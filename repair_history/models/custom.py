@@ -163,6 +163,36 @@ class StockMove(models.Model):
                 }
                 new_line = self.env['sale.order.line'].create(so_line_vals)
 
+    @api.constrains('product_uom_qty', 'quantity', 'state', 'product_id', 'repair_id')
+    def _check_repair_qty_limits(self):
+        for move in self:
+            # Only trigger this constraint if the stock move is part of a Repair Order
+            if move.repair_id and move.product_id:
+                min_qty = move.product_id.repair_min_qty
+                max_qty = move.product_id.repair_max_qty
+
+                # 1. Check Planned Quantity (Demand) when the user adds the product
+                planned_qty = move.product_uom_qty
+                if max_qty > 0 and planned_qty > max_qty:
+                    raise ValidationError(
+                        f"The planned quantity for {move.product_id.display_name} ({planned_qty}) cannot exceed the maximum limit of {max_qty}."
+                    )
+                if min_qty > 0 and planned_qty < min_qty:
+                    raise ValidationError(
+                        f"The planned quantity for {move.product_id.display_name} ({planned_qty}) cannot be less than the minimum limit of {min_qty}."
+                    )
+
+                # 2. Check Consumed Quantity (Done) when the repair order is validated/finished
+                if move.state == 'done':
+                    consumed_qty = move.quantity
+                    if max_qty > 0 and consumed_qty > max_qty:
+                        raise ValidationError(
+                            f"The consumed quantity for {move.product_id.display_name} ({consumed_qty}) cannot exceed the maximum limit of {max_qty}."
+                        )
+                    if min_qty > 0 and consumed_qty < min_qty:
+                        raise ValidationError(
+                            f"The consumed quantity for {move.product_id.display_name} ({consumed_qty}) cannot be less than the minimum limit of {min_qty}."
+                        )
 
 class RepairOrderInherit(models.Model):
     _inherit = 'repair.order'

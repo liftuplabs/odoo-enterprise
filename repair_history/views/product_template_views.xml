@@ -22,6 +22,12 @@
                             </list>
                         </field>
                     </page>
+                    <page string="Repair Min/Max QTY" name="repair_min_max_qty">
+                        <group string="Repair Min/Max QTY">
+                            <field name="repair_min_qty"/>
+                            <field name="repair_max_qty"/>
+                        </group>
+                    </page>
                 </notebook>
             </field>
         </record>
