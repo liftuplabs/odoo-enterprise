@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="paperformat_custom_delivery_slip" model="report.paperformat">
+        <field name="name">Custom Delivery Slip A4</field>
+        <field name="default" eval="True"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">5</field>
+        <field name="margin_bottom">45</field> <!-- THE FIX -->
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- 2. Assign the new Paper Format to the Delivery Slip report action -->
+    <record id="stock.action_report_delivery" model="ir.actions.report">
+        <!-- IMPORTANT: Replace 'your_module_name' with your actual module's technical name -->
+        <field name="paperformat_id" ref="repair_history.paperformat_custom_delivery_slip"/>
+    </record>
+
     <template id="report_deliveryslip_custom" inherit_id="stock.report_delivery_document">
         <xpath expr="//t[@t-call='web.external_layout']" position="replace">
             <t t-call="web.basic_layout">
@@ -70,9 +90,7 @@
 
                 <!-- Loop over the required copies -->
                 <t t-foreach="copies_to_print" t-as="copy_name">
-
-                    <!-- FIX: Set min-height matching A4 and position relative to pin the bottom div -->
-                    <div t-attf-class="page #{shrink_class}" t-attf-style="position: relative; min-height: 1040px; padding-bottom: 200px; font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
+                    <div t-attf-class="page #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
 
                         <style type="text/css">
                             /* Force strict pagination */
@@ -295,34 +313,33 @@
                             </div>
                         </div>
 
-                        <!-- FIX: Absolute Positioned Signature block constrained to bottom of the page container -->
-                        <div style="position: absolute; bottom: 20px; left: 0px; width: 100%;">
-                            <div class="row" style="page-break-inside: avoid; width: 100%;">
-                                <div class="col-6">
-                                    <strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <strong>For <span t-field="o.company_id.name"/></strong>
-                                    <br/><br/>
-                                    <t t-if="o.company_id.digital_signature">
-                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
-                                    </t>
-                                    <br/><br/>
-                                    <strong>Authorized Signatory</strong>
-                                </div>
-                            </div>
-
-                            <div class="row mt-4" style="width: 100%;">
-                                <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
-                                    <span style="font-size: 0.8em;">This is a computer generated document</span>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- Force a page break between copies if iterating over 'All' -->
                         <p style="page-break-after: always;" t-if="not copy_name_last"/>
                     </div>
                 </t>
+
+                <!-- Footer Block: Safely relies on the expanded 45mm Paper Format Margin -->
+                <div class="footer" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}};">
+                    <div class="row" style="width: 100%;">
+                        <div class="col-6 mt-4">
+                            <strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/>
+                        </div>
+                        <div class="col-6 text-end">
+                            <strong>For <span t-field="o.company_id.name"/></strong>
+                            <br/><br/>
+                            <t t-if="o.company_id.digital_signature">
+                                <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
+                            </t>
+                            <br/><br/>
+                            <strong>Authorized Signatory</strong>
+                        </div>
+                    </div>
+                    <div class="row mt-2" style="width: 100%;">
+                        <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
+                            <span style="font-size: 0.8em;">This is a computer generated document</span>
+                        </div>
+                    </div>
+                </div>
 
             </t>
         </xpath>
