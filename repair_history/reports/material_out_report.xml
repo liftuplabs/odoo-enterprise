@@ -70,27 +70,11 @@
 
                 <!-- Loop over the required copies -->
                 <t t-foreach="copies_to_print" t-as="copy_name">
-                    <!-- Added page-container class for flexbox layout -->
-                    <div t-attf-class="page page-container #{shrink_class}" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
+
+                    <!-- FIX: Set min-height matching A4 and position relative to pin the bottom div -->
+                    <div t-attf-class="page #{shrink_class}" t-attf-style="position: relative; min-height: 1040px; padding-bottom: 200px; font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}}; line-height: {{spacing_modifier}}; padding-top: 0px; margin-top: 0px;">
 
                         <style type="text/css">
-                            /* Force flex layout for PDF Engine to push footer down naturally */
-                            .page-container {
-                                display: -webkit-box;
-                                display: -webkit-flex;
-                                display: flex;
-                                -webkit-box-orient: vertical;
-                                -webkit-flex-direction: column;
-                                flex-direction: column;
-                                min-height: 850px;
-                            }
-                            .flex-spacer {
-                                -webkit-box-flex: 1;
-                                -webkit-flex-grow: 1;
-                                flex-grow: 1;
-                                min-height: 20px;
-                            }
-
                             /* Force strict pagination */
                             table { page-break-inside: auto !important; }
                             tr { page-break-inside: avoid !important; page-break-after: auto !important; }
@@ -265,8 +249,8 @@
                             </div>
                         </div>
 
-                        <!-- Product Table with min-height fallback -->
-                        <div class="row mt-3" style="min-height: 350px;">
+                        <!-- Product Table -->
+                        <div class="row mt-3">
                             <div class="col-12">
                                 <table t-attf-class="{{table_class}}">
                                     <thead>
@@ -311,28 +295,27 @@
                             </div>
                         </div>
 
-                        <!-- FLEX SPACER to dynamically consume remaining empty space -->
-                        <div class="flex-spacer"></div>
-
-                        <!-- Signature Section (Inside the page flow) -->
-                        <div class="row mt-4" style="page-break-inside: avoid;">
-                            <div class="col-6">
-                                <strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/>
+                        <!-- FIX: Absolute Positioned Signature block constrained to bottom of the page container -->
+                        <div style="position: absolute; bottom: 20px; left: 0px; width: 100%;">
+                            <div class="row" style="page-break-inside: avoid; width: 100%;">
+                                <div class="col-6">
+                                    <strong>Company's PAN: </strong><span t-field="o.company_id.l10n_in_pan"/>
+                                </div>
+                                <div class="col-6 text-end">
+                                    <strong>For <span t-field="o.company_id.name"/></strong>
+                                    <br/><br/>
+                                    <t t-if="o.company_id.digital_signature">
+                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
+                                    </t>
+                                    <br/><br/>
+                                    <strong>Authorized Signatory</strong>
+                                </div>
                             </div>
-                            <div class="col-6 text-end">
-                                <strong>For <span t-field="o.company_id.name"/></strong>
-                                <br/><br/>
-                                <t t-if="o.company_id.digital_signature">
-                                    <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
-                                </t>
-                                <br/><br/>
-                                <strong>Authorized Signatory</strong>
-                            </div>
-                        </div>
 
-                        <div class="row mt-4" style="page-break-inside: avoid;">
-                            <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
-                                <span style="font-size: 0.8em;">This is a computer generated document</span>
+                            <div class="row mt-4" style="width: 100%;">
+                                <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 10px;">
+                                    <span style="font-size: 0.8em;">This is a computer generated document</span>
+                                </div>
                             </div>
                         </div>
 
