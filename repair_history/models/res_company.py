@@ -190,7 +190,7 @@ class SaleAdvancePaymentInvInherit(models.TransientModel):
         if invoice:
             for line in invoice.invoice_line_ids:
                 for so_line in line.sale_line_ids:
-                    if not so_line.is_repair_parts:
+                    if not so_line.is_repair_parts and sale_order.repair_order_ids:
                         line.unlink()
         # active_id se current sale order fetch karo
         # sale_order = self.env['sale.order'].browse(self._context.get('active_id'))

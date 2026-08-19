@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="mrp_production_form_view_subcontract" model="ir.ui.view">
+        <field name="name">mrp.production.form.subcontract</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_subcontractor_po"
+                        type="object"
+                        class="oe_stat_button"
+                        icon="fa-credit-card"
+                        invisible="not subcontractor_po_id">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Subcontract PO</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <!-- Add the Create PO button in the header -->
+            <xpath expr="//header" position="inside">
+                <button name="action_create_subcontract_po"
+                        type="object"
+                        string="Create Subcontractor PO"
+                        class="oe_highlight"
+                        invisible="not is_external_subcontractor or subcontractor_po_id"/>
+            </xpath>
+
+            <!-- Add tracking fields to the MO form (under the BoM field) -->
+            <xpath expr="//field[@name='bom_id']" position="after">
+                <field name="is_external_subcontractor" invisible="1"/>
+                <field name="subcontractor_receipt_done" readonly="1" invisible="1"/>
+            </xpath>
+
+<!--            &lt;!&ndash; 1. Update 'Produce' button (With raw moves) &ndash;&gt;-->
+<!--            <xpath expr="//button[@name='button_mark_done'][@invisible='not move_raw_ids or not show_produce']" position="attributes">-->
+<!--                <attribute name="invisible">not move_raw_ids or not show_produce or (is_external_subcontractor and not subcontractor_receipt_done)</attribute>-->
+<!--            </xpath>-->
+
+<!--            &lt;!&ndash; 2. Update 'Produce All' button (With raw moves) &ndash;&gt;-->
+<!--            <xpath expr="//button[@name='button_mark_done'][@invisible='not move_raw_ids or not show_produce_all']" position="attributes">-->
+<!--                <attribute name="invisible">not move_raw_ids or not show_produce_all or (is_external_subcontractor and not subcontractor_receipt_done)</attribute>-->
+<!--            </xpath>-->
+
+<!--            &lt;!&ndash; 3. Update 'Produce' button (Without raw moves) &ndash;&gt;-->
+<!--            <xpath expr="//button[@name='button_mark_done'][@invisible='move_raw_ids or not show_produce']" position="attributes">-->
+<!--                <attribute name="invisible">move_raw_ids or not show_produce or (is_external_subcontractor and not subcontractor_receipt_done)</attribute>-->
+<!--            </xpath>-->
+
+<!--            &lt;!&ndash; 4. Update 'Produce All' button (Without raw moves) &ndash;&gt;-->
+<!--            <xpath expr="//button[@name='button_mark_done'][@invisible='move_raw_ids or not show_produce_all']" position="attributes">-->
+<!--                <attribute name="invisible">move_raw_ids or not show_produce_all or (is_external_subcontractor and not subcontractor_receipt_done)</attribute>-->
+<!--            </xpath>-->
+
+        </field>
+    </record>
+</odoo>

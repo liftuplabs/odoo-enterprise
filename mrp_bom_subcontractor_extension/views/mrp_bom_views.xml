@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_bom_form_inherit_subcontractor" model="ir.ui.view">
+        <field name="name">mrp.bom.form.inherit.subcontractor</field>
+        <field name="model">mrp.bom</field>
+        <field name="inherit_id" ref="mrp.mrp_bom_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <field name="is_external_subcontractor" invisible="type != 'normal'"/>
+                <field name="external_subcontractor_id"
+                       invisible="not is_external_subcontractor or type != 'normal'"
+                       required="is_external_subcontractor"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
