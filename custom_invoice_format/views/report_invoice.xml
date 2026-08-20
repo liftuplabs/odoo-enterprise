@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+        <record id="paperformat_custom_tax_invoice" model="report.paperformat">
+            <field name="name">Custom Tax Invoice A4</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">5</field>
+            <field name="margin_bottom">80</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">0</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="account.account_invoices" model="ir.actions.report">
+            <field name="paperformat_id" ref="custom_invoice_format.paperformat_custom_tax_invoice"/>
+        </record>
+
         <template id="report_custom_tax_invoice_document" inherit_id="l10n_in.l10n_in_report_invoice_document_inherit">
 
              <xpath expr="//t[@t-call='web.external_layout']" position="replace">
@@ -541,62 +559,75 @@
                                 </t>
                             </div>
 
-                            <!-- Footer Section: PAN, Bank Details & Signatures -->
-                            <div class="row mt-5" style="page-break-inside: avoid;">
-                                <div class="col-6">
-                                    <strong>Company's PAN: </strong>
-                                    <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
-                                    <strong>Declaration:</strong><br/>
-                                    <span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>
-                                    <t t-if="o.company_id.show_bank_detail">
-                                        <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">
-                                            <strong>Company's Bank Details</strong><br/>
-                                            <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>
-                                                <div class="p-0" style="width: 10px;">:</div>
-                                                <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>
-                                            </div>
-                                            <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>A/C No.</strong></div>
-                                                <div class="p-0" style="width: 10px;">:</div>
-                                                <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>
-                                            </div>
-                                            <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>
-                                                <div class="p-0" style="width: 10px;">:</div>
-                                                <div class="p-0 col">
-                                                    <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
-                                                    <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>
-                                                    <span t-field="bank_info.bank_id.bic"/>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </t>
-                                </div>
-                            </div>
-                            <div class="row mt-5" style="page-break-inside: avoid;">
-                                <div class="col-6">
-                                    <strong>Customer's Seal and Signature</strong><br/>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <strong>For <span t-field="o.company_id.name"/></strong>
-                                    <br/><br/>
-                                    <t t-if="o.company_id.digital_signature">
-                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
-                                    </t>
-                                    <br/><br/>
-                                    <strong>Authorized Signatory</strong>
-                                </div>
-                            </div>
-
                             <!-- Force a page break between copies if iterating over 'All' -->
                             <p style="page-break-after: always;" t-if="not copy_name_last"/>
 
                         </div>
                     </t>
+
+                    <!-- NEW FOOTER SECTION (Requires the 65mm margin_bottom Paper Format) -->
+                    <div class="footer" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}};">
+                        <div class="row" style="width: 100%; margin: 0;">
+
+                            <!-- Left Column: PAN, Declaration, and Customer Signature -->
+                            <div class="col-6 p-0">
+                                <strong>Company's PAN: </strong>
+                                <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
+
+                                <strong>Declaration:</strong><br/>
+                                <span style="font-size: 0.9em;">We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
+
+                                <br/><br/><br/>
+                                <strong>Customer's Seal and Signature</strong>
+                            </div>
+
+                            <!-- Right Column: Bank Details and Authorized Signatory -->
+                            <div class="col-6 text-end p-0">
+                                <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>
+                                <t t-if="o.company_id.show_bank_detail">
+                                    <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 250px; font-size: 0.9em; margin-bottom: 15px;">
+                                        <strong>Company's Bank Details</strong><br/>
+                                        <div class="row m-0">
+                                            <div class="p-0" style="width: 90px;"><strong>Bank Name</strong></div>
+                                            <div class="p-0" style="width: 10px;">:</div>
+                                            <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>
+                                        </div>
+                                        <div class="row m-0">
+                                            <div class="p-0" style="width: 90px;"><strong>A/C No.</strong></div>
+                                            <div class="p-0" style="width: 10px;">:</div>
+                                            <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>
+                                        </div>
+                                        <div class="row m-0">
+                                            <div class="p-0" style="width: 90px;"><strong>Branch &amp; IFSC</strong></div>
+                                            <div class="p-0" style="width: 10px;">:</div>
+                                            <div class="p-0 col">
+                                                <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
+                                                <t t-if="bank_info.bank_id.city and bank_info.bank_id.bic"> - </t>
+                                                <span t-field="bank_info.bank_id.bic"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </t>
+                                <br/>
+
+                                <strong>For <span t-field="o.company_id.name"/></strong>
+                                <div style="min-height: 40px; margin: 2px 0;">
+                                    <t t-if="o.company_id.digital_signature">
+                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 40px;"/>
+                                    </t>
+                                </div>
+                                <strong>Authorized Signatory</strong>
+                            </div>
+                        </div>
+
+                        <!-- Computer Generated Document Notice -->
+                        <div class="row mt-2" style="width: 100%; margin: 0;">
+                            <div class="col-12 text-center" style="border-top: 1px solid #000; padding-top: 5px;">
+                                <span style="font-size: 0.8em;">This is a computer generated document</span>
+                            </div>
+                        </div>
+                    </div>
+
                 </t>
              </xpath>
         </template>
