@@ -265,8 +265,12 @@ class RepairOrderInherit(models.Model):
         domain="[('partner_id', '=', partner_id)]"
     )
 
-    @api.onchange('product_id')
+    @api.onchange('product_id', 'account_en')
     def _onchange_product_id(self):
+        # Only execute if account_en is 'cost'
+        if self.account_en != 'cost':
+            return
+
         new_service_products = self.env['product.product']
         if self.product_id and self.product_id.product_tmpl_id.service_product_ids:
             new_service_products = self.product_id.product_tmpl_id.service_product_ids
@@ -394,6 +398,7 @@ class RepairOrderInherit(models.Model):
         ('service_warranty', 'Service Warranty'),
         ('inspection_cost', 'Inspection Cost'),
         ('material_cost', 'Material Cost'),
+        ('scrap', 'Scrap'),
     ], string="Account EN")
 
     customer_state = fields.Selection([

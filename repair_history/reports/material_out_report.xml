@@ -227,7 +227,12 @@
                                                 <table style="margin: 0; width: 100%; border-collapse: collapse; height: 100%; table-layout: fixed;">
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}}; width: 50%;"><strong>Challan No:</strong><br/><span t-field="o.name"/></td>
-                                                        <td class="address-box" style="width: 50%;"><strong>Date:</strong><br/><span t-field="o.scheduled_date"/></td>
+                                                        <td class="address-box" style="width: 50%;">
+                                                            <strong>Date:</strong><br/>
+                                                            <t t-set="linked_invoice" t-value="o.sale_id.invoice_ids.filtered(lambda i: i.state != 'cancel')[:1] if o.sale_id else False"/>
+                                                            <span t-if="linked_invoice and linked_invoice.invoice_date" t-esc="linked_invoice.invoice_date" t-options='{"widget": "date"}'/>
+                                                            <span t-else="" t-field="o.scheduled_date"/>
+                                                        </td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
@@ -254,7 +259,24 @@
                                                         <td class="address-box"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td colspan="2" class="address-box"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">
+                                                            <strong>Account Type:</strong><br/>
+
+                                                            <!-- Safe dynamic fetch for Repair Order to handle both relational types without crashing -->
+                                                            <t t-set="repair_order" t-value="False"/>
+                                                            <t t-if="o.sale_id">
+                                                                <t t-if="'repair_id' in o.sale_id._fields">
+                                                                    <t t-set="repair_order" t-value="o.sale_id.repair_id"/>
+                                                                </t>
+                                                                <t t-elif="'repair_ids' in o.sale_id._fields">
+                                                                    <t t-set="repair_order" t-value="o.sale_id.repair_ids[:1]"/>
+                                                                </t>
+                                                            </t>
+
+                                                            <!-- The selection field label is automatically extracted using t-field -->
+                                                            <span t-if="repair_order" t-field="repair_order.account_en"/>
+                                                        </td>
+                                                        <td class="address-box"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2" class="address-box"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td>
