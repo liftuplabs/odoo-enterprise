@@ -125,7 +125,7 @@
                                 .table-custom-bordered thead th {
                                     border-bottom: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                     font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
-                                    text-transform: uppercase; font-size: 0.9em;
+                                    text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important;
                                 }
 
                                 /* Style 2: Minimal */
@@ -142,7 +142,7 @@
                                 .table-custom-minimal thead th {
                                     border-bottom: 2px solid <t t-esc="border_color"/> !important;
                                     font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
-                                    text-transform: uppercase; font-size: 0.9em;
+                                    text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important;
                                 }
 
                                 /* Style 3: Striped */
@@ -156,7 +156,7 @@
                                     border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                     border-right: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
                                     font-weight: bold; background-color: <t t-esc="header_bg"/> !important; color: <t t-esc="header_text"/> !important;
-                                    text-transform: uppercase; font-size: 0.9em;
+                                    text-transform: uppercase; font-size: 0.9em; padding: 8px 10px !important;
                                 }
                                 table.table-custom-striped tbody td {
                                     border-left: <t t-esc="border_width"/>px solid <t t-esc="border_color"/> !important;
@@ -456,7 +456,6 @@
                             <div class="row mt-2" style="page-break-inside: avoid;">
                                 <div class="col-12">
                                     <strong>Amount Chargeable (in words):  E. &amp; O.E</strong> <br/>
-                                    <!-- Using our custom Python fallback method -->
                                     <span t-esc="o._get_inr_amount_in_words(o.amount_total)"/>
 
                                     <br/>
@@ -465,7 +464,7 @@
                                 </div>
                             </div>
 
-                            <!-- HSN Summary (Hardcoded to bordered class) -->
+                            <!-- HSN Summary -->
                             <div class="row mt-3" style="page-break-inside: auto;">
                                  <t t-set="hsn_summary" t-value="o._l10n_in_get_hsn_summary_table()"/>
                                  <t t-if="hsn_summary">
@@ -541,31 +540,31 @@
                                 </t>
                             </div>
 
-                            <!-- Footer Section: PAN, Bank Details & Signatures -->
-                            <div class="row mt-5" style="page-break-inside: avoid;">
+                            <!-- PAN, Declaration & Bank Details (Moved back to main body flow) -->
+                            <div class="row mt-3" style="page-break-inside: avoid;">
                                 <div class="col-6">
                                     <strong>Company's PAN: </strong>
                                     <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
                                     <strong>Declaration:</strong><br/>
-                                    <span>We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
+                                    <span style="font-size: 0.9em;">We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.</span>
                                 </div>
                                 <div class="col-6 text-end">
                                     <t t-set="bank_info" t-value="o.company_id.partner_id.bank_ids[:1]"/>
                                     <t t-if="o.company_id.show_bank_detail">
-                                        <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 200px;">
+                                        <div t-if="bank_info" style="display: inline-block; text-align: left; min-width: 250px; font-size: 0.9em;">
                                             <strong>Company's Bank Details</strong><br/>
                                             <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>Bank Name</strong></div>
+                                                <div class="p-0" style="width: 90px;"><strong>Bank Name</strong></div>
                                                 <div class="p-0" style="width: 10px;">:</div>
                                                 <div class="p-0 col"><span t-field="bank_info.bank_id.name"/></div>
                                             </div>
                                             <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>A/C No.</strong></div>
+                                                <div class="p-0" style="width: 90px;"><strong>A/C No.</strong></div>
                                                 <div class="p-0" style="width: 10px;">:</div>
                                                 <div class="p-0 col"><span t-field="bank_info.acc_number"/></div>
                                             </div>
                                             <div class="row m-0">
-                                                <div class="p-0" style="width: 100px;"><strong>Branch &amp; IFSC</strong></div>
+                                                <div class="p-0" style="width: 90px;"><strong>Branch &amp; IFSC</strong></div>
                                                 <div class="p-0" style="width: 10px;">:</div>
                                                 <div class="p-0 col">
                                                     <span t-if="bank_info.bank_id.city" t-field="bank_info.bank_id.city"/>
@@ -577,26 +576,32 @@
                                     </t>
                                 </div>
                             </div>
-                            <div class="row mt-5" style="page-break-inside: avoid;">
-                                <div class="col-6">
-                                    <strong>Customer's Seal and Signature</strong><br/>
-                                </div>
-                                <div class="col-6 text-end">
-                                    <strong>For <span t-field="o.company_id.name"/></strong>
-                                    <br/><br/>
-                                    <t t-if="o.company_id.digital_signature">
-                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
-                                    </t>
-                                    <br/><br/>
-                                    <strong>Authorized Signatory</strong>
-                                </div>
-                            </div>
 
                             <!-- Force a page break between copies if iterating over 'All' -->
                             <p style="page-break-after: always;" t-if="not copy_name_last"/>
 
                         </div>
                     </t>
+
+                    <!-- EXPLICIT ODOO FOOTER CLASS: Pins signatures to the absolute physical bottom -->
+                    <div class="footer" t-attf-style="font-family: {{font_family}}, sans-serif; font-size: {{base_font_size}};">
+                        <!-- Added padding-bottom to lift both signatures away from the page edge -->
+                        <div class="row" style="width: 100%; margin: 0; align-items: flex-end; padding-top: 10px; padding-bottom: 15px;">
+                            <div class="col-6 p-0">
+                                <strong>Customer's Seal and Signature</strong>
+                            </div>
+                            <div class="col-6 text-end p-0">
+                                <strong>For <span t-field="o.company_id.name"/></strong>
+                                <div style="min-height: 40px; margin: 2px 0;">
+                                    <t t-if="o.company_id.digital_signature">
+                                        <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 40px;"/>
+                                    </t>
+                                </div>
+                                <strong>Authorized Signatory</strong>
+                            </div>
+                        </div>
+                    </div>
+
                 </t>
              </xpath>
         </template>
