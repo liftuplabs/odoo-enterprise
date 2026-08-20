@@ -12,7 +12,7 @@ class MrpProduction(models.Model):
     subcontractor_po_id = fields.Many2one(
         'purchase.order',
         string="Subcontractor PO",
-        copy=False
+        copy=True
     )
     subcontractor_receipt_done = fields.Boolean(
         string="Subcontractor Receipt Done",
@@ -63,8 +63,35 @@ class MrpProduction(models.Model):
         }
 
     def button_mark_done(self):
-        """ Backend validation to prevent producing before receipt is done """
+        """ Calculate available received qty and trigger native backorder wizard """
         for mo in self:
-            if mo.is_external_subcontractor and not mo.subcontractor_receipt_done:
-                raise UserError(_("You cannot produce this order until the subcontractor receipt is completed."))
+            if mo.is_external_subcontractor and mo.subcontractor_po_id:
+                if not mo.subcontractor_receipt_done:
+                    raise UserError(_("You cannot produce this order until the subcontractor receipt is completed."))
+
+                # 1. Get total quantity received on the PO so far
+                po_line = mo.subcontractor_po_id.order_line.filtered(lambda l: l.product_id == mo.product_id)[:1]
+                total_received = po_line.qty_received if po_line else 0.0
+
+                # 2. Get total quantity already produced in past MOs (previous backorders) for this PO
+                related_mos = self.env['mrp.production'].search([
+                    ('subcontractor_po_id', '=', mo.subcontractor_po_id.id),
+                    ('state', '=', 'done')
+                ])
+                already_produced = sum(related_mos.mapped('qty_produced'))
+
+                available_to_produce = total_received - already_produced
+
+                if available_to_produce <= 0:
+                    raise UserError(
+                        _("You have already produced all received quantities. Process the next subcontractor receipt first."))
+
+                # 3. If they try to produce more than received (or if qty_producing is 0 which implies 'Produce All'), cap it.
+                qty_intended = mo.qty_producing if mo.qty_producing > 0 else mo.product_qty
+
+                if qty_intended > available_to_produce:
+                    mo.qty_producing = available_to_produce
+                    # Because we set qty_producing < product_qty, Odoo's super() call
+                    # will automatically pop up the standard Backorder Wizard.
+
         return super(MrpProduction, self).button_mark_done()

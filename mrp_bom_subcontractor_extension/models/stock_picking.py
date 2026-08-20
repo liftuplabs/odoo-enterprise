@@ -8,12 +8,18 @@ class StockPicking(models.Model):
         res = super(StockPicking, self)._action_done()
 
         for picking in self:
-            # Check if this picking belongs to our custom Subcontractor PO
-            if picking.purchase_id and picking.purchase_id.mrp_production_id:
-                mo = picking.purchase_id.mrp_production_id
+            if picking.purchase_id:
+                # Check if this receipt is returning to our production location
+                if picking.picking_type_code == 'incoming':
 
-                # Check if this specific picking is the Receipt returning to SMT01/PROD
-                if picking.location_dest_id == mo.production_location_id:
-                    mo.subcontractor_receipt_done = True
+                    # Find ANY open MO tied to this Purchase Order
+                    open_mos = self.env['mrp.production'].search([
+                        ('subcontractor_po_id', '=', picking.purchase_id.id),
+                        ('state', 'not in', ('done', 'cancel')),
+                        ('production_location_id', '=', picking.location_dest_id.id)
+                    ])
+
+                    for mo in open_mos:
+                        mo.subcontractor_receipt_done = True
 
         return res
