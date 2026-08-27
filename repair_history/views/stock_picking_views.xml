@@ -29,6 +29,30 @@
                             </group>
                         </group>
                     </page>
+                    <page string="Transport &amp; Delivery" name="custom_transport_info">
+                        <group>
+                            <group string="Delivery Details">
+                                <field name="dispatch_doc_no"/>
+                                <field name="dispatch_through"/>
+                                <field name="destination"/>
+                                <field name="delivery_note"/>
+                                <field name="delivery_note_date"/>
+                                <field name="date_time_of_issue"/>
+                            </group>
+                            <group string="References">
+                                <field name="supplier_reference"/>
+                                <field name="other_reference"/>
+                                <field name="buyers_order_no"/>
+                                <field name="buyers_order_date"/>
+                                 <field name="mode_of_payment"/>
+                                 <field name="motor_vehicle_no"/>
+                                 <field name="duration_of_process"/>
+                            </group>
+                        </group>
+                        <group string="Nature">
+                             <field name="nature_of_process"/>
+                        </group>
+                    </page>
                 </xpath>
                 <xpath expr="//header" position="inside">
                     <button name="action_export_difference_report"

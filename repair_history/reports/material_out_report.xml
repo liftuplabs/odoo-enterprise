@@ -235,28 +235,28 @@
                                                         </td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.sale_id.delivery_note"/></td>
-                                                        <td class="address-box"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.sale_id.mode_of_payment"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Delivery Note:</strong><br/><span t-field="o.delivery_note"/></td>
+                                                        <td class="address-box"><strong>Mode/Terms of Payment:</strong><br/><span t-field="o.mode_of_payment"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="o.sale_id.supplier_reference"/></td>
-                                                        <td class="address-box"><strong>Other Ref:</strong><br/><span t-field="o.sale_id.other_reference"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Supplier Ref:</strong><br/><span t-field="o.supplier_reference"/></td>
+                                                        <td class="address-box"><strong>Other Ref:</strong><br/><span t-field="o.other_reference"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Buyer Order No:</strong><br/><span t-field="o.sale_id.buyers_order_no"/></td>
-                                                        <td class="address-box"><strong>Dated:</strong><br/><span t-field="o.sale_id.buyers_order_date"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Buyer Order No:</strong><br/><span t-field="o.buyers_order_no"/></td>
+                                                        <td class="address-box"><strong>Dated:</strong><br/><span t-field="o.buyers_order_date"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatch Doc No:</strong><br/><span t-field="o.sale_id.dispatch_doc_no"/></td>
-                                                        <td class="address-box"><strong>Del. Note Date:</strong><br/><span t-field="o.sale_id.delivery_note_date"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatch Doc No:</strong><br/><span t-field="o.dispatch_doc_no"/></td>
+                                                        <td class="address-box"><strong>Del. Note Date:</strong><br/><span t-field="o.delivery_note_date"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatched Through:</strong><br/><span t-field="o.sale_id.dispatch_through"/></td>
-                                                        <td class="address-box"><strong>Destination:</strong><br/><span t-field="o.sale_id.destination"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatched Through:</strong><br/><span t-field="o.dispatch_through"/></td>
+                                                        <td class="address-box"><strong>Destination:</strong><br/><span t-field="o.destination"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
-                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.sale_id.date_time_of_issue"/></td>
-                                                        <td class="address-box"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.sale_id.motor_vehicle_no"/></td>
+                                                        <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Date &amp; Time of Issue:</strong><br/><span t-field="o.date_time_of_issue"/></td>
+                                                        <td class="address-box"><strong>Motor Vehicle No.:</strong><br/><span t-field="o.motor_vehicle_no"/></td>
                                                     </tr>
                                                     <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
                                                         <td class="address-box" t-attf-style="border-right: {{border_width}}px solid {{border_color}};">
@@ -276,10 +276,10 @@
                                                             <!-- The selection field label is automatically extracted using t-field -->
                                                             <span t-if="repair_order" t-field="repair_order.account_en"/>
                                                         </td>
-                                                        <td class="address-box"><strong>Duration of Process:</strong><br/><span t-field="o.sale_id.duration_of_process"/></td>
+                                                        <td class="address-box"><strong>Duration of Process:</strong><br/><span t-field="o.duration_of_process"/></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2" class="address-box"><strong>Nature of Processing:</strong><br/><span t-field="o.sale_id.nature_of_process"/></td>
+                                                        <td colspan="2" class="address-box"><strong>Nature of Processing:</strong><br/><span t-field="o.nature_of_process"/></td>
                                                     </tr>
                                                 </table>
                                             </td>
