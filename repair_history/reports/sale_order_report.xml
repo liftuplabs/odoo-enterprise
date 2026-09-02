@@ -367,63 +367,69 @@
                                                 <tr>
                                                     <th rowspan="2" class="text-center" style="vertical-align: middle;">HSN/SAC</th>
                                                     <th rowspan="2" class="text-end" style="vertical-align: middle;">Taxable Value</th>
-                                                    <t t-if="hsn_summary['has_gst']">
+                                                    <t t-if="hsn_summary.get('has_cgst') or hsn_summary.get('has_sgst') or hsn_summary.get('has_gst')">
                                                         <th class="text-center" colspan="2">CGST</th>
                                                         <th class="text-center" colspan="2">SGST</th>
                                                     </t>
-                                                    <t t-if="hsn_summary['has_igst']">
+                                                    <t t-if="hsn_summary.get('has_igst')">
                                                         <th class="text-center" colspan="2">IGST</th>
                                                     </t>
                                                     <th rowspan="2" class="text-end" style="vertical-align: middle;">Total Tax Amount</th>
                                                 </tr>
                                                  <tr>
-                                                    <t t-if="hsn_summary['has_gst']">
+                                                    <t t-if="hsn_summary.get('has_cgst') or hsn_summary.get('has_sgst') or hsn_summary.get('has_gst')">
                                                         <th class="text-end">Rate</th>
                                                         <th class="text-end">Amount</th>
                                                         <th class="text-end">Rate</th>
                                                         <th class="text-end">Amount</th>
                                                     </t>
-                                                    <t t-if="hsn_summary['has_igst']">
+                                                    <t t-if="hsn_summary.get('has_igst')">
                                                          <th class="text-end">Rate</th>
                                                          <th class="text-end">Amount</th>
                                                     </t>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr t-foreach="hsn_summary['items']" t-as="item">
-                                                    <td class="text-center"><span t-esc="item['l10n_in_hsn_code']"/></td>
-                                                    <td class="text-end"><span t-esc="item['amount_untaxed']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                                    <t t-if="hsn_summary['has_gst']">
-                                                        <td class="text-end"><span t-esc="item['rate'] / 2"/>%</td>
-                                                        <td class="text-end"><span t-esc="item['tax_amount_cgst']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                                        <td class="text-end"><span t-esc="item['rate'] / 2"/>%</td>
-                                                        <td class="text-end"><span t-esc="item['tax_amount_sgst']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                <tr t-foreach="hsn_summary.get('items', [])" t-as="item">
+                                                    <td class="text-center"><span t-esc="item.get('l10n_in_hsn_code', '')"/></td>
+                                                    <td class="text-end"><span t-esc="item.get('amount_untaxed', 0.0)" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+
+                                                    <t t-if="hsn_summary.get('has_cgst') or hsn_summary.get('has_sgst') or hsn_summary.get('has_gst')">
+                                                        <td class="text-end"><span t-esc="item.get('rate', 0.0) / 2"/>%</td>
+                                                        <td class="text-end"><span t-esc="item.get('cgst', item.get('tax_amount_cgst', 0.0))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                        <td class="text-end"><span t-esc="item.get('rate', 0.0) / 2"/>%</td>
+                                                        <td class="text-end"><span t-esc="item.get('sgst', item.get('tax_amount_sgst', 0.0))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                                                     </t>
-                                                    <t t-if="hsn_summary['has_igst']">
-                                                        <td class="text-end"><span t-esc="item['rate']"/>%</td>
-                                                        <td class="text-end"><span t-esc="item['tax_amount_igst']" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                    <t t-if="hsn_summary.get('has_igst')">
+                                                        <td class="text-end"><span t-esc="item.get('rate', 0.0)"/>%</td>
+                                                        <td class="text-end"><span t-esc="item.get('igst', item.get('tax_amount_igst', 0.0))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                                                     </t>
+
+                                                    <!-- DIRECT QWEB CALCULATION WORKAROUND -->
                                                     <td class="text-end">
-                                                        <t t-set="total_tax_amount" t-value="item.get('tax_amount_igst', 0.0) + item.get('tax_amount_cgst', 0.0) + item.get('tax_amount_sgst', 0.0) + item.get('tax_amount_cess', 0.0)"/>
-                                                        <span t-esc="total_tax_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                        <t t-set="hsn_lines" t-value="doc.order_line.filtered(lambda l: (l.product_template_id.l10n_in_hsn_code or '') == (item.get('l10n_in_hsn_code') or '') and not l.display_type)"/>
+                                                        <t t-set="computed_total_tax" t-value="sum(l.price_tax for l in hsn_lines)"/>
+                                                        <span t-esc="computed_total_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
                                                     </td>
                                                 </tr>
                                                 <tr class="text-bold">
                                                     <td class="text-end">Total:</td>
-                                                    <td class="text-end"><span t-esc="sum(item['amount_untaxed'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
-                                                     <t t-if="hsn_summary['has_gst']">
+                                                    <td class="text-end"><span t-esc="sum(item.get('amount_untaxed', 0.0) for item in hsn_summary.get('items', []))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+
+                                                     <t t-if="hsn_summary.get('has_cgst') or hsn_summary.get('has_sgst') or hsn_summary.get('has_gst')">
                                                         <td></td>
-                                                        <td class="text-end"><span t-esc="sum(item['tax_amount_cgst'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                        <td class="text-end"><span t-esc="sum(item.get('cgst', item.get('tax_amount_cgst', 0.0)) for item in hsn_summary.get('items', []))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                                                         <td></td>
-                                                        <td class="text-end"><span t-esc="sum(item['tax_amount_sgst'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                        <td class="text-end"><span t-esc="sum(item.get('sgst', item.get('tax_amount_sgst', 0.0)) for item in hsn_summary.get('items', []))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                                                     </t>
-                                                     <t t-if="hsn_summary['has_igst']">
+                                                     <t t-if="hsn_summary.get('has_igst')">
                                                         <td></td>
-                                                        <td class="text-end"><span t-esc="sum(item['tax_amount_igst'] for item in hsn_summary['items'])" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
+                                                        <td class="text-end"><span t-esc="sum(item.get('igst', item.get('tax_amount_igst', 0.0)) for item in hsn_summary.get('items', []))" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/></td>
                                                     </t>
+
+                                                    <!-- USE NATIVE ODOO TOTAL TAX FIELD -->
                                                     <td class="text-end">
-                                                         <t t-set="grand_total_tax_amount" t-value="sum(item.get('tax_amount_igst', 0.0) + item.get('tax_amount_cgst', 0.0) + item.get('tax_amount_sgst', 0.0) + item.get('tax_amount_cess', 0.0) for item in hsn_summary['items'])"/>
-                                                        <span t-esc="grand_total_tax_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                                        <span t-field="doc.amount_tax"/>
                                                     </td>
                                                 </tr>
                                             </tbody>
