@@ -43,6 +43,7 @@
         'reports/sale_order_report.xml',
         'reports/purchase_order_report.xml',
         'reports/repair_order_report.xml',
+        'reports/proforma_invoice_report.xml',
         'wizard/sale_order_print_wizard.xml',
         'wizard/purchase_order_print_wizard.xml',
         'wizard/repair_order_print_wizard.xml',

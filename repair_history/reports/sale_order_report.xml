@@ -18,7 +18,7 @@
                     <t t-set="font_family" t-value="doc.company_id.custom_invoice_font_family or 'Arial'"/>
 
                     <!-- Dynamic Page Title based on state -->
-                    <t t-set="page_title" t-value="'SALE ORDER' if doc.state in ['sale', 'done'] else 'QUOTATION'"/>
+                    <t t-set="page_title" t-value="'PRO-FORMA INVOICE' if env.context.get('proforma', False) or is_pro_forma else ('SALE ORDER' if doc.state in ['sale', 'done'] else 'QUOTATION')"/>
 
                     <t t-set="product_lines" t-value="doc.order_line.filtered(lambda l: not l.display_type)"/>
                     <t t-set="line_count" t-value="len(product_lines)"/>
@@ -450,7 +450,8 @@
                                     <span t-field="doc.company_id.l10n_in_pan"/><br/><br/>
                                     <strong>Declaration:</strong><br/>
                                     <!-- Dynamic wording in declaration -->
-                                    <span>We declare that this <t t-esc="'sale order' if doc.state in ['sale', 'done'] else 'quotation'"/> shows the actual price of the goods described and that all particulars are true and correct.</span>
+                                    <t t-set="doc_type_name" t-value="'pro-forma invoice' if env.context.get('proforma', False) or is_pro_forma else ('sale order' if doc.state in ['sale', 'done'] else 'quotation')"/>
+                                    <span>We declare that this <t t-esc="doc_type_name"/> shows the actual price of the goods described and that all particulars are true and correct.</span>
                                 </div>
                                 <div class="col-6 text-end">
                                     <t t-set="bank_info" t-value="doc.company_id.partner_id.bank_ids[:1]"/>
