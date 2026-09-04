@@ -97,8 +97,18 @@ class StockPicking(models.Model):
 
     mode_of_payment = fields.Char(string='Mode/Terms of Payment')
 
-    buyers_order_no = fields.Char(string="Buyer's Order No.")
-    buyers_order_date = fields.Date(string="Buyer's Order Date")
+    buyers_order_no = fields.Char(
+        string="Buyer's Order No.",
+        related='sale_id.buyers_order_no',
+        store=True,
+        readonly=False
+    )
+    buyers_order_date = fields.Date(
+        string="Buyer's Order Date",
+        related='sale_id.buyers_order_date',
+        store=True,
+        readonly=False
+    )
     date_time_of_issue = fields.Datetime(string="Date & Time of Issue")
     motor_vehicle_no = fields.Char(string="Motor Vehicle No.")
     duration_of_process = fields.Char(string="Duration of Process")

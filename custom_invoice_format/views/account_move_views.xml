@@ -35,13 +35,16 @@
                             <field name="destination"/>
                             <field name="delivery_note"/>
                             <field name="delivery_note_date"/>
+                            <field name="date_time_of_issue"/>
                         </group>
                         <group string="References">
                             <field name="supplier_reference"/>
                             <field name="other_reference"/>
                             <field name="buyers_order_no"/>
                             <field name="buyers_order_date"/>
-                             <field name="mode_of_payment" invisible="1"/>
+                            <field name="motor_vehicle_no"/>
+                            <field name="duration_of_process"/>
+                            <field name="mode_of_payment" invisible="1"/>
                         </group>
                     </group>
                     <group string="Terms">

@@ -412,3 +412,33 @@ class SaleOrder(models.Model):
             'has_gst': has_gst,
             'has_igst': has_igst,
         }
+
+    def _prepare_invoice(self):
+        invoice_vals = super(SaleOrder, self)._prepare_invoice()
+        invoice_vals.update({
+            'buyers_order_no': self.buyers_order_no,
+            'buyers_order_date': self.buyers_order_date,
+        })
+
+        done_deliveries = self.picking_ids.filtered(
+            lambda p: p.state == 'done' and p.picking_type_id.code == 'outgoing'
+        )
+
+        if done_deliveries:
+            latest_delivery = done_deliveries.sorted(key=lambda p: p.date_done, reverse=True)[0]
+
+            invoice_vals.update({
+                'dispatch_doc_no': latest_delivery.dispatch_doc_no,
+                'dispatch_through': latest_delivery.dispatch_through,
+                'destination': latest_delivery.destination,
+                'supplier_reference': latest_delivery.supplier_reference,
+                'other_reference': latest_delivery.other_reference,
+                'delivery_note': latest_delivery.delivery_note,
+                'delivery_note_date': latest_delivery.delivery_note_date,
+                'mode_of_payment': latest_delivery.mode_of_payment,
+                'date_time_of_issue': latest_delivery.date_time_of_issue,
+                'motor_vehicle_no': latest_delivery.motor_vehicle_no,
+                'duration_of_process': latest_delivery.duration_of_process,
+            })
+
+        return invoice_vals

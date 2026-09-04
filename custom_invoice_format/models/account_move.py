@@ -31,6 +31,9 @@ class AccountMove(models.Model):
 
     buyers_order_no = fields.Char(string="Buyer's Order No.")
     buyers_order_date = fields.Date(string="Buyer's Order Date")
+    date_time_of_issue = fields.Datetime(string="Date & Time of Issue")
+    motor_vehicle_no = fields.Char(string="Motor Vehicle No.")
+    duration_of_process = fields.Char(string="Duration of Process")
 
     eway_bill_no = fields.Char(
         string='Ewb No.',
