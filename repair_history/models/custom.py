@@ -966,8 +966,8 @@ class RepairOrderInherit(models.Model):
             raise UserError("Selected records don't have customer set.")
         if self.filtered(lambda repair: repair.sale_order_id):
             raise UserError("Selected records have already sale order create.")
-        if self.filtered(lambda repair: repair.state not in ['done','cancel']):
-            raise UserError("Please select records with the done or scrap status only.")
+        # if self.filtered(lambda repair: repair.state not in ['done','cancel']):
+        #     raise UserError("Please select records with the done or scrap status only.")
         if len(self.mapped('partner_id')) > 1:
             raise UserError("Please select records with the same customer only.")
         if len(self.mapped('company_id')) > 1:
