@@ -25,6 +25,7 @@ class ProductionOrder(models.Model):
         'Date', default=fields.Datetime.now, required=True,
         help="The date when the production order was created.")
     machine_id = fields.Many2many('maintenance.equipment', string='Machine')
+    workcenter_ids = fields.Many2many('mrp.workcenter', string='Work Centers')
     shift_no = fields.Selection(string='Shift No', selection=[('shift_1', 'Shift 1'), ('shift_2', 'Shift 2'), ('shift_3', 'Shift 3')], required=True)
     mrp_ids = fields.One2many('mrp.production', 'production_order_id', string='Manufacturing Orders', help="Manufacturing orders associated with this production order.")
     state = fields.Selection([('draft', 'Draft'), ('in_progress', 'In Progress'), ('done', 'Done'), ('cancel', 'Cancelled')], string='Status', default='draft', required=True, help="The current status of the production order.")

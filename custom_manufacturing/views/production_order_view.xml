@@ -28,7 +28,8 @@
                 <list string="Production Orders">
                     <field name="name"/>
                     <field name="date"/>
-                    <field name="machine_id" widget="many2many_tags"/>
+                    <field name="machine_id" widget="many2many_tags" column_invisible="1"/>
+                    <field name="workcenter_ids" widget="many2many_tags"/>
                     <field name="shift_no"/>
                     <field name="state" widget="badge" decoration-danger="state=='cancel'" decoration-info="state== 'in_progress'" decoration-muted="state == 'draft'" decoration-success="state == 'done'"/>
                 </list>
@@ -64,7 +65,8 @@
                         </div>
                         <group>
                             <field name="date"/>
-                            <field name="machine_id" widget="many2many_tags"/>
+                            <field name="machine_id" widget="many2many_tags" invisible="1"/>
+                            <field name="workcenter_ids" widget="many2many_tags"/>
                             <field name="shift_no"/>
                         </group>
                         <notebook>
