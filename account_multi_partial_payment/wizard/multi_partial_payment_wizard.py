@@ -90,7 +90,7 @@ class MultiPartialPaymentWizard(models.TransientModel):
 
             payment_record = register_wizard._create_payments()
             if payment_record:
-                payment_record.action_validate()
+                payment_record.action_post()
 
         return {'type': 'ir.actions.act_window_close'}
 
