@@ -10,6 +10,8 @@
     'author': 'Your Company',
     'depends': ['mrp', 'purchase', 'stock', 'mrp_subcontracting_purchase'],
     'data': [
+        'security/ir.model.access.csv',
+        'wizard/mrp_subcontractor_wizard_views.xml',
         'views/mrp_bom_views.xml',
         'views/mrp_production_views.xml',
     ],

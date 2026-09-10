@@ -19,7 +19,7 @@
 
             <!-- Add the Create PO button in the header -->
             <xpath expr="//header" position="inside">
-                <button name="action_create_subcontract_po"
+                <button name="action_open_subcontractor_wizard"
                         type="object"
                         string="Create Subcontractor PO"
                         class="oe_highlight"

@@ -9,7 +9,8 @@
                 <field name="is_external_subcontractor" invisible="type != 'normal'"/>
                 <field name="external_subcontractor_id"
                        invisible="not is_external_subcontractor or type != 'normal'"
-                       required="is_external_subcontractor"/>
+                       required="is_external_subcontractor"
+                       widget="many2many_tags"/>
             </xpath>
 
         </field>

@@ -10,7 +10,7 @@ class MrpBom(models.Model):
         help="Check this if an external subcontractor is involved in this internal BoM."
     )
 
-    external_subcontractor_id = fields.Many2one(
+    external_subcontractor_id = fields.Many2many(
         'res.partner',
         string='Subcontractor',
         help="Select the partner handling the subcontracted operation."

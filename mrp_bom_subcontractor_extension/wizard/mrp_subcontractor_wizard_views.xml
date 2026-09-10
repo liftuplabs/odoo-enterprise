@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_mrp_subcontractor_wizard_form" model="ir.ui.view">
+        <field name="name">mrp.subcontractor.wizard.form</field>
+        <field name="model">mrp.subcontractor.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Select Subcontractor">
+                <group>
+                    <field name="mrp_production_id" invisible="1"/>
+                    <field name="subcontractor_id" domain="[('id', 'in', context.get('allowed_subcontractor_ids', []))]"/>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

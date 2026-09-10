@@ -32,14 +32,31 @@ class MrpProduction(models.Model):
                 'target': 'current',
             }
 
-    def action_create_subcontract_po(self):
+    def action_open_subcontractor_wizard(self):
         self.ensure_one()
         if not self.bom_id.external_subcontractor_id:
             raise UserError(_("Please set a subcontractor on the Bill of Materials."))
+        
+        return {
+            'name': _('Select Subcontractor'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.subcontractor.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_mrp_production_id': self.id,
+                'allowed_subcontractor_ids': self.bom_id.external_subcontractor_id.ids,
+            }
+        }
+
+    def action_create_subcontractor_po(self, subcontractor_id):
+        self.ensure_one()
+        if not subcontractor_id:
+            raise UserError(_("Please select a subcontractor."))
 
         # Create the Purchase Order
         po_vals = {
-            'partner_id': self.bom_id.external_subcontractor_id.id,
+            'partner_id': subcontractor_id.id,
             'mrp_production_id': self.id,
             'origin': self.name,
             'order_line': [(0, 0, {
