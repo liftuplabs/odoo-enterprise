@@ -55,6 +55,7 @@
             <field name="inherit_id" ref="product.product_template_search_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//search" position="inside">
+                    <field name="item_code" string="Item Code" filter_domain="[('item_code', 'ilike', self)]"/>
                     <filter string="Tracked Goods" name="filter_tracked_goods"
                             domain="[('type', '=', 'consu'), ('is_storable', '=', True)]"/>
                 </xpath>
@@ -67,6 +68,7 @@
             <field name="inherit_id" ref="product.product_search_form_view"/>
             <field name="arch" type="xml">
                 <xpath expr="//search" position="inside">
+                    <field name="item_code" string="Item Code" filter_domain="[('item_code', 'ilike', self)]"/>
                     <filter string="Tracked Goods" name="filter_tracked_goods"
                             domain="[('type', '=', 'consu'), ('is_storable', '=', True)]"/>
                 </xpath>
