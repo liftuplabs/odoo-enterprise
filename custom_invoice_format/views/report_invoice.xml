@@ -263,35 +263,50 @@
                                                         </div>
                                                     </div>
 
+                                                    <!-- Consignee Address Logic Setup -->
+                                                    <t t-set="shipping_partner" t-value="o.partner_shipping_id"/>
+                                                    <t t-if="o.move_type in ['in_invoice', 'in_refund'] and 'purchase_line_id' in o.invoice_line_ids">
+                                                        <t t-set="related_po" t-value="o.invoice_line_ids.mapped('purchase_line_id.order_id')"/>
+                                                        <t t-if="related_po and related_po[0].dest_address_id">
+                                                            <t t-set="shipping_partner" t-value="related_po[0].dest_address_id"/>
+                                                        </t>
+                                                    </t>
+
                                                     <!-- Consignee Address Box -->
-                                                    <div t-if="o.partner_shipping_id" class="mb-3">
+                                                    <div t-if="shipping_partner" class="mb-3">
                                                         <strong>Consignee (Ship To):</strong><br/>
-                                                        <strong style="font-size: 1.1em;"><span t-field="o.partner_shipping_id.name"/></strong><br/>
+                                                        <strong style="font-size: 1.1em;"><span t-field="shipping_partner.name"/></strong><br/>
 
                                                         <!-- Inline Address For Consignee -->
                                                         <div>
-                                                            <span t-if="o.partner_shipping_id.street"><span t-field="o.partner_shipping_id.street"/></span>
-                                                            <span t-if="o.partner_shipping_id.street2">, <span t-field="o.partner_shipping_id.street2"/></span>
-                                                            <br t-if="o.partner_shipping_id.street or o.partner_shipping_id.street2"/>
-                                                            <span t-if="o.partner_shipping_id.city"><span t-field="o.partner_shipping_id.city"/> </span>
-                                                            <span t-if="o.partner_shipping_id.zip"><span t-field="o.partner_shipping_id.zip"/>, </span>
-                                                            <span t-if="o.partner_shipping_id.state_id"><span t-field="o.partner_shipping_id.state_id.name"/>, </span>
-                                                            <span t-if="o.partner_shipping_id.country_id"><span t-field="o.partner_shipping_id.country_id.name"/></span>
+                                                            <span t-if="shipping_partner.street"><span t-field="shipping_partner.street"/></span>
+                                                            <span t-if="shipping_partner.street2">, <span t-field="shipping_partner.street2"/></span>
+                                                            <br t-if="shipping_partner.street or shipping_partner.street2"/>
+                                                            <span t-if="shipping_partner.city"><span t-field="shipping_partner.city"/> </span>
+                                                            <span t-if="shipping_partner.zip"><span t-field="shipping_partner.zip"/>, </span>
+                                                            <span t-if="shipping_partner.state_id"><span t-field="shipping_partner.state_id.name"/>, </span>
+                                                            <span t-if="shipping_partner.country_id"><span t-field="shipping_partner.country_id.name"/></span>
                                                         </div>
 
-                                                        <div t-if="o.partner_shipping_id.vat">GSTIN: <span t-field="o.partner_shipping_id.vat"/></div>
-                                                        <div t-if="o.partner_shipping_id.state_id">
-                                                            State Name: <span t-field="o.partner_shipping_id.state_id.name"/>,
-                                                            Code: <span t-field="o.partner_shipping_id.state_id.l10n_in_tin"/>
+                                                        <div t-if="shipping_partner.vat">GSTIN: <span t-field="shipping_partner.vat"/></div>
+                                                        <div t-if="shipping_partner.state_id">
+                                                            State Name: <span t-field="shipping_partner.state_id.name"/>,
+                                                            Code: <span t-field="shipping_partner.state_id.l10n_in_tin"/>
                                                         </div>
                                                     </div>
 
-                                                    <!-- Bill To Address Box -->
+                                                    <!-- Bill To / Seller Address Box -->
                                                     <div>
-                                                        <strong>Bill To (Buyer):</strong><br/>
+                                                        <!-- Dynamic Label based on Document Type -->
+                                                        <t t-if="o.move_type in ['in_invoice', 'in_refund']">
+                                                            <strong>Seller (Bill from):</strong><br/>
+                                                        </t>
+                                                        <t t-else="">
+                                                            <strong>Bill To (Buyer):</strong><br/>
+                                                        </t>
                                                         <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
 
-                                                        <!-- Inline Address For Buyer -->
+                                                        <!-- Inline Address For Buyer/Seller -->
                                                         <div>
                                                             <span t-if="o.partner_id.street"><span t-field="o.partner_id.street"/></span>
                                                             <span t-if="o.partner_id.street2">, <span t-field="o.partner_id.street2"/></span>
