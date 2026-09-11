@@ -462,8 +462,17 @@
                                      Tax Amount (in words): <span t-esc="o.currency_id.amount_to_text(o.amount_tax)"/>
                                  </div>
                              </div>
-
-                            <div class="row mt-5" style="page-break-inside: avoid;">
+                            <!-- Add this block for Terms and Conditions -->
+                             <div class="row mt-3" t-if="o.notes" style="page-break-inside: avoid;">
+                                 <div class="col-12">
+                                     <strong>Terms and Conditions:</strong>
+                                     <div class="mt-1">
+                                         <span t-field="o.notes"/>
+                                     </div>
+                                 </div>
+                             </div>
+                             <!-- End of Terms and Conditions block -->
+                             <div class="row mt-5" style="page-break-inside: avoid;">
                                 <div class="col-6">
                                     <strong>Company's PAN: </strong>
                                     <span t-field="o.company_id.l10n_in_pan"/><br/><br/>
@@ -494,25 +503,25 @@
                                         </div>
                                     </t>
                                 </div>
-                            </div>
+                             </div>
 
-                            <div class="row mt-4">
-                                <div class="col-6">
+                             <div class="row mt-4">
+                                 <div class="col-6">
                                     <br/><br/>
                                     <strong>Prepared By</strong>
-                                </div>
-                                <div class="col-6 text-end">
+                                 </div>
+                                 <div class="col-6 text-end">
                                     <strong>For <span t-field="o.company_id.name"/></strong><br/><br/>
                                     <t t-if="o.company_id.digital_signature">
                                         <img t-att-src="image_data_uri(o.company_id.digital_signature)" style="max-height: 80px;"/>
                                     </t>
                                     <br/><br/>
                                     <strong>Authorized Signatory</strong>
-                                </div>
-                            </div>
+                                 </div>
+                             </div>
 
                             <!-- Force a page break between copies if iterating over 'All' -->
-                            <p style="page-break-after: always;" t-if="not copy_name_last"/>
+                             <p style="page-break-after: always;" t-if="not copy_name_last"/>
 
                         </div>
                     </t>

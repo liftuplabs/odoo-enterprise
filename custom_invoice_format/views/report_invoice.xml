@@ -539,7 +539,16 @@
                                     </div>
                                 </t>
                             </div>
-
+                            <!-- Add this block for Terms and Conditions -->
+                             <div class="row mt-3" t-if="o.narration" style="page-break-inside: avoid;">
+                                 <div class="col-12">
+                                     <strong>Terms and Conditions:</strong>
+                                     <div class="mt-1">
+                                         <span t-field="o.narration"/>
+                                     </div>
+                                 </div>
+                             </div>
+                             <!-- End of Terms and Conditions block -->
                             <!-- PAN, Declaration & Bank Details (Moved back to main body flow) -->
                             <div class="row mt-3" style="page-break-inside: avoid;">
                                 <div class="col-6">
