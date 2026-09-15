@@ -66,6 +66,8 @@
             <xpath expr="//field[@name='invoice_date']" position="after">
                 <field name="sale_order_name" optional="show"/>
                 <field name="sale_order_date" optional="show" widget="date"/>
+                <field name="delivery_note" string="DC No." optional="show"/>
+                <field name="delivery_note_date" string="DC Date" optional="show" widget="date"/>
             </xpath>
 
         </field>
