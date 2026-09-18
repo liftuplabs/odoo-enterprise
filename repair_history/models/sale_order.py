@@ -423,7 +423,7 @@ class SaleOrder(models.Model):
         done_deliveries = self.picking_ids.filtered(
             lambda p: p.state == 'done' and p.picking_type_id.code == 'outgoing'
         )
-        
+
         if done_deliveries:
             latest_delivery = done_deliveries.sorted(key=lambda p: p.date_done, reverse=True)[0]
 
