@@ -108,3 +108,21 @@ class PurchaseOrder(models.Model):
             'has_gst': has_gst,
             'has_igst': has_igst,
         }
+
+class PurchaseOrderLine(models.Model):
+    _inherit = 'purchase.order.line'
+
+    def _get_product_purchase_description(self, product_lang):
+        self.ensure_one()
+        name = super()._get_product_purchase_description(product_lang)
+        item_code = product_lang.item_code or product_lang.product_tmpl_id.item_code
+        if product_lang.show_item_code_on_po and item_code:
+            if name.startswith('['):
+                closing_bracket_idx = name.find(']')
+                if closing_bracket_idx != -1:
+                    name = name[:closing_bracket_idx+1] + f' [{item_code}]' + name[closing_bracket_idx+1:]
+                else:
+                    name = f'[{item_code}] {name}'
+            else:
+                name = f'[{item_code}] {name}'
+        return name

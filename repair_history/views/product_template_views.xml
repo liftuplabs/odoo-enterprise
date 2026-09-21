@@ -10,6 +10,7 @@
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="after">
                     <field name="item_code"/>
+                    <field name="show_item_code_on_po"/>
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="attributes">
                     <attribute name="string">Part Code</attribute>
@@ -42,6 +43,7 @@
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="after">
                     <field name="item_code"/>
+                    <field name="show_item_code_on_po"/>
                 </xpath>
                 <xpath expr="//field[@name='default_code']" position="attributes">
                     <attribute name="string">Part Code</attribute>

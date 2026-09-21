@@ -10,6 +10,7 @@ class ProductTemplate(models.Model):
 
     service_product_ids = fields.Many2many('product.product', string='Service Products', tracking=True)
     item_code = fields.Char(string='Item Code', tracking=True)
+    show_item_code_on_po = fields.Boolean(string='Show Item Code on PO', default=False)
     repair_min_qty = fields.Float(string="Min Repair Qty", default=0.0,
                                   help="Minimum quantity allowed when used in a Repair Order.")
     repair_max_qty = fields.Float(string="Max Repair Qty", default=0.0,
@@ -66,6 +67,7 @@ class ProductProduct(models.Model):
     _inherit = 'product.product'
 
     item_code = fields.Char(string='Item Code', tracking=True)
+    show_item_code_on_po = fields.Boolean(string='Show Item Code on PO', related='product_tmpl_id.show_item_code_on_po', readonly=False)
 
     # @api.constrains('name', 'default_code')
     @api.constrains('name')
