@@ -13,11 +13,49 @@ class PurchaseOrder(models.Model):
         super()._compute_subcontracting_resupply_picking_count()
 
     def button_confirm(self):
+        for order in self:
+            if order.mrp_production_id and not self.env.context.get('skip_alternative_po_check'):
+                mo = order.mrp_production_id
+                all_pos = self.env['purchase.order'].search([('mrp_production_id', '=', mo.id)])
+                confirmed_pos = all_pos.filtered(lambda p: p.state in ['purchase', 'done'] or p.id == order.id)
+                total_confirmed_qty = sum(
+                    confirmed_pos.mapped('order_line').filtered(
+                        lambda l: l.product_id == mo.product_id
+                    ).mapped('product_qty')
+                )
+                if total_confirmed_qty >= mo.product_qty:
+                    alternative_pos = all_pos.filtered(lambda p: p.id not in confirmed_pos.ids and p.state in ['draft', 'sent', 'to approve'])
+                    if alternative_pos:
+                        return {
+                            'name': 'Confirm Cancel Alternatives',
+                            'type': 'ir.actions.act_window',
+                            'res_model': 'purchase.cancel.alternatives.wizard',
+                            'view_mode': 'form',
+                            'target': 'new',
+                            'context': {
+                                'default_purchase_order_id': order.id,
+                            }
+                        }
+
         res = super(PurchaseOrder, self).button_confirm()
 
         for order in self:
             if order.mrp_production_id:
                 mo = order.mrp_production_id
+
+                # Cancel alternative RFQs if total confirmed qty reaches MO qty
+                all_pos = self.env['purchase.order'].search([('mrp_production_id', '=', mo.id)])
+                confirmed_pos = all_pos.filtered(lambda p: p.state in ['purchase', 'done'] or p.id == order.id)
+                total_confirmed_qty = sum(
+                    confirmed_pos.mapped('order_line').filtered(
+                        lambda l: l.product_id == mo.product_id
+                    ).mapped('product_qty')
+                )
+
+                if total_confirmed_qty >= mo.product_qty:
+                    alternative_pos = all_pos.filtered(lambda p: p.id not in confirmed_pos.ids and p.state in ['draft', 'sent', 'to approve'])
+                    for alt_po in alternative_pos:
+                        alt_po.button_cancel()
 
                 # Setup Locations
                 prod_location = mo.production_location_id
@@ -63,7 +101,7 @@ class PurchaseOrder(models.Model):
                         'move_ids': [(0, 0, {
                             'name': f"Resupply: {mo.product_id.name}",
                             'product_id': mo.product_id.id,
-                            'product_uom_qty': mo.product_qty,
+                            'product_uom_qty': sum(order.order_line.filtered(lambda l: l.product_id == mo.product_id).mapped('product_qty')),
                             'product_uom': mo.product_uom_id.id,
                             'location_id': prod_location.id,
                             'location_dest_id': dest_location.id,

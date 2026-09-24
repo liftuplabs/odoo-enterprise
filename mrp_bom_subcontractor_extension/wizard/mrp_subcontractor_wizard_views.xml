@@ -8,6 +8,7 @@
                 <group>
                     <field name="mrp_production_id" invisible="1"/>
                     <field name="subcontractor_id" domain="[('id', 'in', context.get('allowed_subcontractor_ids', []))]"/>
+                    <field name="product_qty"/>
                 </group>
                 <footer>
                     <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"/>

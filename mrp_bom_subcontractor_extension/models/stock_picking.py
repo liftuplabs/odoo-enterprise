@@ -14,7 +14,7 @@ class StockPicking(models.Model):
 
                     # Find ANY open MO tied to this Purchase Order
                     open_mos = self.env['mrp.production'].search([
-                        ('subcontractor_po_id', '=', picking.purchase_id.id),
+                        ('subcontractor_po_ids', 'in', picking.purchase_id.ids),
                         ('state', 'not in', ('done', 'cancel')),
                         ('production_location_id', '=', picking.location_dest_id.id)
                     ])

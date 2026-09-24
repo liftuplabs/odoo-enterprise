@@ -9,9 +9,11 @@ class MrpProduction(models.Model):
         related='bom_id.is_external_subcontractor',
         store=True
     )
-    subcontractor_po_id = fields.Many2one(
+    subcontractor_po_ids = fields.Many2many(
         'purchase.order',
-        string="Subcontractor PO",
+        'mrp_production_purchase_order_rel',
+        'production_id', 'purchase_order_id',
+        string="Subcontractor POs",
         copy=True
     )
     subcontractor_receipt_done = fields.Boolean(
@@ -22,15 +24,19 @@ class MrpProduction(models.Model):
 
     def action_view_subcontractor_po(self):
         self.ensure_one()
-        if self.subcontractor_po_id:
-            return {
+        if self.subcontractor_po_ids:
+            action = {
                 'type': 'ir.actions.act_window',
-                'name': _('Subcontractor PO'),
+                'name': _('Subcontractor POs'),
                 'res_model': 'purchase.order',
-                'res_id': self.subcontractor_po_id.id,
-                'view_mode': 'form',
+                'view_mode': 'list,form',
+                'domain': [('id', 'in', self.subcontractor_po_ids.ids)],
                 'target': 'current',
             }
+            if len(self.subcontractor_po_ids) == 1:
+                action['view_mode'] = 'form'
+                action['res_id'] = self.subcontractor_po_ids[0].id
+            return action
 
     def action_open_subcontractor_wizard(self):
         self.ensure_one()
@@ -49,10 +55,12 @@ class MrpProduction(models.Model):
             }
         }
 
-    def action_create_subcontractor_po(self, subcontractor_id):
+    def action_create_subcontractor_po(self, subcontractor_id, qty):
         self.ensure_one()
         if not subcontractor_id:
             raise UserError(_("Please select a subcontractor."))
+        if qty <= 0:
+            raise UserError(_("Quantity must be greater than zero."))
 
         # Create the Purchase Order
         po_vals = {
@@ -61,7 +69,7 @@ class MrpProduction(models.Model):
             'origin': self.name,
             'order_line': [(0, 0, {
                 'product_id': self.product_id.id,
-                'product_qty': self.product_qty,
+                'product_qty': qty,
                 'product_uom': self.product_uom_id.id,
                 'name': self.product_id.name,
                 'price_unit': 0.0,  # You can update this manually on the PO
@@ -69,7 +77,7 @@ class MrpProduction(models.Model):
             })]
         }
         po = self.env['purchase.order'].create(po_vals)
-        self.subcontractor_po_id = po.id
+        self.subcontractor_po_ids = [(4, po.id)]
 
         return {
             'type': 'ir.actions.act_window',
@@ -82,17 +90,17 @@ class MrpProduction(models.Model):
     def button_mark_done(self):
         """ Calculate available received qty and trigger native backorder wizard """
         for mo in self:
-            if mo.is_external_subcontractor and mo.subcontractor_po_id:
+            if mo.is_external_subcontractor and mo.subcontractor_po_ids:
                 if not mo.subcontractor_receipt_done:
                     raise UserError(_("You cannot produce this order until the subcontractor receipt is completed."))
 
-                # 1. Get total quantity received on the PO so far
-                po_line = mo.subcontractor_po_id.order_line.filtered(lambda l: l.product_id == mo.product_id)[:1]
-                total_received = po_line.qty_received if po_line else 0.0
+                # 1. Get total quantity received on the POs so far
+                po_lines = mo.subcontractor_po_ids.mapped('order_line').filtered(lambda l: l.product_id == mo.product_id)
+                total_received = sum(po_lines.mapped('qty_received'))
 
-                # 2. Get total quantity already produced in past MOs (previous backorders) for this PO
+                # 2. Get total quantity already produced in past MOs (previous backorders) for these POs
                 related_mos = self.env['mrp.production'].search([
-                    ('subcontractor_po_id', '=', mo.subcontractor_po_id.id),
+                    ('subcontractor_po_ids', 'in', mo.subcontractor_po_ids.ids),
                     ('state', '=', 'done')
                 ])
                 already_produced = sum(related_mos.mapped('qty_produced'))

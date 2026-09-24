@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_purchase_cancel_alternatives_wizard_form" model="ir.ui.view">
+        <field name="name">purchase.cancel.alternatives.wizard.form</field>
+        <field name="model">purchase.cancel.alternatives.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Confirm Confirmation">
+                <group>
+                    <div class="alert alert-warning" role="alert">
+                        Confirming this Purchase Order will automatically cancel the other alternative Subcontractor POs for this Manufacturing Order. Are you sure you want to proceed?
+                    </div>
+                </group>
+                <footer>
+                    <button name="action_confirm" string="Yes, Confirm and Cancel Alternatives" type="object" class="oe_highlight"/>
+                    <button string="Discard" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

@@ -12,6 +12,7 @@
     'data': [
         'security/ir.model.access.csv',
         'wizard/mrp_subcontractor_wizard_views.xml',
+        'wizard/purchase_cancel_alternatives_wizard_views.xml',
         'views/mrp_bom_views.xml',
         'views/mrp_production_views.xml',
     ],

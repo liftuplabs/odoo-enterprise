@@ -10,9 +10,9 @@
                         type="object"
                         class="oe_stat_button"
                         icon="fa-credit-card"
-                        invisible="not subcontractor_po_id">
+                        invisible="not subcontractor_po_ids">
                     <div class="o_stat_info">
-                        <span class="o_stat_text">Subcontract PO</span>
+                        <span class="o_stat_text">Subcontract POs</span>
                     </div>
                 </button>
             </xpath>
@@ -23,7 +23,7 @@
                         type="object"
                         string="Create Subcontractor PO"
                         class="oe_highlight"
-                        invisible="not is_external_subcontractor or subcontractor_po_id"/>
+                        invisible="not is_external_subcontractor"/>
             </xpath>
 
             <!-- Add tracking fields to the MO form (under the BoM field) -->
