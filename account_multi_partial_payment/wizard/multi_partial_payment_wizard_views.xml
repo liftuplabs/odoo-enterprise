@@ -16,8 +16,8 @@
                         <field name="move_id" force_save="1" domain="[('id', 'in', allowed_move_ids)]"/>
                         <field name="partner_id"/>
                         <field name="currency_id" column_invisible="1"/>
-                        <field name="amount_residual" force_save="1"/>
-                        <field name="amount_to_pay"/>
+                        <field name="amount_residual" force_save="1" sum="Total"/>
+                        <field name="amount_to_pay" sum="Total"/>
                     </list>
                 </field>
                 <footer>
