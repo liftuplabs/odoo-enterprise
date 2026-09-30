@@ -275,7 +275,14 @@
                                                     <!-- Consignee Address Box -->
                                                     <div t-if="shipping_partner" class="mb-3">
                                                         <strong>Consignee (Ship To):</strong><br/>
-                                                        <strong style="font-size: 1.1em;"><span t-field="shipping_partner.name"/></strong><br/>
+                                                        <strong style="font-size: 1.1em;">
+                                                            <t t-if="shipping_partner.parent_id">
+                                                                <span t-field="shipping_partner.parent_id.name"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span t-field="shipping_partner.name"/>
+                                                            </t>
+                                                        </strong><br/>
 
                                                         <!-- Inline Address For Consignee -->
                                                         <div>
@@ -304,7 +311,14 @@
                                                         <t t-else="">
                                                             <strong>Bill To (Buyer):</strong><br/>
                                                         </t>
-                                                        <strong style="font-size: 1.1em;"><span t-field="o.partner_id.name"/></strong><br/>
+                                                        <strong style="font-size: 1.1em;">
+                                                            <t t-if="o.partner_id.parent_id">
+                                                                <span t-field="o.partner_id.parent_id.name"/>
+                                                            </t>
+                                                            <t t-else="">
+                                                                <span t-field="o.partner_id.name"/>
+                                                            </t>
+                                                        </strong><br/>
 
                                                         <!-- Inline Address For Buyer/Seller -->
                                                         <div>
