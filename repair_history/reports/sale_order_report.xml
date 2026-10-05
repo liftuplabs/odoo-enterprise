@@ -290,8 +290,11 @@
                                                             <td class="meta-cell" t-attf-style="border-right: {{border_width}}px solid {{border_color}};"><strong>Dispatched Through:</strong><br/><span t-field="doc.dispatch_through"/></td>
                                                             <td class="meta-cell"><strong>Destination:</strong><br/><span t-field="doc.destination"/></td>
                                                         </tr>
+                                                        <tr t-attf-style="border-bottom: {{border_width}}px solid {{border_color}};">
+                                                            <td colspan="2" class="meta-cell"><strong>Delivery Terms:</strong><br/><span t-field="doc.terms_of_delivery"/></td>
+                                                        </tr>
                                                         <tr>
-                                                            <td colspan="2" class="meta-cell"><strong>Nature of Processing:</strong><br/><span t-field="doc.nature_of_process"/></td>
+                                                            <td colspan="2" class="meta-cell"><strong>Warranty Terms:</strong><br/><span t-field="doc.warrenty_terms"/></td>
                                                         </tr>
                                                     </table>
                                                 </td>

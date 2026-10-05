@@ -33,13 +33,14 @@ class SaleOrder(models.Model):
     dispatch_doc_no = fields.Char(string='Dispatch Doc No.')
     dispatch_through = fields.Char(string='Dispatched Through')
     destination = fields.Char(string='Destination')
-    nature_of_process = fields.Text(string='Nature of Processing')
+    terms_of_delivery = fields.Text(string='Delivery Terms')
 
     supplier_reference = fields.Char(string='Supplier Reference')
     other_reference = fields.Char(string='Other Reference')
 
     delivery_note = fields.Char(string='Delivery Note')
     delivery_note_date = fields.Date(string='Delivery Note Date')
+    warrenty_terms = fields.Text(string='Warranty Terms')
 
     mode_of_payment = fields.Char(string='Mode/Terms of Payment')
 
@@ -418,6 +419,8 @@ class SaleOrder(models.Model):
         invoice_vals.update({
             'buyers_order_no': self.buyers_order_no,
             'buyers_order_date': self.buyers_order_date,
+            'terms_of_delivery': self.terms_of_delivery,
+            'warrenty_terms': self.warrenty_terms,
         })
 
         done_deliveries = self.picking_ids.filtered(

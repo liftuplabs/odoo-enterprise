@@ -48,7 +48,8 @@
                         </group>
                     </group>
                     <group string="Terms">
-                         <field name="terms_of_delivery"/>
+                        <field name="terms_of_delivery"/>
+                        <field name="warrenty_terms"/>
                     </group>
                 </page>
             </xpath>

@@ -98,6 +98,7 @@
                                 <field name="date_time_of_issue"/>
                             </group>
                             <group string="References">
+                                <field name="warrenty_terms"/>
                                 <field name="supplier_reference"/>
                                 <field name="other_reference"/>
                                 <field name="buyers_order_no"/>
@@ -107,8 +108,9 @@
                                  <field name="duration_of_process"/>
                             </group>
                         </group>
-                        <group string="Nature">
-                             <field name="nature_of_process"/>
+                        <group string="Terms">
+                            <field name="terms_of_delivery"/>
+                            <field name="warrenty_terms"/>
                         </group>
                     </page>
                 </xpath>
