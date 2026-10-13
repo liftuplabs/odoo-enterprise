@@ -20,5 +20,6 @@ access_material_out_print_wizard,material.out.print.wizard.access,model_material
 access_sale_order_print_wizard,sale.order.print.wizard,model_sale_order_print_wizard,base.group_user,1,1,1,1
 access_purchase_order_print_wizard,purchase.order.print.wizard,model_purchase_order_print_wizard,base.group_user,1,1,1,1
 access_repair_order_print_wizard,repair.order.print.wizard,model_repair_order_print_wizard,base.group_user,1,1,1,1
-
-
+access_repair_internal_note_readonly,repair.internal.note.readonly,model_repair_internal_note,repair_history.group_repair_read_only,1,0,0,0
+access_repair_internal_note_user,repair.internal.note.user,model_repair_internal_note,base.group_user,1,1,1,0
+access_repair_internal_note_manager,repair.internal.note.manager,model_repair_internal_note,repair_history.group_repair_manager,1,1,1,1

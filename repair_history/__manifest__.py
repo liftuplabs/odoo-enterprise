@@ -39,6 +39,7 @@
         'views/hr_employee.xml',
         'views/res_company.xml',
         'views/material_out_print_wizard_views.xml',
+        'views/repair_internal_note_views.xml',
         'reports/material_out_report.xml',
         'reports/sale_order_report.xml',
         'reports/purchase_order_report.xml',
